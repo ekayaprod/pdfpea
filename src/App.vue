@@ -2393,10 +2393,8 @@ export default {
         const elTopRelative = elRect.top - containerRect.top + container.scrollTop;
         const elLeftRelative = elRect.left - containerRect.left + container.scrollLeft;
 
-        const targetTop =
-          elTopRelative - container.clientHeight / 2 + elRect.height / 2;
-        const targetLeft =
-          elLeftRelative - container.clientWidth / 2 + elRect.width / 2;
+        const targetTop = elTopRelative - container.clientHeight / 2 + elRect.height / 2;
+        const targetLeft = elLeftRelative - container.clientWidth / 2 + elRect.width / 2;
 
         container.scrollTo({
           top: targetTop,
@@ -2718,8 +2716,7 @@ export default {
               [...m.addedNodes, ...m.removedNodes].some(
                 (node) =>
                   node.nodeType === 1 &&
-                  (node.classList?.contains("component") ||
-                    node.querySelector?.(".component")),
+                  (node.classList?.contains("component") || node.querySelector?.(".component")),
               ),
             );
             if (hasComponentChange) refreshLayers();
