@@ -96,9 +96,11 @@ body {
 /* Floating toolbar */
 .floating-toolbar {
   position: relative;
-  left: 20px; /* Initial position, will be updated dynamically by JavaScript */
-  top: 60px; /* Start below the header area */
+  left: 10px; /* Initial position, will be updated dynamically by JavaScript */
+  top: 25px; /* Start below the header area */
   width: 60px;
+  flex: 0 0 60px;
+  min-width: 60px;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;
@@ -106,7 +108,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0px;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 120px);
   -ms-overflow-style: none;
   scrollbar-width: none;
   z-index: 10000;
@@ -323,6 +325,187 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* Layers panel (right sidebar) */
+.layers-panel {
+  flex: 0 0 240px;
+  width: 240px;
+  margin-left: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+}
+
+.layers-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #2d2d2d;
+  border-bottom: 1px solid #dee2e6;
+  background-color: #fff;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.layers-panel-header i {
+  color: #007acc;
+}
+
+.layers-count {
+  margin-left: auto;
+  background-color: #e9ecef;
+  color: #6c757d;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+
+.layers-panel-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.layers-empty {
+  color: #868e96;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.layers-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #495057;
+  font-size: 13px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.layer-item:hover {
+  background-color: #eef1f4;
+}
+
+.layer-item.active {
+  background-color: #e3f2fd;
+  border-color: #007acc;
+  color: #0a4a73;
+  font-weight: 600;
+}
+
+.layer-icon {
+  width: 16px;
+  text-align: center;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.layer-item.active .layer-icon {
+  color: #007acc;
+}
+
+.layer-label {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layer-page {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #adb5bd;
+  background-color: #f1f3f5;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.layer-actions {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.layer-item:hover .layer-actions,
+.layer-item.active .layer-actions {
+  display: flex;
+}
+
+/* Hide the page badge while actions are shown to save horizontal space. */
+.layer-item:hover .layer-page,
+.layer-item.active .layer-page {
+  display: none;
+}
+
+.layer-action-btn {
+  border: none;
+  background: transparent;
+  color: #868e96;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.layer-action-btn:hover {
+  background-color: #e0e0e0;
+  color: #495057;
+}
+
+.layer-action-delete:hover {
+  background-color: #fbe2e2;
+  color: #d6336c;
+}
+
+.layer-edit-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  padding: 2px 6px;
+  border: 1px solid #007acc;
+  border-radius: 4px;
+  outline: none;
+  color: #2d2d2d;
+  background-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .layers-panel {
+    display: none;
+  }
 }
 
 .body-pdf-view.drawing-mode .pdf-page {
@@ -452,6 +635,10 @@ body {
 .rectangle-component .component-content {
   height: 100%;
   width: 100%;
+}
+
+.image-component .component-content {
+  object-fit: contain;
 }
 
 .text-component .component-content {
@@ -693,18 +880,20 @@ h3 {
   border: 1px solid #4af !important;
 }
 
-/* Moveable Delete Button Styles */
+/* Moveable Control Button Styles */
 .moveable-delete-container {
   position: absolute;
-  top: -25px;
-  right: -30px;
+  top: -28px;
+  left: 0;
+  display: flex;
+  gap: 4px;
   z-index: 10000;
 }
 
+.moveable-move-button,
 .moveable-delete-button {
   width: 22px;
   height: 22px;
-  background-color: #0e8eff;
   color: white;
   border-radius: 2px;
   border: 0px solid white;
@@ -717,11 +906,26 @@ h3 {
   transition: all 0.2s ease;
 }
 
-.moveable-delete-button:hover {
-  background-color: #ff0000;
+.moveable-move-button {
+  background-color: #0e8eff;
+  cursor: move;
+}
+
+.moveable-move-button:hover {
+  background-color: #0072d6;
   transform: scale(1.1);
 }
 
+.moveable-delete-button {
+  background-color: #ff0000;
+}
+
+.moveable-delete-button:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+.moveable-move-button i,
 .moveable-delete-button i {
   font-size: 10px;
   line-height: 1;

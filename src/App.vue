@@ -29,7 +29,7 @@
               title="Export the edited PDF with all annotations"
             >
               <i class="fa-solid fa-download mr-2"></i>
-              Export
+              Download PDF
             </button>
           </div>
           <div class="option-element">
@@ -703,6 +703,15 @@
           >
             <i class="fa-solid fa-ruler"></i>
           </div>
+
+          <div
+            class="body-tool"
+            :class="{ active: selectedTool === 'date' }"
+            @click="selectTool('date')"
+            title="Date Tool - Click to add a text element with the current date (YYYY-MM-DD)"
+          >
+            <i class="fa-regular fa-calendar"></i>
+          </div>
         </div>
 
         <!-- Icon Tools Section -->
@@ -748,6 +757,66 @@
               <span class="pdf-placeholder-format ml-3">JSON config files</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Layers Panel -->
+      <div v-if="isLoaded" class="layers-panel">
+        <div class="layers-panel-header">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Layers</span>
+          <span class="layers-count">{{ layers.length }}</span>
+        </div>
+        <div class="layers-panel-body">
+          <p v-if="layers.length === 0" class="layers-empty">
+            No elements yet. Add text, images, or shapes to see them here.
+          </p>
+          <ul v-else class="layers-list">
+            <li
+              v-for="layer in layers"
+              :key="layer.key"
+              class="layer-item"
+              :class="{ active: isLayerSelected(layer), editing: editingLayerKey === layer.key }"
+              :title="layer.label"
+              @click="selectLayer(layer)"
+            >
+              <i class="layer-icon" :class="layer.icon"></i>
+
+              <input
+                v-if="editingLayerKey === layer.key"
+                v-model="editingLayerValue"
+                class="layer-edit-input"
+                type="text"
+                @click.stop
+                @keydown.enter.prevent="commitEditLayer(layer)"
+                @keydown.esc.prevent="cancelEditLayer()"
+                @blur="commitEditLayer(layer)"
+              />
+              <span v-else class="layer-label">{{ layer.label }}</span>
+
+              <span v-if="editingLayerKey !== layer.key" class="layer-page"
+                >p{{ layer.pageNumber }}</span
+              >
+
+              <div v-if="editingLayerKey !== layer.key" class="layer-actions">
+                <button
+                  v-if="canEditLayer(layer)"
+                  class="layer-action-btn"
+                  title="Rename element"
+                  @click.stop="startEditLayer(layer)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="layer-action-btn layer-action-delete"
+                  title="Delete element"
+                  @click.stop="deleteLayer(layer)"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -816,6 +885,12 @@ export default {
     const counter = ref(0);
     const zoomLevel = ref(1.5);
     const selectedTool = ref("select");
+
+    // Layers panel state
+    const layers = ref([]);
+    const selectedLayerEl = ref(null);
+    const editingLayerKey = ref(null);
+    const editingLayerValue = ref("");
 
     // Icon cache for base64 encoded SVGs
     const iconCache = ref({});
@@ -1105,6 +1180,14 @@ export default {
       console.log("Selected tool:", tool);
     };
 
+    const getFormattedCurrentDate = () => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
     const getToolSettings = (tool) => {
       // Check if the tool is an icon tool from the dynamic array
       const iconTool = iconTools.value.find((iconTool) => iconTool.id === tool);
@@ -1131,6 +1214,12 @@ export default {
           opacity: lineOptions.value.opacity,
         },
         text: {
+          fontFamily: textOptions.value.fontFamily,
+          fontSize: textOptions.value.fontSize,
+          color: textOptions.value.color,
+          opacity: textOptions.value.opacity,
+        },
+        date: {
           fontFamily: textOptions.value.fontFamily,
           fontSize: textOptions.value.fontSize,
           color: textOptions.value.color,
@@ -1166,6 +1255,7 @@ export default {
 
       const toolTypeMap = {
         text: "text",
+        date: "text",
         image: "image",
         rectangle: "rectangle",
         circle: "circle",
@@ -1295,6 +1385,41 @@ export default {
             }
 
             // For text tool, create component immediately and focus for editing
+            if (selectedTool.value === "date") {
+              // Check if component creation is temporarily prevented (e.g., after deletion)
+              if (window.preventComponentCreation) {
+                isDrawing.value = false;
+                return;
+              }
+
+              const id = Math.random().toString(36).substring(2, 11);
+              const toolType = getToolType(selectedTool.value);
+              const settings = getToolSettings(selectedTool.value);
+
+              const component = page.createComponentWithDimensions(
+                toolType,
+                settings,
+                id,
+                drawingStart.value.x,
+                drawingStart.value.y,
+                20,
+                20,
+              );
+
+              if (component) {
+                // Populate with the current date and resize to fit.
+                const op = component.getOperation();
+                op.text = getFormattedCurrentDate();
+                if (typeof component.updateSize === "function") {
+                  component.updateSize();
+                }
+                component.setSelected(true);
+              }
+
+              isDrawing.value = false;
+              return;
+            }
+
             if (selectedTool.value === "text") {
               // Check if component creation is temporarily prevented (e.g., after deletion)
               if (window.preventComponentCreation) {
@@ -2147,10 +2272,203 @@ export default {
 
     const uploadPropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
+      if (e.detail.target && e.detail.target.wrapperContainer) {
+        selectedLayerEl.value = e.detail.target.wrapperContainer;
+      }
+      refreshLayers();
     };
 
     const clearPropertyPanel = () => {
       selectedOperation.value = null;
+      selectedLayerEl.value = null;
+      refreshLayers();
+    };
+
+    // ----- Layers panel -----
+    const getLayerLabel = (op) => {
+      if (!op) return "Element";
+      switch (op.type) {
+        case "text":
+          return (op.text && op.text.trim()) || "Text";
+        case "textfield":
+          return (op.text && op.text.trim()) || op.id || "Text field";
+        case "image":
+          if (op.subType === "freehand") return "Freehand drawing";
+          if (op.subType === "line") return "Line";
+          if (op.subType === "icon") return "Icon";
+          return "Image";
+        case "rectangle":
+          return "Rectangle";
+        case "circle":
+          return "Circle";
+        case "link":
+          return op.linkValue || op.url || "Link";
+        case "checkbox":
+          return op.id || "Checkbox";
+        default:
+          return op.type ? op.type.charAt(0).toUpperCase() + op.type.slice(1) : "Element";
+      }
+    };
+
+    const getLayerIcon = (op) => {
+      if (!op) return "fa-solid fa-shapes";
+      switch (op.type) {
+        case "text":
+        case "textfield":
+          return "fa-solid fa-font";
+        case "image":
+          if (op.subType === "freehand") return "fa-solid fa-pencil";
+          if (op.subType === "line") return "fa-solid fa-minus";
+          if (op.subType === "icon") return "fa-solid fa-star";
+          return "fa-regular fa-image";
+        case "rectangle":
+          return "fa-regular fa-square";
+        case "circle":
+          return "fa-regular fa-circle";
+        case "link":
+          return "fa-solid fa-link";
+        case "checkbox":
+          return "fa-regular fa-square-check";
+        default:
+          return "fa-solid fa-shapes";
+      }
+    };
+
+    const refreshLayers = () => {
+      if (!pdfEditor || !pdfEditor.pdfPages || !pdfEditor.pdfPages.length) {
+        layers.value = [];
+        return;
+      }
+
+      const result = [];
+      pdfEditor.pdfPages.forEach((page) => {
+        if (!page.container) return;
+        const nodes = Array.from(page.container.querySelectorAll(".component"));
+        nodes.forEach((el, index) => {
+          const op = el.operation || {};
+          result.push({
+            key: `${page.pageNumber}-${op.id || op.identifier || index}-${index}`,
+            el,
+            pageNumber: page.pageNumber,
+            type: op.type,
+            label: getLayerLabel(op),
+            icon: getLayerIcon(op),
+          });
+        });
+      });
+      layers.value = result;
+    };
+
+    const isLayerSelected = (layer) => {
+      return selectedLayerEl.value === layer.el || layer.el.classList.contains("selected");
+    };
+
+    const selectLayer = (layer) => {
+      if (!layer || !layer.el) return;
+
+      // Selection requires the select tool (drawing mode disables pointer events
+      // and prevents Moveable handles from appearing).
+      if (selectedTool.value !== "select") {
+        selectTool("select");
+      }
+
+      const component = layer.el.__component;
+      if (component && typeof component.setSelected === "function") {
+        component.setSelected(true);
+      } else {
+        layer.el.click();
+      }
+
+      selectedLayerEl.value = layer.el;
+
+      // Bring the element into view within the scrollable PDF area only,
+      // without scrolling the browser window/page. Using scrollIntoView would
+      // bubble up and scroll every ancestor scroll container (including the
+      // document), so we manually scroll just the PDF view container instead.
+      const container = pdfViewContainer.value;
+      if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const elRect = layer.el.getBoundingClientRect();
+
+        const elTopRelative = elRect.top - containerRect.top + container.scrollTop;
+        const elLeftRelative = elRect.left - containerRect.left + container.scrollLeft;
+
+        const targetTop =
+          elTopRelative - container.clientHeight / 2 + elRect.height / 2;
+        const targetLeft =
+          elLeftRelative - container.clientWidth / 2 + elRect.width / 2;
+
+        container.scrollTo({
+          top: targetTop,
+          left: targetLeft,
+          behavior: "smooth",
+        });
+      }
+
+      refreshLayers();
+    };
+
+    const deleteLayer = (layer) => {
+      if (!layer || !layer.el) return;
+
+      const component = layer.el.__component;
+      if (component && typeof component.deleteComponent === "function") {
+        component.deleteComponent();
+      } else {
+        layer.el.remove();
+      }
+
+      if (selectedLayerEl.value === layer.el) {
+        selectedLayerEl.value = null;
+        selectedOperation.value = null;
+      }
+      if (editingLayerKey.value === layer.key) {
+        editingLayerKey.value = null;
+      }
+
+      refreshLayers();
+    };
+
+    // Inline rename is only meaningful for text-based elements.
+    const canEditLayer = (layer) => layer && (layer.type === "text" || layer.type === "textfield");
+
+    const startEditLayer = (layer) => {
+      if (!canEditLayer(layer)) {
+        // For non-text elements, "edit" simply selects so the property bar opens.
+        selectLayer(layer);
+        return;
+      }
+
+      selectLayer(layer);
+      editingLayerKey.value = layer.key;
+      editingLayerValue.value = (layer.el.operation && layer.el.operation.text) || "";
+
+      nextTick(() => {
+        const input = document.querySelector(".layer-edit-input");
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    };
+
+    const commitEditLayer = (layer) => {
+      if (!layer || editingLayerKey.value !== layer.key) return;
+
+      const component = layer.el.__component;
+      if (component && typeof component.getOperation === "function") {
+        const op = component.getOperation();
+        op.text = editingLayerValue.value;
+      }
+
+      editingLayerKey.value = null;
+      editingLayerValue.value = "";
+      refreshLayers();
+    };
+
+    const cancelEditLayer = () => {
+      editingLayerKey.value = null;
+      editingLayerValue.value = "";
     };
 
     const updateToolbarPosition = () => {
@@ -2393,6 +2711,24 @@ export default {
           document.addEventListener("pdfeditor.componentDragging", uploadPropertyPanel);
           document.addEventListener("pdfeditor.componentResizing", uploadPropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
+
+          // Keep the Layers panel in sync as components are added/removed.
+          const layersObserver = new MutationObserver((mutations) => {
+            const hasComponentChange = mutations.some((m) =>
+              [...m.addedNodes, ...m.removedNodes].some(
+                (node) =>
+                  node.nodeType === 1 &&
+                  (node.classList?.contains("component") ||
+                    node.querySelector?.(".component")),
+              ),
+            );
+            if (hasComponentChange) refreshLayers();
+          });
+          layersObserver.observe(pdfViewContainer.value, {
+            childList: true,
+            subtree: true,
+          });
+
           console.log("PDFEditor initialized successfully");
         } catch (error) {
           console.error("Error creating PDFEditor:", error);
@@ -2424,31 +2760,6 @@ export default {
           });
         }
       });
-
-      // Check for PDF file in sessionStorage (from landing page)
-      const storedPdfFile = sessionStorage.getItem("pdfFile");
-      const storedFileName = sessionStorage.getItem("pdfFileName");
-      if (storedPdfFile && pdfEditor) {
-        // Convert data URL to binary string
-        const base64Data = storedPdfFile.split(",")[1];
-        const binaryString = atob(base64Data);
-
-        clearPdfPages();
-        isLoaded.value = true;
-        pdfEditor.renderPDF("", binaryString).then(() => {
-          pdfEditor.applyZoom(zoomLevel.value);
-          setupCanvasDrawingListeners();
-          setTimeout(() => {
-            updateToolbarPosition();
-          }, 100);
-          isLoaded.value = true;
-          showToast(`${storedFileName} loaded successfully`, "success");
-        });
-
-        // Clear from sessionStorage after loading
-        sessionStorage.removeItem("pdfFile");
-        sessionStorage.removeItem("pdfFileName");
-      }
 
       // Setup dynamic tooltip positioning
       setupTooltipPositioning();
@@ -2767,6 +3078,16 @@ export default {
       updateToolbarPosition,
       selectedTool,
       selectTool,
+      layers,
+      selectLayer,
+      isLayerSelected,
+      deleteLayer,
+      canEditLayer,
+      startEditLayer,
+      commitEditLayer,
+      cancelEditLayer,
+      editingLayerKey,
+      editingLayerValue,
       freehandOptions,
       lineOptions,
       shapeOptions,

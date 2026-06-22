@@ -120,6 +120,10 @@ class PDFPage {
 
   async initialize(pdfURL, pageNumber, fileContents) {
     const scale = DEFAULT_VALUES.SCALE;
+    // Render the canvas at a higher resolution than the layout scale. This only
+    // affects the canvas backing store, not the on-screen size or form-field
+    // coordinate math (which keep using the layout `viewport`).
+    const renderScale = scale * DEFAULT_VALUES.RENDER_RESOLUTION_MULTIPLIER;
 
     this.pdfURL = pdfURL;
     this.pageNumber = pageNumber;
@@ -131,12 +135,13 @@ class PDFPage {
       }).promise;
       const page = await pdfDoc.getPage(pageNumber);
       const viewport = page.getViewport({ scale });
+      const renderViewport = page.getViewport({ scale: renderScale });
 
-      // Set canvas to high resolution
-      this.canvas.height = viewport.height;
-      this.canvas.width = viewport.width;
+      // Set canvas backing store to the high-resolution viewport size
+      this.canvas.height = renderViewport.height;
+      this.canvas.width = renderViewport.width;
 
-      // Set container style to display size (half of canvas size for 2x scale)
+      // Set container style to display size (independent of render resolution)
       const displayHeight = viewport.height / scale;
       const displayWidth = viewport.width / scale;
       this.container.style.height = `${displayHeight}px`;
@@ -153,7 +158,7 @@ class PDFPage {
       await page.render({
         annotationMode: pdfjsLib.AnnotationMode.DISABLE,
         canvasContext: this.context,
-        viewport: page.getViewport({ scale: DEFAULT_VALUES.SCALE }),
+        viewport: renderViewport,
       });
 
       this.processFormFields(formFields, viewport);

@@ -1,6 +1,9 @@
 // Default values and constants
 export const DEFAULT_VALUES = {
   SCALE: 2.0,
+  // Extra multiplier applied only to the rendered canvas backing store so the
+  // PDF is drawn at a higher resolution than the on-screen layout size.
+  RENDER_RESOLUTION_MULTIPLIER: 2.0,
   COMPONENT_HEIGHT: 100,
   COMPONENT_WIDTH: 100,
   TEXT_HEIGHT: 25,

@@ -205,11 +205,16 @@ class PDFGenerator {
 
     // Helper for JPG/PNG
     const drawRaster = async (embeddedImg) => {
+      // Preserve aspect ratio (object-fit: contain) and center within the box
+      const scaled = embeddedImg.scaleToFit(width, height);
+      const offsetX = (width - scaled.width) / 2;
+      const offsetY = (height - scaled.height) / 2;
+
       await pdfPage.drawImage(embeddedImg, {
-        x,
-        y: pageHeight - y - height,
-        width,
-        height,
+        x: x + offsetX,
+        y: pageHeight - y - height + offsetY,
+        width: scaled.width,
+        height: scaled.height,
         opacity,
       });
     };

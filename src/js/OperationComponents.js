@@ -20,6 +20,7 @@ class BasicOperationComponent {
     this.wrapperContainer.style.width = `${this.operation.width}px`;
 
     this.wrapperContainer.operation = operation;
+    this.wrapperContainer.__component = this;
 
     this.canvasContainer.appendChild(this.wrapperContainer);
 
@@ -50,7 +51,52 @@ class BasicOperationComponent {
     });
   }
 
-  // Create the delete able for Moveable
+  // Start dragging the component from the move handle
+  startMoveDrag = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const startClientX = e.clientX;
+    const startClientY = e.clientY;
+    const startX = this.operation.x;
+    const startY = this.operation.y;
+
+    // Account for canvas zoom (the container is scaled via CSS transform)
+    const rect = this.canvasContainer.getBoundingClientRect();
+    const scale = this.canvasContainer.offsetWidth
+      ? rect.width / this.canvasContainer.offsetWidth
+      : 1;
+
+    const onMouseMove = (moveEvent) => {
+      const deltaX = (moveEvent.clientX - startClientX) / scale;
+      const deltaY = (moveEvent.clientY - startClientY) / scale;
+
+      const newLeft = startX + deltaX;
+      const newTop = startY + deltaY;
+
+      this.wrapperContainer.style.left = `${newLeft}px`;
+      this.wrapperContainer.style.top = `${newTop}px`;
+
+      this.operation.x = newLeft;
+      this.operation.y = newTop;
+
+      if (this.wrapperContainer.moveable) {
+        this.wrapperContainer.moveable.updateRect();
+      }
+
+      this.fireEvent("pdfeditor.componentDragging");
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  };
+
+  // Create the controls able (move + delete) for Moveable
   createDeleteAble = () => {
     const deleteAble = {
       name: "deleteViewable",
@@ -67,6 +113,27 @@ class BasicOperationComponent {
             r.createElement(
               "div",
               {
+                key: "move-button",
+                className: "moveable-move-button",
+                title: "Move component",
+                onMouseDown: (e) => {
+                  this.startMoveDrag(e);
+                },
+                onClick: (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                },
+              },
+              [
+                r.createElement("i", {
+                  className: "fa-solid fa-up-down-left-right",
+                }),
+              ],
+            ),
+            r.createElement(
+              "div",
+              {
+                key: "delete-button",
                 className: "moveable-delete-button",
                 title: "Delete component",
                 onMouseDown: (e) => {

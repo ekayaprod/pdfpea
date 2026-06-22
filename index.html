@@ -573,11 +573,9 @@
             const appContainer = document.getElementById('app');
             appContainer.scrollIntoView({ behavior: 'smooth' });
 
-            // Store the file for the Vue app to pick up
+            // Pass the file to the Vue app via a custom event
             const reader = new FileReader();
             reader.onload = function(e) {
-                sessionStorage.setItem('pdfFile', e.target.result);
-                sessionStorage.setItem('pdfFileName', file.name);
                 // Trigger file load event for Vue app
                 setTimeout(() => {
                     const event = new CustomEvent('loadPdfFromLanding', {
@@ -588,45 +586,6 @@
             };
             reader.readAsDataURL(file);
         }
-
-        // Drag and drop functionality
-        let dragCounter = 0;
-
-        document.addEventListener('dragenter', function(e) {
-            e.preventDefault();
-            dragCounter++;
-            if (dragCounter === 1) {
-                document.getElementById('dropOverlay').classList.remove('hidden');
-            }
-        });
-
-        document.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            dragCounter--;
-            if (dragCounter === 0) {
-                document.getElementById('dropOverlay').classList.add('hidden');
-            }
-        });
-
-        document.addEventListener('dragover', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dragCounter = 0;
-            document.getElementById('dropOverlay').classList.add('hidden');
-
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type === 'application/pdf') {
-                    redirectToEditor(file);
-                } else {
-                    alert('Please drop a PDF file.');
-                }
-            }
-        });
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
