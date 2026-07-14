@@ -3,7 +3,7 @@
     <div class="link-dialog" @click.stop>
       <div class="link-dialog-header">
         <h3>Add Link</h3>
-        <button @click="closeDialog" class="dialog-close-btn">&times;</button>
+        <button @click="closeDialog" class="dialog-close-btn" aria-label="Close dialog">&times;</button>
       </div>
 
       <div class="link-dialog-content">

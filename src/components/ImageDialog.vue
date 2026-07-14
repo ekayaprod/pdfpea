@@ -3,7 +3,7 @@
     <div class="image-dialog" @click.stop>
       <div class="image-dialog-header">
         <h3>Add Image</h3>
-        <button @click="closeDialog" class="dialog-close-btn">&times;</button>
+        <button @click="closeDialog" class="dialog-close-btn" aria-label="Close dialog">&times;</button>
       </div>
 
       <div class="image-dialog-content">
