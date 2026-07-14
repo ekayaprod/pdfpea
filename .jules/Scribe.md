@@ -1,0 +1,3 @@
+- Injected JSDoc for `getImageType` in `src/js/PDFGenerator.js` explaining magic numbers.
+- Injected JSDoc for `catmullRomInterpolate` in `src/utils/FreehandDrawing.js` explaining math coefficients.
+- Aggregated recent git commit 7c1af7e (format code) into CHANGELOG.md

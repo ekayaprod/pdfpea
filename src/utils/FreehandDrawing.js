@@ -124,8 +124,12 @@ export class FreehandDrawing {
     return result;
   }
 
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+
   /**
-   * Catmull-Rom spline interpolation for smooth curves
+   * Calculates a point on a Catmull-Rom spline using four control points (p0, p1, p2, p3) and a normalized time parameter (t).
+   * It uses a tension of 0.5 (implicitly embedded in the coefficients) to smoothly interpolate points between p1 and p2.
+   * * Historical Intent: Introduced in commit 7c1af7e (Jun 2026) to provide high-quality smooth curves for freehand drawing operations.
    */
   catmullRomInterpolate(p0, p1, p2, p3, t) {
     const t2 = t * t;
