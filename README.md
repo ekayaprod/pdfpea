@@ -1,31 +1,19 @@
-## TL;DR
-PDFPea is an editing tool that works completely locally. Add text, images, shapes, annotations, and more without uploading your files to any server.
+# ⚡ PDFPea
+[![build: passing](https://img.shields.io/badge/build-passing-brightgreen)](#)
+
+PDFPea is a high-velocity, browser-based PDF editor engineered for total local privacy. Built on Vue 3 and Vite, it delivers zero-latency text, image, and shape annotations directly in your browser. No server uploads. No compromises.
 
 Working website: [pdfpea.com](https://pdfpea.com)
 
+## 🚀 The Stack
+- **Engine:** Vue 3 + Vanilla JavaScript
+- **Build Tooling:** Vite
+- **Styling:** Tailwind CSS (v4)
+- **PDF Core:** `pdf-lib` & `pdfjs-dist`
 
-## Recommended IDE Setup
+*Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0.*
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Architectural Map
+## 🏗️ Architectural Map
 | Directory | Purpose |
 | --- | --- |
 | `/src` | Core Vue 3 application logic, components, styling, and utilities. |
@@ -36,22 +24,26 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 | `/public` | Static assets like images served directly. |
 | `/test-files` | Local PDF and media assets for testing the editor visually. |
 
-## Project Setup
+## 🛠️ Boot Sequence (CLI Commands)
 
 1. `npm install` (Install dependencies)
 
-### Compile and Hot-Reload for Development
-
+### Development
 1. `npm run dev` (Boot the Vite development server)
 
-### Type-Check, Compile and Minify for Production
+### Production & Verification
+1. `npm run type-check` (Type check TS and Vue components using `vue-tsc`)
+2. `npm run build` (Compile with Vite --debug)
+3. `npm run preview` (Locally preview the production build)
 
-1. `npm run type-check` (Type check TS and Vue components)
-2. `npm run build` (Compile with Vite)
+### Linting & Formatting
+1. `npm run lint` (ESLint auto-fix and cache)
+2. `npm run format:check` (Prettier validation)
+3. `npm run format` (Prettier auto-format)
 
-### Lint with [ESLint](https://eslint.org/)
+## ⚙️ Recommended IDE Setup
 
-1. `npm run lint`
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur).
 
-## License
+## 🛡️ License
 MIT License.
