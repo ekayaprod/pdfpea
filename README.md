@@ -25,29 +25,33 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 
 See [Vite Configuration Reference](https://vite.dev/config/).
 
+## Architectural Map
+| Directory | Purpose |
+| --- | --- |
+| `/src` | Core Vue 3 application logic, components, styling, and utilities. |
+| `/src/components` | Reusable UI and tool components. |
+| `/src/css` | Global styling and tailwind configuration. |
+| `/src/js` | Vanilla JavaScript modules and integrations (like `pdf-lib`). |
+| `/src/utils` | Shared utility functions and helpers. |
+| `/public` | Static assets like images served directly. |
+| `/test-files` | Local PDF and media assets for testing the editor visually. |
+
 ## Project Setup
 
-```sh
-npm install
-```
+1. `npm install` (Install dependencies)
 
 ### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
+1. `npm run dev` (Boot the Vite development server)
 
 ### Type-Check, Compile and Minify for Production
 
-```sh
-npm run build
-```
+1. `npm run type-check` (Type check TS and Vue components)
+2. `npm run build` (Compile with Vite)
 
 ### Lint with [ESLint](https://eslint.org/)
 
-```sh
-npm run lint
-```
+1. `npm run lint`
 
 ## License
 MIT License.
