@@ -28,6 +28,13 @@ class PDFGenerator {
     };
   }
 
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+
+  /**
+   * Identifies the image file type by inspecting the magic bytes (file signature) of the buffer.
+   * Checks for '<svg' or '<?xml' for SVG files, 0xFFD8 for JPEG, and the 8-byte 0x89504E470D0A1A0A signature for PNG.
+   * * Historical Intent: Introduced in commit 7c1af7e (Jun 2026) to handle file identification locally without relying on external dependencies.
+   */
   static getImageType(arrayBuffer) {
     const view = new DataView(arrayBuffer);
     const signature = [view.getUint8(0), view.getUint8(1)];
