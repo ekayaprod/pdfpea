@@ -521,9 +521,23 @@ class PDFGenerator {
       existingTextField.setAlignment(PDFLib.TextAlignment.Right);
     }
 
-    isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
-    isMultiline ? existingTextField.enableMultiline() : existingTextField.disableMultiline();
-    isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
+    if (isRequired) {
+      existingTextField.enableRequired();
+    } else {
+      existingTextField.disableRequired();
+    }
+
+    if (isMultiline) {
+      existingTextField.enableMultiline();
+    } else {
+      existingTextField.disableMultiline();
+    }
+
+    if (isReadOnly) {
+      existingTextField.enableReadOnly();
+    } else {
+      existingTextField.disableReadOnly();
+    }
   }
 
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
@@ -562,8 +576,17 @@ class PDFGenerator {
 
     const existingCheckbox = form.getCheckBox(id);
 
-    isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
-    isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
+    if (isChecked) {
+      existingCheckbox.check();
+    } else {
+      existingCheckbox.uncheck();
+    }
+
+    if (isReadOnly) {
+      existingCheckbox.enableReadOnly();
+    } else {
+      existingCheckbox.disableReadOnly();
+    }
   }
 
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
