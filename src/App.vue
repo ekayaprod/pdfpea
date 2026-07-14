@@ -803,6 +803,7 @@
                   v-if="canEditLayer(layer)"
                   class="layer-action-btn"
                   title="Rename element"
+                  aria-label="Rename element"
                   @click.stop="startEditLayer(layer)"
                 >
                   <i class="fa-solid fa-pen"></i>
@@ -810,6 +811,7 @@
                 <button
                   class="layer-action-btn layer-action-delete"
                   title="Delete element"
+                  aria-label="Delete element"
                   @click.stop="deleteLayer(layer)"
                 >
                   <i class="fa-solid fa-trash"></i>
@@ -846,6 +848,7 @@
       <span>{{ toast.message }}</span>
       <button
         @click.stop="hideToast"
+        aria-label="Dismiss notification"
         style="
           background: none;
           border: none;
