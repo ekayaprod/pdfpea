@@ -1,0 +1,4 @@
+/src/ @frontend-core
+/public/ @frontend-core
+/test-files/ @qa-team
+package.json @frontend-core
