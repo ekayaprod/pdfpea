@@ -2502,7 +2502,7 @@ export default {
           } catch (error) {
             console.error(`Error loading icon ${iconName}:`, error);
           }
-        })
+        }),
       );
     };
     // Apply fill color to cached SVG icon
