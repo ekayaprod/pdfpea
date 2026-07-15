@@ -123,9 +123,12 @@ class PDFGenerator {
     const width = operation.width;
     const opacity = parseFloat(operation.opacity, 10);
     const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont) ? resolvedFont : PDFLib.StandardFonts.Helvetica;
+    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
+      ? resolvedFont
+      : PDFLib.StandardFonts.Helvetica;
     const embedFont = await pdfDoc.embedFont(fontToEmbed);
-    const wordBreaks = fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
+    const wordBreaks =
+      fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
     await pdfPage.drawText(text, {
       x: x + xPadding,
       y: operationPageHeight - y - fontSize,
@@ -354,7 +357,9 @@ class PDFGenerator {
     const isMultiline = operation.isMultiline;
     const isReadOnly = operation.isReadOnly;
     const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont) ? resolvedFont : PDFLib.StandardFonts.Helvetica;
+    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
+      ? resolvedFont
+      : PDFLib.StandardFonts.Helvetica;
     const embedFont = await pdfDoc.embedFont(fontToEmbed);
     const form = pdfDoc.getForm();
     const textField = form.createTextField(id);
