@@ -3,6 +3,9 @@ import { BasicOperationComponent } from "./BasicOperationComponent.js";
 class ImageOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
+    if (!operation) {
+      throw new TypeError("ImageOperationComponent: image operation must exist");
+    }
     const url = "/images/default_image.jpg";
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
