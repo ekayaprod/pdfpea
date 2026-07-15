@@ -368,7 +368,6 @@ class PDFGenerator {
     const fill = operation.fill || operation.color;
     const opacity = parseFloat(operation.opacity, 10);
 
-    // Check if fill is empty, transparent, or undefined
     const isTransparent =
       !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
     const fillColor = isTransparent ? null : PDFGenerator.hexToRgb(fill);
@@ -406,7 +405,6 @@ class PDFGenerator {
     const fill = operation.fill || operation.color;
     const opacity = parseFloat(operation.opacity, 10);
 
-    // Check if fill is empty, transparent, or undefined
     const isTransparent =
       !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
     const fillColor = isTransparent ? null : PDFGenerator.hexToRgb(fill);
@@ -521,23 +519,9 @@ class PDFGenerator {
       existingTextField.setAlignment(PDFLib.TextAlignment.Right);
     }
 
-    if (isRequired) {
-      existingTextField.enableRequired();
-    } else {
-      existingTextField.disableRequired();
-    }
-
-    if (isMultiline) {
-      existingTextField.enableMultiline();
-    } else {
-      existingTextField.disableMultiline();
-    }
-
-    if (isReadOnly) {
-      existingTextField.enableReadOnly();
-    } else {
-      existingTextField.disableReadOnly();
-    }
+    isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
+    isMultiline ? existingTextField.enableMultiline() : existingTextField.disableMultiline();
+    isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
   }
 
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
@@ -576,17 +560,8 @@ class PDFGenerator {
 
     const existingCheckbox = form.getCheckBox(id);
 
-    if (isChecked) {
-      existingCheckbox.check();
-    } else {
-      existingCheckbox.uncheck();
-    }
-
-    if (isReadOnly) {
-      existingCheckbox.enableReadOnly();
-    } else {
-      existingCheckbox.disableReadOnly();
-    }
+    isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
+    isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
 
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
