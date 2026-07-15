@@ -2750,8 +2750,9 @@ export default {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #dee2e6;
-  position: absolute;
-  min-width: 1100px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
   .option-element {
     display: flex;
     align-items: center;
