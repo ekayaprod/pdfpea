@@ -1,0 +1,1 @@
+* 🪴 **The ID Generation Propagation**: Extracted scattered `Math.random().toString(36).substring(2, 11)` calls from `src/App.vue` into a pure `generateId` taproot in `src/utils/generateId.js`. Rewired 6 original callers in `src/App.vue` to use the unified taproot.

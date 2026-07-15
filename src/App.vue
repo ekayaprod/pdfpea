@@ -872,6 +872,7 @@
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
 import ImageDialog from "./components/ImageDialog.vue";
+import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
 
@@ -1366,7 +1367,7 @@ export default {
 
             // For icon tools, create component immediately with default size
             if (iconTools.value.some((tool) => tool.id === selectedTool.value)) {
-              const id = Math.random().toString(36).substring(2, 11);
+              const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1399,7 +1400,7 @@ export default {
                 return;
               }
 
-              const id = Math.random().toString(36).substring(2, 11);
+              const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1434,7 +1435,7 @@ export default {
                 return;
               }
 
-              const id = Math.random().toString(36).substring(2, 11);
+              const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1756,7 +1757,7 @@ export default {
                 );
 
                 if (boundingBox) {
-                  const id = Math.random().toString(36).substring(2, 11);
+                  const id = generateId();
                   const component = page.createComponentWithDimensions(
                     "image",
                     { subType: "freehand", url: svgDataUrl },
@@ -1822,7 +1823,7 @@ export default {
                   );
 
                   if (boundingBox) {
-                    const id = Math.random().toString(36).substring(2, 11);
+                    const id = generateId();
                     const component = page.createComponentWithDimensions(
                       "image",
                       { subType: "line", url: svgDataUrl },
@@ -1861,7 +1862,7 @@ export default {
 
             // Only create component if there's a meaningful size
             if (width > 5 && height > 5) {
-              const id = Math.random().toString(36).substring(2, 11);
+              const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
