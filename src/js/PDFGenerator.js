@@ -66,6 +66,10 @@ class PDFGenerator {
     const pdfDoc = await PDFLib.PDFDocument.create();
     const srcDoc = await PDFLib.PDFDocument.load(PDFGenerator.str2ab(fileContents));
 
+    // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
+    const srcForm = srcDoc.getForm();
+    const fieldMap = new Map(srcForm.getFields().map(f => [f.getName(), f]));
+
     for (const page of pageOperations) {
       const index = page.pageIndex;
       const pdfURL = page.pdfURL;
@@ -74,11 +78,11 @@ class PDFGenerator {
       const updateOperations = page.operations.filter((item) => item.operation == "update");
 
       for (const op of updateOperations) {
-        const form = srcDoc.getForm();
-        const formField = form.getFields().find((x) => x.getName() === op.id);
+        const formField = fieldMap.get(op.id);
 
         if (formField !== null && formField !== undefined) {
-          form.removeField(formField);
+          srcForm.removeField(formField);
+          fieldMap.delete(op.id); // Prevent Double Remove
         }
       }
 
@@ -86,14 +90,18 @@ class PDFGenerator {
       pdfDoc.addPage(cpage);
     }
 
-    for (const page of pageOperations) {
+    // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
+    const pdfPages = pdfDoc.getPages();
+
+    // Pages themselves can be processed concurrently
+    const pagePromises = pageOperations.map(async (page) => {
       const pageNumber = page.pageNumber;
       const createOperations = page.operations.filter((item) => item.operation == "create");
       const updateOperations = page.operations.filter((item) => item.operation == "update");
 
-      const pdfPages = pdfDoc.getPages();
       const pdfPage = pdfPages[pageNumber - 1];
 
+      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
       for (const op of createOperations) {
         if (op.type === "text") {
           await this.drawTextOnPage(pdfDoc, pdfPage, op);
@@ -121,7 +129,10 @@ class PDFGenerator {
           await this.drawLinkOnPage(pdfDoc, pdfPage, op);
         }
       }
-    }
+    });
+
+    // Await all pages concurrently
+    await Promise.all(pagePromises);
 
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
