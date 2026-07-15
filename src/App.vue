@@ -166,6 +166,7 @@
                 @click="shapeOptions.fill = 'transparent'"
                 class="btn transparent-btn"
                 title="No Fill"
+                aria-label="Remove fill color"
               >
                 ∅
               </button>
@@ -242,6 +243,7 @@
                   @click="selectedOperation.fill = 'transparent'"
                   class="btn transparent-btn"
                   title="No Fill"
+                  aria-label="Remove fill color"
                 >
                   ∅
                 </button>
@@ -411,6 +413,7 @@
                   @click="selectedOperation.fill = 'transparent'"
                   class="btn transparent-btn"
                   title="No Fill"
+                  aria-label="Remove fill color"
                 >
                   ∅
                 </button>
@@ -563,6 +566,7 @@
                 @click="linkOptions.fill = 'transparent'"
                 class="btn transparent-btn"
                 title="No Fill"
+                aria-label="Remove fill color"
               >
                 ∅
               </button>
@@ -743,14 +747,14 @@
           <div class="pdf-placeholder-content">
             <i class="fas fa-file-pdf pdf-placeholder-icon"></i>
 
-            <p class="pdf-placeholder-text">Drag and drop a PDF file here to get started</p>
+            <p class="pdf-placeholder-text">Drag and drop a PDF document to begin editing</p>
             <p class="pdf-placeholder-text-secondary">
-              or use the
+              Alternatively, select
               <button @click="clickFileInput" class="btn">
                 <i class="fa-solid fa-folder-open mr-2"></i>
                 Open
               </button>
-              button above to browse for a file
+              to browse your files
             </p>
             <div class="pdf-placeholder-formats">
               <span class="pdf-placeholder-format">PDF files</span>
@@ -803,6 +807,7 @@
                   v-if="canEditLayer(layer)"
                   class="layer-action-btn"
                   title="Rename element"
+                  aria-label="Rename element"
                   @click.stop="startEditLayer(layer)"
                 >
                   <i class="fa-solid fa-pen"></i>
@@ -810,6 +815,7 @@
                 <button
                   class="layer-action-btn layer-action-delete"
                   title="Delete element"
+                  aria-label="Delete element"
                   @click.stop="deleteLayer(layer)"
                 >
                   <i class="fa-solid fa-trash"></i>
@@ -846,6 +852,7 @@
       <span>{{ toast.message }}</span>
       <button
         @click.stop="hideToast"
+        aria-label="Close notification"
         style="
           background: none;
           border: none;
@@ -2051,7 +2058,7 @@ export default {
         showToast("Configuration exported successfully!", "success");
       } catch (error) {
         console.error("Error creating config file:", error);
-        showToast("Error creating config file. Please try again.", "error");
+        showToast("Unable to export configuration. Please try again.", "error");
       }
     };
 
@@ -2164,7 +2171,7 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config from dropped file:", error);
-        showToast("Error restoring configuration. Please check the file format.", "error");
+        showToast("Unable to restore configuration. Please check the file format.", "error");
       }
     };
 
@@ -2266,7 +2273,7 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config:", error);
-        showToast("Error restoring configuration. Please check the file format.", "error");
+        showToast("Unable to restore configuration. Please check the file format.", "error");
       }
     };
 
