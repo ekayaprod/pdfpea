@@ -96,7 +96,15 @@ describe("ImageOperationComponent", () => {
 
     it("should accurately assign all provided properties", () => {
       const allArgsOp = ImageOperationComponent.createDefaultOperation(
-        "id-999", 10, 20, 200, 300, "/images/custom.png", 50, 75, "logo"
+        "id-999",
+        10,
+        20,
+        200,
+        300,
+        "/images/custom.png",
+        50,
+        75,
+        "logo",
       );
       expect(allArgsOp).toEqual({
         type: "image",
