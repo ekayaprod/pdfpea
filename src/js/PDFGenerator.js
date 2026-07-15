@@ -249,6 +249,11 @@ class PDFGenerator {
         const svgText = new TextDecoder("utf-8").decode(arrayBuffer);
 
         // Extract all path elements
+        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+        /**
+         * Parses SVG `<path>` elements and extracts the 'd' attribute (path data) to enable rendering custom SVG icons.
+         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and inject accessibility labels, standardizing icon rendering via PDF generation.
+         */
         const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
         const paths = [];
         let pathMatch;
@@ -596,6 +601,11 @@ class PDFGenerator {
     if (fill && fill !== "transparent") {
       if (fill.startsWith("rgba(")) {
         // Parse rgba(r, g, b, a) format
+        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+        /**
+         * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
+         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and allow transparent/semi-transparent background fills on link annotations.
+         */
         const rgba = fill.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
         if (rgba) {
           fillColor = {
