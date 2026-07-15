@@ -1135,15 +1135,6 @@ h3 {
   animation: measurement-fade 1s infinite alternate;
 }
 
-@keyframes measurement-pulse {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes measurement-fade {
   from {
     opacity: 0.8;

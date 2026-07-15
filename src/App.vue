@@ -667,8 +667,11 @@
             <img
               src="/images/highlight.svg"
               alt="highlight"
-              class="body-tool-image"
-              style="padding: 3px"
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+              class="body-tool-image p-[3px]"
             />
           </div>
 
@@ -728,7 +731,7 @@
             @click="selectTool(iconTool.id)"
             :title="iconTool.title"
           >
-            <img :src="iconTool.icon" :alt="iconTool.alt" class="body-tool-image" />
+            <img :src="iconTool.icon" :alt="iconTool.alt" width="24" height="24" loading="lazy" decoding="async" class="body-tool-image" />
           </div>
         </div>
       </div>
@@ -834,35 +837,20 @@
   <!-- Dynamic toast -->
   <div
     v-if="toast.show"
-    style="
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      background: #4ade80;
-      color: white;
-      padding: 16px;
-      border-radius: 8px;
-      z-index: 99999;
-      min-width: 300px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    "
+    :class="['toast-notification', `toast-${toast.type || 'success'}`]"
     @click="hideToast"
   >
-    <div style="display: flex; align-items: center; justify-content: space-between">
-      <span>{{ toast.message }}</span>
+    <div class="toast-content">
+      <i class="fa-solid fa-circle-check toast-icon" v-if="toast.type === 'success' || !toast.type"></i>
+      <i class="fa-solid fa-circle-exclamation toast-icon" v-else-if="toast.type === 'error'"></i>
+      <i class="fa-solid fa-circle-info toast-icon" v-else></i>
+      <span class="toast-message">{{ toast.message }}</span>
       <button
         @click.stop="hideToast"
         aria-label="Close notification"
-        style="
-          background: none;
-          border: none;
-          color: white;
-          font-size: 18px;
-          cursor: pointer;
-          margin-left: 10px;
-        "
+        class="toast-close"
       >
-        ×
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
   </div>
