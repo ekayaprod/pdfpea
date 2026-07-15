@@ -41,7 +41,7 @@
               style="display: none"
             />
             <i class="fa-solid fa-cloud-upload-alt upload-icon"></i>
-            <p>Click to upload or drag and drop an image</p>
+            <p>Select or drag and drop an image</p>
             <p class="upload-hint">Supports: JPG, PNG, GIF, WebP</p>
           </div>
         </div>

@@ -608,7 +608,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'select' }"
             @click="selectTool('select')"
-            title="Select Tool - Click and drag to select and move components"
+            title="Select Tool - Select and move components"
           >
             <i class="fa-solid fa-mouse-pointer"></i>
           </div>
@@ -617,7 +617,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'text' }"
             @click="selectTool('text')"
-            title="Text Tool - Click to add text to the document"
+            title="Text Tool - Add text to the document"
           >
             <i class="fa-solid fa-font"></i>
           </div>
@@ -626,7 +626,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'image' }"
             @click="selectTool('image')"
-            title="Image Tool - Click and drag to add images to the document"
+            title="Image Tool - Add images to the document"
           >
             <i class="fa-regular fa-image"></i>
           </div>
@@ -635,7 +635,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'rectangle' }"
             @click="selectTool('rectangle')"
-            title="Rectangle Tool - Click and drag to draw rectangles"
+            title="Rectangle Tool - Draw rectangles"
           >
             <i class="fa-regular fa-square"></i>
           </div>
@@ -644,7 +644,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'circle' }"
             @click="selectTool('circle')"
-            title="Circle Tool - Click and drag to draw circles and ellipses"
+            title="Circle Tool - Draw circles and ellipses"
           >
             <i class="fa-regular fa-circle"></i>
           </div>
@@ -653,7 +653,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'white-out' }"
             @click="selectTool('white-out')"
-            title="White-out Tool - Click and drag to cover text with white rectangles"
+            title="White-out Tool - Cover text with white rectangles"
           >
             <i class="fa fa-window-close-o" aria-hidden="true"></i>
           </div>
@@ -662,7 +662,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'highlight' }"
             @click="selectTool('highlight')"
-            title="Highlight Tool - Click and drag to highlight text with colored rectangles"
+            title="Highlight Tool - Highlight text with colored rectangles"
           >
             <img
               src="/images/highlight.svg"
@@ -676,7 +676,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'link' }"
             @click="selectTool('link')"
-            title="Link Tool - Click and drag to add hyperlinks or page links to the document"
+            title="Link Tool - Add hyperlinks or page links to the document"
           >
             <i class="fa-solid fa-link"></i>
           </div>
@@ -685,7 +685,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'line' }"
             @click="selectTool('line')"
-            title="Line Tool - Click and drag to draw straight lines. Hold Shift for horizontal/vertical lines"
+            title="Line Tool - Draw straight lines. Hold Shift for horizontal/vertical lines"
           >
             <i class="fa-solid fa-minus"></i>
           </div>
@@ -694,7 +694,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'freehand' }"
             @click="selectTool('freehand')"
-            title="Freehand Tool - Click and drag to draw freehand lines and shapes"
+            title="Freehand Tool - Draw freehand lines and shapes"
           >
             <i class="fa-solid fa-pencil"></i>
           </div>
@@ -703,7 +703,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'measure' }"
             @click="selectTool('measure')"
-            title="Measurement Tool - Click two points to measure distance. Hold Shift for horizontal/vertical measurements"
+            title="Measurement Tool - Select two points to measure distance. Hold Shift for horizontal/vertical measurements"
           >
             <i class="fa-solid fa-ruler"></i>
           </div>
@@ -712,7 +712,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'date' }"
             @click="selectTool('date')"
-            title="Date Tool - Click to add a text element with the current date (YYYY-MM-DD)"
+            title="Date Tool - Add a text element with the current date (YYYY-MM-DD)"
           >
             <i class="fa-regular fa-calendar"></i>
           </div>
@@ -907,37 +907,37 @@ export default {
     const iconTools = ref([
       {
         id: "tick",
-        title: "Tick Tool - Click to add checkmark icons to the document",
+        title: "Tick Tool - Add checkmark icons to the document",
         icon: "/images/tick.svg",
         alt: "svg-tick",
       },
       {
         id: "cross",
-        title: "Cross Tool - Click to add cross/X mark icons to the document",
+        title: "Cross Tool - Add cross/X mark icons to the document",
         icon: "/images/cross.svg",
         alt: "svg-cross",
       },
       {
         id: "star",
-        title: "Star Tool - Click to add star icons to the document",
+        title: "Star Tool - Add star icons to the document",
         icon: "/images/star.svg",
         alt: "svg-star",
       },
       {
         id: "thumb-up",
-        title: "Thumbs Up Tool - Click to add thumbs up icons to the document",
+        title: "Thumbs Up Tool - Add thumbs up icons to the document",
         icon: "/images/thumb-up.svg",
         alt: "svg-thumb-up",
       },
       {
         id: "thumb-down",
-        title: "Thumbs Down Tool - Click to add thumbs down icons to the document",
+        title: "Thumbs Down Tool - Add thumbs down icons to the document",
         icon: "/images/thumb-down.svg",
         alt: "svg-thumb-down",
       },
       {
         id: "love",
-        title: "Heart Tool - Click to add heart icons to the document",
+        title: "Heart Tool - Add heart icons to the document",
         icon: "/images/love.svg",
         alt: "svg-love",
       },
