@@ -29,6 +29,9 @@ class PDFEditor {
     this.container = container;
   }
   async renderPDF(fileName, fileContents) {
+    if (fileName == null || fileContents == null) {
+      return Promise.reject(new Error("Cannot be null"));
+    }
     this.fileContents = fileContents;
     this.pdfPages = [];
     return new Promise(async (resolve, reject) => {
@@ -38,7 +41,7 @@ class PDFEditor {
           data: fileContents,
         }).promise;
         // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, (_, i) => {
+        const promises = Array.from({ length: pdfDoc.numPages }, async (_, i) => {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
@@ -46,7 +49,8 @@ class PDFEditor {
           this.container.appendChild(pdfPageContainer);
           const pdfPage = new PDFPage(pdfPageContainer);
           // Wait for initialization to complete and return the page
-          return pdfPage.initialize(pdfURL, pdfPageNumber, fileContents).then(() => pdfPage);
+          await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+          return pdfPage;
         });
         // Await all page renders simultaneously instead of sequential blocking
         const pages = await Promise.all(promises);
