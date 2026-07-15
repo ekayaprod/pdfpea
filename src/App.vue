@@ -731,7 +731,15 @@
             @click="selectTool(iconTool.id)"
             :title="iconTool.title"
           >
-            <img :src="iconTool.icon" :alt="iconTool.alt" width="24" height="24" loading="lazy" decoding="async" class="body-tool-image" />
+            <img
+              :src="iconTool.icon"
+              :alt="iconTool.alt"
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+              class="body-tool-image"
+            />
           </div>
         </div>
       </div>
@@ -841,15 +849,14 @@
     @click="hideToast"
   >
     <div class="toast-content">
-      <i class="fa-solid fa-circle-check toast-icon" v-if="toast.type === 'success' || !toast.type"></i>
+      <i
+        class="fa-solid fa-circle-check toast-icon"
+        v-if="toast.type === 'success' || !toast.type"
+      ></i>
       <i class="fa-solid fa-circle-exclamation toast-icon" v-else-if="toast.type === 'error'"></i>
       <i class="fa-solid fa-circle-info toast-icon" v-else></i>
       <span class="toast-message">{{ toast.message }}</span>
-      <button
-        @click.stop="hideToast"
-        aria-label="Close notification"
-        class="toast-close"
-      >
+      <button @click.stop="hideToast" aria-label="Close notification" class="toast-close">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
