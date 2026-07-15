@@ -88,14 +88,12 @@
               Clear
             </button>
           </div>
-
           <div class="option-element">
             <button @click="scrollToEditor" class="btn btn-xs" title="Focus on the PDF editor area">
               <i class="fa-solid fa-expand"></i>
               Focus
             </button>
           </div>
-
           <div class="option-element">
             <select
               v-model="zoomLevel"
@@ -116,7 +114,6 @@
               <option value="3.0">300%</option>
             </select>
           </div>
-
           <!-- Freehand tool options -->
           <template v-if="selectedTool === 'freehand'">
             <div class="option-element">
@@ -124,39 +121,33 @@
               <input type="range" v-model="freehandOptions.smoothLevel" min="1" max="10" />
               <span class="value-display">{{ freehandOptions.smoothLevel }}</span>
             </div>
-
             <div class="option-element">
               <label>Stroke Color:</label>
               <input type="color" v-model="freehandOptions.color" />
             </div>
-
             <div class="option-element">
               <label>Stroke Width:</label>
               <input type="range" v-model="freehandOptions.width" min="1" max="20" />
               <span class="value-display">{{ freehandOptions.width }}px</span>
             </div>
           </template>
-
           <!-- Line tool options -->
           <template v-if="selectedTool === 'line'">
             <div class="option-element">
               <label>Stroke Color:</label>
               <input type="color" v-model="lineOptions.color" />
             </div>
-
             <div class="option-element">
               <label>Stroke Width:</label>
               <input type="range" v-model="lineOptions.width" min="1" max="20" />
               <span class="value-display">{{ lineOptions.width }}px</span>
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input type="range" v-model="lineOptions.opacity" min="0.1" max="1.0" step="0.1" />
               <span class="value-display">{{ Math.round(lineOptions.opacity * 100) }}%</span>
             </div>
           </template>
-
           <!-- Shape tool options (Circle and Rectangle) -->
           <template v-if="selectedTool === 'rectangle' || selectedTool === 'circle'">
             <div class="option-element">
@@ -171,25 +162,21 @@
                 ∅
               </button>
             </div>
-
             <div class="option-element">
               <label>Border:</label>
               <input type="color" v-model="shapeOptions.borderColor" />
             </div>
-
             <div class="option-element">
               <label>Width:</label>
               <input type="range" v-model="shapeOptions.borderWidth" min="0" max="10" />
               <span class="value-display">{{ shapeOptions.borderWidth }}px</span>
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input type="range" v-model="shapeOptions.opacity" min="0.1" max="1.0" step="0.1" />
               <span class="value-display">{{ Math.round(shapeOptions.opacity * 100) }}%</span>
             </div>
           </template>
-
           <!-- Selected Component Options - Show when select tool is active and component is selected -->
           <template v-if="selectedTool === 'select' && selectedOperation">
             <!-- Selected Text Component Options -->
@@ -205,18 +192,15 @@
                   <option value="Courier-Bold">Courier Bold</option>
                 </select>
               </div>
-
               <div class="option-element">
                 <label>Size:</label>
                 <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
                 <span class="value-display">{{ selectedOperation.fontSize }}px</span>
               </div>
-
               <div class="option-element">
                 <label>Color:</label>
                 <input type="color" v-model="selectedOperation.color" />
               </div>
-
               <div class="option-element">
                 <label>Opacity:</label>
                 <input
@@ -231,7 +215,6 @@
                 >
               </div>
             </template>
-
             <!-- Selected Rectangle/Circle Component Options -->
             <template
               v-if="selectedOperation.type === 'rectangle' || selectedOperation.type === 'circle'"
@@ -248,18 +231,15 @@
                   ∅
                 </button>
               </div>
-
               <div class="option-element">
                 <label>Border:</label>
                 <input type="color" v-model="selectedOperation.borderColor" />
               </div>
-
               <div class="option-element">
                 <label>Width:</label>
                 <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
                 <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
               </div>
-
               <div class="option-element">
                 <label>Opacity:</label>
                 <input
@@ -274,7 +254,6 @@
                 >
               </div>
             </template>
-
             <!-- Selected Image Component Options -->
             <template v-if="selectedOperation.type === 'image'">
               <!-- SVG-specific controls for line and freehand -->
@@ -294,7 +273,6 @@
                     />
                   </div>
                 </div>
-
                 <div class="option-element">
                   <label>Stroke Width:</label>
                   <input
@@ -307,7 +285,6 @@
                   <span class="value-display">{{ getSvgStrokeWidth(selectedOperation) }}px</span>
                 </div>
               </template>
-
               <!-- SVG-specific controls for icons -->
               <template v-if="selectedOperation.subType === 'icon'">
                 <div class="option-element">
@@ -322,7 +299,6 @@
                   </div>
                 </div>
               </template>
-
               <div class="option-element">
                 <label>Opacity:</label>
                 <input
@@ -337,7 +313,6 @@
                 >
               </div>
             </template>
-
             <!-- Selected TextField Component Options -->
             <template v-if="selectedOperation.type === 'textfield'">
               <div class="option-element">
@@ -351,59 +326,49 @@
                   <option value="Courier-Bold">Courier Bold</option>
                 </select>
               </div>
-
               <div class="option-element">
                 <label>Size:</label>
                 <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
                 <span class="value-display">{{ selectedOperation.fontSize }}px</span>
               </div>
-
               <div class="option-element">
                 <label>Text Color:</label>
                 <input type="color" v-model="selectedOperation.color" />
               </div>
-
               <div class="option-element">
                 <label>Background:</label>
                 <input type="color" v-model="selectedOperation.backgroundColor" />
               </div>
-
               <div class="option-element">
                 <label>Border:</label>
                 <input type="color" v-model="selectedOperation.borderColor" />
               </div>
-
               <div class="option-element">
                 <label>Border Width:</label>
                 <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
                 <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
               </div>
             </template>
-
             <!-- Selected Checkbox Component Options -->
             <template v-if="selectedOperation.type === 'checkbox'">
               <div class="option-element">
                 <label>Background:</label>
                 <input type="color" v-model="selectedOperation.backgroundColor" />
               </div>
-
               <div class="option-element">
                 <label>Border:</label>
                 <input type="color" v-model="selectedOperation.borderColor" />
               </div>
-
               <div class="option-element">
                 <label>Border Width:</label>
                 <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
                 <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
               </div>
-
               <div class="option-element">
                 <label>Checked:</label>
                 <input type="checkbox" v-model="selectedOperation.isChecked" />
               </div>
             </template>
-
             <!-- Selected Link Component Options -->
             <template v-if="selectedOperation.type === 'link'">
               <div class="option-element">
@@ -418,18 +383,15 @@
                   ∅
                 </button>
               </div>
-
               <div class="option-element">
                 <label>Border:</label>
                 <input type="color" v-model="selectedOperation.borderColor" />
               </div>
-
               <div class="option-element">
                 <label>Border Width:</label>
                 <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
                 <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
               </div>
-
               <div class="option-element">
                 <label>Opacity:</label>
                 <input
@@ -445,14 +407,12 @@
               </div>
             </template>
           </template>
-
           <!-- Highlight tool options -->
           <template v-if="selectedTool === 'highlight'">
             <div class="option-element">
               <label>Fill:</label>
               <input type="color" v-model="highlightOptions.fill" />
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input
@@ -465,7 +425,6 @@
               <span class="value-display">{{ Math.round(highlightOptions.opacity * 100) }}%</span>
             </div>
           </template>
-
           <!-- Text tool options -->
           <template v-if="selectedTool === 'text'">
             <div class="option-element">
@@ -479,25 +438,21 @@
                 <option value="Courier-Bold">Courier Bold</option>
               </select>
             </div>
-
             <div class="option-element">
               <label>Size:</label>
               <input type="range" v-model="textOptions.fontSize" min="8" max="72" />
               <span class="value-display">{{ textOptions.fontSize }}px </span>
             </div>
-
             <div class="option-element">
               <label>Color:</label>
               <input type="color" v-model="textOptions.color" />
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input type="range" v-model="textOptions.opacity" min="0.1" max="1.0" step="0.1" />
               <span class="value-display">{{ Math.round(textOptions.opacity * 100) }}%</span>
             </div>
           </template>
-
           <!-- Icon tool options -->
           <template v-if="iconTools.some((tool) => tool.id === selectedTool)">
             <div class="option-element">
@@ -544,19 +499,16 @@
                 <option value="200">200</option>
               </select>
             </div>
-
             <div class="option-element">
               <label>Fill Color:</label>
               <input type="color" v-model="iconOptions.fillColor" />
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input type="range" v-model="iconOptions.opacity" min="0.1" max="1.0" step="0.1" />
               <span class="value-display">{{ Math.round(iconOptions.opacity * 100) }}%</span>
             </div>
           </template>
-
           <!-- Link tool options -->
           <template v-if="selectedTool === 'link'">
             <div class="option-element">
@@ -571,18 +523,15 @@
                 ∅
               </button>
             </div>
-
             <div class="option-element">
               <label>Border:</label>
               <input type="color" v-model="linkOptions.borderColor" />
             </div>
-
             <div class="option-element">
               <label>Width:</label>
               <input type="range" v-model="linkOptions.borderWidth" min="0" max="10" />
               <span class="value-display">{{ linkOptions.borderWidth }}px</span>
             </div>
-
             <div class="option-element">
               <label>Opacity:</label>
               <input type="range" v-model="linkOptions.opacity" min="0.1" max="1.0" step="0.1" />
@@ -592,13 +541,10 @@
         </div>
       </div>
     </div>
-
     <!-- Image Dialog Component -->
     <ImageDialog :show="showImageDialog" @close="closeImageDialog" @confirm="handleImageConfirm" />
-
     <!-- Link Dialog Component -->
     <LinkDialog :show="showLinkDialog" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
-
     <div class="pdf-body">
       <!-- Floating Toolbar -->
       <div class="floating-toolbar">
@@ -612,7 +558,6 @@
           >
             <i class="fa-solid fa-mouse-pointer"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'text' }"
@@ -621,7 +566,6 @@
           >
             <i class="fa-solid fa-font"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'image' }"
@@ -630,7 +574,6 @@
           >
             <i class="fa-regular fa-image"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'rectangle' }"
@@ -639,7 +582,6 @@
           >
             <i class="fa-regular fa-square"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'circle' }"
@@ -648,7 +590,6 @@
           >
             <i class="fa-regular fa-circle"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'white-out' }"
@@ -657,7 +598,6 @@
           >
             <i class="fa fa-window-close-o" aria-hidden="true"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'highlight' }"
@@ -671,7 +611,6 @@
               style="padding: 3px"
             />
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'link' }"
@@ -680,7 +619,6 @@
           >
             <i class="fa-solid fa-link"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'line' }"
@@ -689,7 +627,6 @@
           >
             <i class="fa-solid fa-minus"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'freehand' }"
@@ -698,7 +635,6 @@
           >
             <i class="fa-solid fa-pencil"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'measure' }"
@@ -707,7 +643,6 @@
           >
             <i class="fa-solid fa-ruler"></i>
           </div>
-
           <div
             class="body-tool"
             :class="{ active: selectedTool === 'date' }"
@@ -717,7 +652,6 @@
             <i class="fa-regular fa-calendar"></i>
           </div>
         </div>
-
         <!-- Icon Tools Section -->
         <div class="icons-section">
           <div
@@ -732,7 +666,6 @@
           </div>
         </div>
       </div>
-
       <div
         ref="pdfViewContainer"
         id="body-pdf-view"
@@ -746,7 +679,6 @@
         <div v-if="!isLoaded" class="pdf-placeholder">
           <div class="pdf-placeholder-content">
             <i class="fas fa-file-pdf pdf-placeholder-icon"></i>
-
             <p class="pdf-placeholder-text">Drag and drop a PDF document to begin editing</p>
             <p class="pdf-placeholder-text-secondary">
               Alternatively, select
@@ -763,7 +695,6 @@
           </div>
         </div>
       </div>
-
       <!-- Layers Panel -->
       <div v-if="isLoaded" class="layers-panel">
         <div class="layers-panel-header">
@@ -785,7 +716,6 @@
               @click="selectLayer(layer)"
             >
               <i class="layer-icon" :class="layer.icon"></i>
-
               <input
                 v-if="editingLayerKey === layer.key"
                 v-model="editingLayerValue"
@@ -797,11 +727,9 @@
                 @blur="commitEditLayer(layer)"
               />
               <span v-else class="layer-label">{{ layer.label }}</span>
-
               <span v-if="editingLayerKey !== layer.key" class="layer-page"
                 >p{{ layer.pageNumber }}</span
               >
-
               <div v-if="editingLayerKey !== layer.key" class="layer-actions">
                 <button
                   v-if="canEditLayer(layer)"
@@ -827,10 +755,8 @@
       </div>
     </div>
   </div>
-
   <!-- Toast Notification - Outside main container for better positioning -->
   <!-- Debug: Toast show state: {{ toast.show }} -->
-
   <!-- Dynamic toast -->
   <div
     v-if="toast.show"
@@ -867,7 +793,6 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
@@ -875,7 +800,6 @@ import ImageDialog from "./components/ImageDialog.vue";
 import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
-
 export default {
   name: "App",
   components: {
@@ -883,8 +807,6 @@ export default {
     LinkDialog,
   },
   setup() {
-    console.log("Vue setup() function called - this means Vue is working");
-
     const pdfViewContainer = ref(null);
     const file = ref(null);
     const configFile = ref(null);
@@ -893,16 +815,13 @@ export default {
     const counter = ref(0);
     const zoomLevel = ref(1.5);
     const selectedTool = ref("select");
-
     // Layers panel state
     const layers = ref([]);
     const selectedLayerEl = ref(null);
     const editingLayerKey = ref(null);
     const editingLayerValue = ref("");
-
     // Icon cache for base64 encoded SVGs
     const iconCache = ref({});
-
     // Define icon tools array for dynamic rendering
     const iconTools = ref([
       {
@@ -942,32 +861,27 @@ export default {
         alt: "svg-love",
       },
     ]);
-
     // Drawing state
     const isDrawing = ref(false);
     const drawingStart = ref({ x: 0, y: 0 });
     const drawingCurrent = ref({ x: 0, y: 0 });
     let drawingOverlay = null;
-
     // Freehand drawing state
     const freehandPath = ref([]);
     let lastDrawTime = 0;
     const drawThrottleMs = 16; // ~60fps
-
     // Freehand tool options
     const freehandOptions = ref({
       smoothLevel: 5,
       color: "#000000",
       width: 2,
     });
-
     // Line tool options
     const lineOptions = ref({
       color: "#000000",
       width: 2,
       opacity: 1.0,
     });
-
     // Shape tool options
     const shapeOptions = ref({
       fill: "transparent",
@@ -975,13 +889,11 @@ export default {
       borderWidth: 2,
       opacity: 1.0,
     });
-
     // Highlight tool options
     const highlightOptions = ref({
       fill: "#FFFF00",
       opacity: 0.5,
     });
-
     // Text tool options
     const textOptions = ref({
       fontFamily: "Helvetica",
@@ -989,14 +901,12 @@ export default {
       color: "#000000",
       opacity: 1.0,
     });
-
     // Icon tool options
     const iconOptions = ref({
       fillColor: "#000000",
       opacity: 1.0,
       size: 25,
     });
-
     // Link tool options
     const linkOptions = ref({
       fill: "#a5edff",
@@ -1004,7 +914,6 @@ export default {
       borderWidth: 1,
       opacity: 0.2,
     });
-
     // Measurement state
     const measurementState = ref({
       isActive: false,
@@ -1013,18 +922,14 @@ export default {
       measurements: [], // Array of finalized measurements
       liveMeasurement: null, // Current live measurement being drawn
     });
-
     // Image dialog state - simplified
     const showImageDialog = ref(false);
     const pendingImageParams = ref(null);
-
     // Link dialog state
     const showLinkDialog = ref(false);
     const pendingLinkParams = ref(null);
-
     // Config dropdown state
     const showConfigDropdown = ref(false);
-
     // Toast notification state
     const toast = ref({
       show: false,
@@ -1032,21 +937,16 @@ export default {
       type: "success", // 'success', 'error', 'info', 'warning'
       timeout: null,
     });
-
     // PDF loaded state
     const isLoaded = ref(false);
-
     // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
       pendingImageParams.value = { page, id, x, y, width, height };
       showImageDialog.value = true;
     };
-
     const handleImageConfirm = (imageDataUrl) => {
       if (!pendingImageParams.value) return;
-
       const { page, id, x, y, width, height } = pendingImageParams.value;
-
       // Create image component with base64 data
       const component = page.createComponentWithDimensions(
         "image",
@@ -1057,31 +957,21 @@ export default {
         width,
         height,
       );
-
-      //if (component) {
       //  component.setSelected(true);
-      //}
-
       pendingImageParams.value = null;
     };
-
     const closeImageDialog = () => {
       showImageDialog.value = false;
       pendingImageParams.value = null;
     };
-
     // Link dialog functions
     const openLinkDialog = (page, id, x, y, width, height) => {
       pendingLinkParams.value = { page, id, x, y, width, height };
       showLinkDialog.value = true;
     };
-
     const handleLinkConfirm = ({ type, value }) => {
-      console.log(`handleLinkConfirm`);
       if (!pendingLinkParams.value) return;
-
       const { page, id, x, y, width, height } = pendingLinkParams.value;
-
       // Create link component
       const component = page.createComponentWithDimensions(
         "link",
@@ -1099,45 +989,33 @@ export default {
         width,
         height,
       );
-
       pendingLinkParams.value = null;
     };
-
     const closeLinkDialog = () => {
       showLinkDialog.value = false;
       pendingLinkParams.value = null;
     };
-
     // Config dropdown functions
     const toggleConfigDropdown = () => {
       showConfigDropdown.value = !showConfigDropdown.value;
     };
-
     const closeConfigDropdown = () => {
       showConfigDropdown.value = false;
     };
-
     // Toast functions
     const showToast = (message, type = "success", duration = 2000) => {
-      console.log("showToast called:", { message, type, duration });
-
       // Clear existing timeout
       if (toast.value.timeout) {
         clearTimeout(toast.value.timeout);
       }
-
       toast.value.message = message;
       toast.value.type = type;
       toast.value.show = true;
-
-      console.log("Toast state after setting:", toast.value);
-
       // Auto-hide after duration
       toast.value.timeout = setTimeout(() => {
         hideToast();
       }, duration);
     };
-
     const hideToast = () => {
       toast.value.show = false;
       if (toast.value.timeout) {
@@ -1145,7 +1023,6 @@ export default {
         toast.value.timeout = null;
       }
     };
-
     // Function to clear PDF pages while preserving other content (toolbar, placeholder)
     const clearPdfPages = () => {
       if (pdfViewContainer.value) {
@@ -1154,18 +1031,13 @@ export default {
       }
       isLoaded.value = false;
     };
-
     const clickFileInput = () => {
-      console.log("clickFileInput called");
       file.value.click();
     };
-
     const selectTool = (tool) => {
       selectedTool.value = tool;
-
       // Clear all component selections when switching tools
       selectedOperation.value = null;
-
       // Clear measurements when switching away from measurement tool
       if (tool !== "measure" && measurementState.value.isActive) {
         // Remove live measurement if switching away from measure tool
@@ -1176,7 +1048,6 @@ export default {
         measurementState.value.firstPoint = null;
         measurementState.value.currentPoint = null;
       }
-
       // Dispatch event to clear all component selections
       const clearEvent = new CustomEvent("pdfeditor.shouldClearAllSelection", {
         detail: { target: null },
@@ -1184,10 +1055,7 @@ export default {
         cancelable: true,
       });
       document.dispatchEvent(clearEvent);
-
-      console.log("Selected tool:", tool);
     };
-
     const getFormattedCurrentDate = () => {
       const now = new Date();
       const year = now.getFullYear();
@@ -1195,7 +1063,6 @@ export default {
       const day = String(now.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     };
-
     const getToolSettings = (tool) => {
       // Check if the tool is an icon tool from the dynamic array
       const iconTool = iconTools.value.find((iconTool) => iconTool.id === tool);
@@ -1206,7 +1073,6 @@ export default {
           opacity: iconOptions.value.opacity,
         };
       }
-
       const toolSettings = {
         highlight: {
           subType: "highlight",
@@ -1254,13 +1120,11 @@ export default {
       };
       return toolSettings[tool] || {};
     };
-
     const getToolType = (tool) => {
       // Check if the tool is an icon tool from the dynamic array
       if (iconTools.value.some((iconTool) => iconTool.id === tool)) {
         return "image";
       }
-
       const toolTypeMap = {
         text: "text",
         date: "text",
@@ -1277,18 +1141,14 @@ export default {
       };
       return toolTypeMap[tool] || tool;
     };
-
     const createDrawingOverlay = () => {
       if (drawingOverlay) {
         drawingOverlay.remove();
       }
-
       drawingOverlay = document.createElement("div");
       drawingOverlay.className = "drawing-overlay";
-
       return drawingOverlay;
     };
-
     const updateDrawingOverlay = (
       startX,
       startY,
@@ -1298,36 +1158,28 @@ export default {
       zoomFactor = 1,
     ) => {
       if (!drawingOverlay) return;
-
       const left = Math.min(startX, currentX);
       const top = Math.min(startY, currentY);
       const width = Math.abs(currentX - startX);
       const height = Math.abs(currentY - startY);
-
       // Position overlay in the scaled coordinate system
       drawingOverlay.style.left = `${left}px`;
       drawingOverlay.style.top = `${top}px`;
       drawingOverlay.style.width = `${width}px`;
       drawingOverlay.style.height = `${height}px`;
     };
-
     const setupCanvasDrawingListeners = () => {
       if (!pdfEditor) return;
-
       pdfEditor.pdfPages.forEach((page) => {
         const canvas = page.canvas;
         const container = page.container;
-
         // Remove old drag and drop listeners
         canvas.removeEventListener("dragenter", page.dragEnter);
         canvas.removeEventListener("dragover", page.dragOver);
         canvas.removeEventListener("drop", page.dragDrop);
-
         // Add drawing listeners to both canvas and container
         const addDrawingListeners = (element) => {
           element.addEventListener("mousedown", (event) => {
-            console.log(`mouse down`);
-
             // Check if click is on a moveable control or delete button
             if (
               event.target.closest(".moveable-control") ||
@@ -1338,7 +1190,6 @@ export default {
             ) {
               return; // Don't handle drawing events for moveable controls
             }
-
             if (selectedTool.value === "select") {
               // Default selection behavior - only handle on canvas
               if (element === canvas) {
@@ -1347,35 +1198,28 @@ export default {
               }
               return;
             }
-
             event.preventDefault();
             event.stopPropagation();
-
             isDrawing.value = true;
             const rect = container.getBoundingClientRect();
-
             // Account for zoom level when calculating coordinates
             const zoomFactor = zoomLevel.value;
             const rawX = event.clientX - rect.left;
             const rawY = event.clientY - rect.top;
-
             drawingStart.value = {
               x: rawX / zoomFactor,
               y: rawY / zoomFactor,
             };
             drawingCurrent.value = { ...drawingStart.value };
-
             // For icon tools, create component immediately with default size
             if (iconTools.value.some((tool) => tool.id === selectedTool.value)) {
               const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
-
               // Center the icon on the cursor position
               const iconSize = iconOptions.value.size;
               const centeredX = drawingStart.value.x - iconSize / 2;
               const centeredY = drawingStart.value.y - iconSize / 2;
-
               const component = page.createComponentWithDimensions(
                 toolType,
                 settings,
@@ -1385,13 +1229,10 @@ export default {
                 iconSize,
                 iconSize,
               );
-              //if (component) {
               //  component.setSelected(true);
-              //}
               isDrawing.value = false;
               return;
             }
-
             // For text tool, create component immediately and focus for editing
             if (selectedTool.value === "date") {
               // Check if component creation is temporarily prevented (e.g., after deletion)
@@ -1399,11 +1240,9 @@ export default {
                 isDrawing.value = false;
                 return;
               }
-
               const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
-
               const component = page.createComponentWithDimensions(
                 toolType,
                 settings,
@@ -1413,7 +1252,6 @@ export default {
                 20,
                 20,
               );
-
               if (component) {
                 // Populate with the current date and resize to fit.
                 const op = component.getOperation();
@@ -1423,22 +1261,18 @@ export default {
                 }
                 component.setSelected(true);
               }
-
               isDrawing.value = false;
               return;
             }
-
             if (selectedTool.value === "text") {
               // Check if component creation is temporarily prevented (e.g., after deletion)
               if (window.preventComponentCreation) {
                 isDrawing.value = false;
                 return;
               }
-
               const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
-
               // Create text component with minimal initial size (will auto-resize)
               const component = page.createComponentWithDimensions(
                 toolType,
@@ -1449,11 +1283,9 @@ export default {
                 20, // Minimal initial width
                 20, // Minimal initial height
               );
-
               if (component) {
                 // Set selected and trigger edit mode
                 component.setSelected(true);
-
                 // Focus the text element for immediate editing
                 setTimeout(() => {
                   const textElement = component.shadow;
@@ -1469,43 +1301,35 @@ export default {
                   }
                 }, 10);
               }
-
               isDrawing.value = false;
               return;
             }
-
             // For freehand drawing, set up canvas and start path
             if (selectedTool.value === "freehand") {
               freehandPath.value = [{ x: drawingStart.value.x, y: drawingStart.value.y }];
-
               // Create freehand canvas using utility
               freehandDrawing.createCanvas(container, {
                 zoomFactor,
                 color: freehandOptions.value.color,
                 width: freehandOptions.value.width,
               });
-
               // Start drawing path
               freehandDrawing.startPath(drawingStart.value.x, drawingStart.value.y);
               return;
             }
-
             // For line drawing, set up canvas and start line
             if (selectedTool.value === "line") {
               freehandPath.value = [{ x: drawingStart.value.x, y: drawingStart.value.y }];
-
               // Create line canvas using utility
               freehandDrawing.createCanvas(container, {
                 zoomFactor,
                 color: lineOptions.value.color,
                 width: lineOptions.value.width,
               });
-
               // Start drawing line
               freehandDrawing.startPath(drawingStart.value.x, drawingStart.value.y);
               return;
             }
-
             // For measurement tool
             if (selectedTool.value === "measure") {
               if (!measurementState.value.isActive) {
@@ -1516,12 +1340,10 @@ export default {
               } else {
                 // Second click - finalize measurement
                 const finalPoint = { ...drawingStart.value };
-
                 // If Shift is held, constrain to horizontal or vertical measurement
                 if (event.shiftKey) {
                   const deltaX = Math.abs(finalPoint.x - measurementState.value.firstPoint.x);
                   const deltaY = Math.abs(finalPoint.y - measurementState.value.firstPoint.y);
-
                   // Choose direction based on which axis has greater movement
                   if (deltaX > deltaY) {
                     // Make horizontal measurement
@@ -1531,12 +1353,10 @@ export default {
                     finalPoint.x = measurementState.value.firstPoint.x;
                   }
                 }
-
                 // Remove live measurement
                 document.querySelectorAll(".measurement-overlay.live").forEach((overlay) => {
                   overlay.remove();
                 });
-
                 // Add final measurement
                 const finalMeasurement = addMeasurementOverlay(
                   measurementState.value.firstPoint,
@@ -1544,24 +1364,20 @@ export default {
                   container,
                   false,
                 );
-
                 // Store measurement
                 measurementState.value.measurements.push({
                   start: measurementState.value.firstPoint,
                   end: finalPoint,
                   elements: finalMeasurement,
                 });
-
                 // Reset measurement state
                 measurementState.value.isActive = false;
                 measurementState.value.firstPoint = null;
                 measurementState.value.currentPoint = null;
               }
-
               isDrawing.value = false;
               return;
             }
-
             // Create and add drawing overlay for other tools
             createDrawingOverlay();
             container.appendChild(drawingOverlay);
@@ -1574,28 +1390,22 @@ export default {
               zoomFactor,
             );
           });
-
           element.addEventListener("mousemove", (event) => {
             if (!isDrawing.value || selectedTool.value === "select") return;
-
             event.preventDefault();
             const rect = container.getBoundingClientRect();
-
             // Account for zoom level when calculating coordinates
             const zoomFactor = zoomLevel.value;
             const rawX = event.clientX - rect.left;
             const rawY = event.clientY - rect.top;
-
             drawingCurrent.value = {
               x: rawX / zoomFactor,
               y: rawY / zoomFactor,
             };
-
             // Handle freehand drawing
             if (selectedTool.value === "freehand") {
               freehandPath.value.push({ x: drawingCurrent.value.x, y: drawingCurrent.value.y });
               freehandDrawing.addPoint(drawingCurrent.value.x, drawingCurrent.value.y);
-
               // Throttle drawing for better performance
               const now = Date.now();
               if (now - lastDrawTime >= drawThrottleMs) {
@@ -1608,18 +1418,15 @@ export default {
               }
               return;
             }
-
             // Handle line drawing (straight line from start to current point)
             if (selectedTool.value === "line") {
               // For line tool, only use start and current points (straight line)
               let endX = drawingCurrent.value.x;
               let endY = drawingCurrent.value.y;
-
               // If Shift is held, constrain to horizontal or vertical line
               if (event.shiftKey) {
                 const deltaX = Math.abs(endX - drawingStart.value.x);
                 const deltaY = Math.abs(endY - drawingStart.value.y);
-
                 // Choose direction based on which axis has greater movement
                 if (deltaX > deltaY) {
                   // Make horizontal line
@@ -1629,12 +1436,10 @@ export default {
                   endX = drawingStart.value.x;
                 }
               }
-
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
                 { x: endX, y: endY },
               ];
-
               // Throttle drawing for better performance
               const now = Date.now();
               if (now - lastDrawTime >= drawThrottleMs) {
@@ -1647,16 +1452,13 @@ export default {
               }
               return;
             }
-
             // Handle measurement tool live preview
             if (selectedTool.value === "measure" && measurementState.value.isActive) {
               const currentPoint = { ...drawingCurrent.value };
-
               // If Shift is held, constrain to horizontal or vertical measurement
               if (event.shiftKey) {
                 const deltaX = Math.abs(currentPoint.x - measurementState.value.firstPoint.x);
                 const deltaY = Math.abs(currentPoint.y - measurementState.value.firstPoint.y);
-
                 // Choose direction based on which axis has greater movement
                 if (deltaX > deltaY) {
                   // Make horizontal measurement
@@ -1666,9 +1468,7 @@ export default {
                   currentPoint.x = measurementState.value.firstPoint.x;
                 }
               }
-
               measurementState.value.currentPoint = currentPoint;
-
               // Show live measurement
               addMeasurementOverlay(
                 measurementState.value.firstPoint,
@@ -1678,7 +1478,6 @@ export default {
               );
               return;
             }
-
             updateDrawingOverlay(
               drawingStart.value.x,
               drawingStart.value.y,
@@ -1688,7 +1487,6 @@ export default {
               zoomFactor,
             );
           });
-
           // Add separate mousemove listener for measurement tool when not drawing
           element.addEventListener("mousemove", (event) => {
             // Only handle measurement tool when active but not drawing
@@ -1701,17 +1499,14 @@ export default {
               const zoomFactor = zoomLevel.value;
               const rawX = event.clientX - rect.left;
               const rawY = event.clientY - rect.top;
-
               const currentPoint = {
                 x: rawX / zoomFactor,
                 y: rawY / zoomFactor,
               };
-
               // If Shift is held, constrain to horizontal or vertical measurement
               if (event.shiftKey) {
                 const deltaX = Math.abs(currentPoint.x - measurementState.value.firstPoint.x);
                 const deltaY = Math.abs(currentPoint.y - measurementState.value.firstPoint.y);
-
                 // Choose direction based on which axis has greater movement
                 if (deltaX > deltaY) {
                   // Make horizontal measurement
@@ -1721,9 +1516,7 @@ export default {
                   currentPoint.x = measurementState.value.firstPoint.x;
                 }
               }
-
               measurementState.value.currentPoint = currentPoint;
-
               // Show live measurement
               addMeasurementOverlay(
                 measurementState.value.firstPoint,
@@ -1733,13 +1526,10 @@ export default {
               );
             }
           });
-
           element.addEventListener("mouseup", (event) => {
             if (!isDrawing.value || selectedTool.value === "select") return;
-
             event.preventDefault();
             event.stopPropagation();
-
             // Handle freehand drawing completion
             if (selectedTool.value === "freehand" && freehandPath.value.length > 1) {
               // Convert path to SVG data URL using utility
@@ -1748,14 +1538,12 @@ export default {
                 width: freehandOptions.value.width,
                 smoothLevel: freehandOptions.value.smoothLevel,
               });
-
               if (svgDataUrl) {
                 // Calculate bounding box using utility
                 const boundingBox = freehandDrawing.calculateBoundingBox(
                   freehandPath.value,
                   freehandOptions.value.width,
                 );
-
                 if (boundingBox) {
                   const id = generateId();
                   const component = page.createComponentWithDimensions(
@@ -1767,31 +1555,26 @@ export default {
                     boundingBox.width,
                     boundingBox.height,
                   );
-
                   if (component) {
                     component.setSelected(true);
                   }
                 }
               }
-
               // Clean up freehand drawing
               freehandDrawing.cleanup();
               freehandPath.value = [];
               isDrawing.value = false;
               return;
             }
-
             // Handle line drawing completion
             if (selectedTool.value === "line") {
               // Create final line path with just start and end points
               let endX = drawingCurrent.value.x;
               let endY = drawingCurrent.value.y;
-
               // If Shift is held, constrain to horizontal or vertical line
               if (event.shiftKey) {
                 const deltaX = Math.abs(endX - drawingStart.value.x);
                 const deltaY = Math.abs(endY - drawingStart.value.y);
-
                 // Choose direction based on which axis has greater movement
                 if (deltaX > deltaY) {
                   // Make horizontal line
@@ -1801,12 +1584,10 @@ export default {
                   endX = drawingStart.value.x;
                 }
               }
-
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
                 { x: endX, y: endY },
               ];
-
               if (linePath.length === 2) {
                 // Convert line to SVG data URL using utility
                 const svgDataUrl = freehandDrawing.pathToSvgDataUrl(linePath, {
@@ -1814,14 +1595,12 @@ export default {
                   width: lineOptions.value.width,
                   smoothLevel: 1, // No smoothing for straight lines
                 });
-
                 if (svgDataUrl) {
                   // Calculate bounding box using utility
                   const boundingBox = freehandDrawing.calculateBoundingBox(
                     linePath,
                     lineOptions.value.width,
                   );
-
                   if (boundingBox) {
                     const id = generateId();
                     const component = page.createComponentWithDimensions(
@@ -1833,39 +1612,33 @@ export default {
                       boundingBox.width,
                       boundingBox.height,
                     );
-
                     if (component) {
                       component.setSelected(true);
                     }
                   }
                 }
               }
-
               // Clean up line drawing
               freehandDrawing.cleanup();
               freehandPath.value = [];
               isDrawing.value = false;
               return;
             }
-
             // Remove drawing overlay
             if (drawingOverlay) {
               drawingOverlay.remove();
               drawingOverlay = null;
             }
-
             // Calculate final dimensions (already adjusted for zoom)
             const x = Math.min(drawingStart.value.x, drawingCurrent.value.x);
             const y = Math.min(drawingStart.value.y, drawingCurrent.value.y);
             const width = Math.abs(drawingCurrent.value.x - drawingStart.value.x);
             const height = Math.abs(drawingCurrent.value.y - drawingStart.value.y);
-
             // Only create component if there's a meaningful size
             if (width > 5 && height > 5) {
               const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
-
               // Special handling for image tool - show dialog
               if (selectedTool.value === "image") {
                 openImageDialog(page, id, x, y, width, height);
@@ -1888,10 +1661,8 @@ export default {
                 }
               }
             }
-
             isDrawing.value = false;
           });
-
           // Handle mouse leave to cancel drawing
           element.addEventListener("mouseleave", () => {
             if (isDrawing.value) {
@@ -1899,34 +1670,26 @@ export default {
                 drawingOverlay.remove();
                 drawingOverlay = null;
               }
-
               // Clean up freehand drawing
               freehandDrawing.cleanup();
               freehandPath.value = [];
-
               isDrawing.value = false;
             }
           });
         };
-
         // Add listeners to both canvas and container
         addDrawingListeners(canvas);
         addDrawingListeners(container);
       });
     };
-
     const handleFileUpload = () => {
-      console.log("handleFileUpload called");
       const rfile = file.value.files[0];
       processFile(rfile);
     };
-
     const processFile = (fileToProcess) => {
       if (!fileToProcess) {
-        console.log("No file provided");
         return;
       }
-
       // Check if it's a PDF file
       if (
         fileToProcess.type !== "application/pdf" &&
@@ -1935,9 +1698,7 @@ export default {
         showToast("Please select a PDF file.", "warning");
         return;
       }
-
       const reader = new FileReader();
-
       reader.onload = async (e) => {
         if (pdfEditor) {
           // Clear PDF pages before loading new PDF
@@ -1958,36 +1719,29 @@ export default {
           console.error("PDFEditor not initialized yet");
         }
       };
-
       reader.readAsBinaryString(fileToProcess);
     };
-
     const handleDragEnter = (e) => {
       e.preventDefault();
       e.stopPropagation();
       document.body.classList.add("drag-over");
     };
-
     const handleDragOver = (e) => {
       e.preventDefault();
       e.stopPropagation();
     };
-
     const handleDragLeave = (e) => {
       e.preventDefault();
       e.stopPropagation();
-
       // Only remove drag-over class if we're leaving the document entirely
       if (e.clientX === 0 && e.clientY === 0) {
         document.body.classList.remove("drag-over");
       }
     };
-
     const handleDrop = (e) => {
       e.preventDefault();
       e.stopPropagation();
       document.body.classList.remove("drag-over");
-
       const files = Array.from(e.dataTransfer.files);
       const pdfFile = files.find(
         (file) => file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"),
@@ -1995,20 +1749,15 @@ export default {
       const jsonFile = files.find(
         (file) => file.type === "application/json" || file.name.toLowerCase().endsWith(".json"),
       );
-
       if (pdfFile) {
-        console.log("PDF file dropped:", pdfFile.name);
         processFile(pdfFile);
       } else if (jsonFile) {
-        console.log("JSON config file dropped:", jsonFile.name);
         processConfigFile(jsonFile);
       } else if (files.length > 0) {
         showToast("Please drop a PDF file or JSON config file.", "warning");
       }
     };
-
     const downloadPDF = async () => {
-      console.log("downloadPDF called");
       if (pdfEditor) {
         const pdfBytes = await pdfEditor.downloadPDF();
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -2020,25 +1769,20 @@ export default {
         console.error("PDFEditor not initialized yet");
       }
     };
-
     const downloadConfig = () => {
-      console.log("downloadConfig called");
       if (!pdfEditor || !pdfEditor.fileContents) {
         console.error("No PDF loaded or PDFEditor not initialized");
         return;
       }
-
       try {
         // Convert PDF binary string to base64 with proper data URL prefix
         const pdfBase64 = btoa(pdfEditor.fileContents);
         const pdfURL = `data:application/pdf;base64,${pdfBase64}`;
-
         // Get all page operations
         const pages = pdfEditor.pdfPages.map((page) => ({
           pageNumber: page.pageNumber,
           operations: page.getOperations(),
         }));
-
         // Create config object
         const config = {
           version: "1.0",
@@ -2046,7 +1790,6 @@ export default {
           pdfURL: pdfURL,
           pages: pages,
         };
-
         // Create and download JSON file
         const jsonString = JSON.stringify(config, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
@@ -2054,26 +1797,19 @@ export default {
         link.href = URL.createObjectURL(blob);
         link.download = `pdf-config-${new Date().toISOString().split("T")[0]}-pdfso.json`;
         link.click();
-
-        console.log("Config downloaded successfully");
         showToast("Configuration exported successfully!", "success");
       } catch (error) {
         console.error("Error creating config file:", error);
         showToast("Unable to export configuration. Please try again.", "error");
       }
     };
-
     const clickRestoreConfigInput = () => {
-      console.log("clickRestoreConfigInput called");
       configFile.value.click();
     };
-
     const processConfigFile = async (configFileToProcess) => {
       if (!configFileToProcess) {
-        console.log("No config file provided");
         return;
       }
-
       // Check if it's a JSON file
       if (
         configFileToProcess.type !== "application/json" &&
@@ -2082,7 +1818,6 @@ export default {
         showToast("Please select a JSON config file.", "warning");
         return;
       }
-
       try {
         const fileContent = await new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -2090,19 +1825,13 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileToProcess);
         });
-
         const config = JSON.parse(fileContent);
-
         // Validate config structure
         if (!config.pdfURL || !config.pages) {
           throw new Error("Invalid config file format");
         }
-
-        console.log("Config loaded:", config);
-
         // Clear PDF pages before loading new PDF
         clearPdfPages();
-
         // Handle PDF data - check if it's a base64 data URL or regular URL
         let pdfData;
         if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
@@ -2113,17 +1842,14 @@ export default {
           // It's a regular URL, we'll pass it as is
           pdfData = config.pdfURL;
         }
-
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
           isLoaded.value = true;
-
           // Restore operations for each page
           config.pages.forEach((pageConfig, index) => {
             if (pdfEditor.pdfPages[index]) {
               const page = pdfEditor.pdfPages[index];
-
               // Create components for each operation
               pageConfig.operations.forEach((operation) => {
                 try {
@@ -2136,7 +1862,6 @@ export default {
                     operation.width,
                     operation.height,
                   );
-
                   if (component) {
                     // Update all operation properties
                     Object.keys(operation).forEach((key) => {
@@ -2144,7 +1869,6 @@ export default {
                         component.operation[key] = operation[key];
                       }
                     });
-
                     // Trigger operation changed to update visual appearance
                     if (component.operationChanged) {
                       Object.keys(operation).forEach((key) => {
@@ -2158,7 +1882,6 @@ export default {
               });
             }
           });
-
           // Apply current zoom level and setup drawing listeners
           pdfEditor.applyZoom(zoomLevel.value);
           setupCanvasDrawingListeners();
@@ -2166,8 +1889,6 @@ export default {
           setTimeout(() => {
             updateToolbarPosition();
           }, 100);
-
-          console.log("Config restored successfully from dropped file");
           showToast("Configuration restored successfully!", "success");
         }
       } catch (error) {
@@ -2175,16 +1896,11 @@ export default {
         showToast("Unable to restore configuration. Please check the file format.", "error");
       }
     };
-
     const handleConfigRestore = async () => {
-      console.log("handleConfigRestore called");
       const configFileInput = configFile.value.files[0];
-
       if (!configFileInput) {
-        console.log("No config file selected");
         return;
       }
-
       try {
         const fileContent = await new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -2192,19 +1908,13 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileInput);
         });
-
         const config = JSON.parse(fileContent);
-
         // Validate config structure
         if (!config.pdfURL || !config.pages) {
           throw new Error("Invalid config file format");
         }
-
-        console.log("Config loaded:", config);
-
         // Clear PDF pages before loading new PDF
         clearPdfPages();
-
         // Handle PDF data - check if it's a base64 data URL or regular URL
         let pdfData;
         if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
@@ -2215,17 +1925,14 @@ export default {
           // It's a regular URL, we'll pass it as is
           pdfData = config.pdfURL;
         }
-
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
           isLoaded.value = true;
-
           // Restore operations for each page
           config.pages.forEach((pageConfig, index) => {
             if (pdfEditor.pdfPages[index]) {
               const page = pdfEditor.pdfPages[index];
-
               // Create components for each operation
               pageConfig.operations.forEach((operation) => {
                 try {
@@ -2238,7 +1945,6 @@ export default {
                     operation.width,
                     operation.height,
                   );
-
                   if (component) {
                     // Update all operation properties
                     Object.keys(operation).forEach((key) => {
@@ -2246,7 +1952,6 @@ export default {
                         component.operation[key] = operation[key];
                       }
                     });
-
                     // Trigger operation changed to update visual appearance
                     if (component.operationChanged) {
                       Object.keys(operation).forEach((key) => {
@@ -2260,7 +1965,6 @@ export default {
               });
             }
           });
-
           // Apply current zoom level and setup drawing listeners
           pdfEditor.applyZoom(zoomLevel.value);
           setupCanvasDrawingListeners();
@@ -2268,8 +1972,6 @@ export default {
           setTimeout(() => {
             updateToolbarPosition();
           }, 100);
-
-          console.log("Config restored successfully");
           showToast("Configuration restored successfully!", "success");
         }
       } catch (error) {
@@ -2277,7 +1979,6 @@ export default {
         showToast("Unable to restore configuration. Please check the file format.", "error");
       }
     };
-
     const updatePropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
       if (e.detail.target && e.detail.target.wrapperContainer) {
@@ -2285,13 +1986,11 @@ export default {
       }
       refreshLayers();
     };
-
     const clearPropertyPanel = () => {
       selectedOperation.value = null;
       selectedLayerEl.value = null;
       refreshLayers();
     };
-
     // ----- Layers panel -----
     const getLayerLabel = (op) => {
       if (!op) return "Element";
@@ -2317,7 +2016,6 @@ export default {
           return op.type ? op.type.charAt(0).toUpperCase() + op.type.slice(1) : "Element";
       }
     };
-
     const getLayerIcon = (op) => {
       if (!op) return "fa-solid fa-shapes";
       switch (op.type) {
@@ -2341,13 +2039,11 @@ export default {
           return "fa-solid fa-shapes";
       }
     };
-
     const refreshLayers = () => {
       if (!pdfEditor || !pdfEditor.pdfPages || !pdfEditor.pdfPages.length) {
         layers.value = [];
         return;
       }
-
       const result = [];
       pdfEditor.pdfPages.forEach((page) => {
         if (!page.container) return;
@@ -2366,29 +2062,23 @@ export default {
       });
       layers.value = result;
     };
-
     const isLayerSelected = (layer) => {
       return selectedLayerEl.value === layer.el || layer.el.classList.contains("selected");
     };
-
     const selectLayer = (layer) => {
       if (!layer || !layer.el) return;
-
       // Selection requires the select tool (drawing mode disables pointer events
       // and prevents Moveable handles from appearing).
       if (selectedTool.value !== "select") {
         selectTool("select");
       }
-
       const component = layer.el.__component;
       if (component && typeof component.setSelected === "function") {
         component.setSelected(true);
       } else {
         layer.el.click();
       }
-
       selectedLayerEl.value = layer.el;
-
       // Bring the element into view within the scrollable PDF area only,
       // without scrolling the browser window/page. Using scrollIntoView would
       // bubble up and scroll every ancestor scroll container (including the
@@ -2397,33 +2087,26 @@ export default {
       if (container) {
         const containerRect = container.getBoundingClientRect();
         const elRect = layer.el.getBoundingClientRect();
-
         const elTopRelative = elRect.top - containerRect.top + container.scrollTop;
         const elLeftRelative = elRect.left - containerRect.left + container.scrollLeft;
-
         const targetTop = elTopRelative - container.clientHeight / 2 + elRect.height / 2;
         const targetLeft = elLeftRelative - container.clientWidth / 2 + elRect.width / 2;
-
         container.scrollTo({
           top: targetTop,
           left: targetLeft,
           behavior: "smooth",
         });
       }
-
       refreshLayers();
     };
-
     const deleteLayer = (layer) => {
       if (!layer || !layer.el) return;
-
       const component = layer.el.__component;
       if (component && typeof component.deleteComponent === "function") {
         component.deleteComponent();
       } else {
         layer.el.remove();
       }
-
       if (selectedLayerEl.value === layer.el) {
         selectedLayerEl.value = null;
         selectedOperation.value = null;
@@ -2431,24 +2114,19 @@ export default {
       if (editingLayerKey.value === layer.key) {
         editingLayerKey.value = null;
       }
-
       refreshLayers();
     };
-
     // Inline rename is only meaningful for text-based elements.
     const canEditLayer = (layer) => layer && (layer.type === "text" || layer.type === "textfield");
-
     const startEditLayer = (layer) => {
       if (!canEditLayer(layer)) {
         // For non-text elements, "edit" simply selects so the property bar opens.
         selectLayer(layer);
         return;
       }
-
       selectLayer(layer);
       editingLayerKey.value = layer.key;
       editingLayerValue.value = (layer.el.operation && layer.el.operation.text) || "";
-
       nextTick(() => {
         const input = document.querySelector(".layer-edit-input");
         if (input) {
@@ -2457,68 +2135,53 @@ export default {
         }
       });
     };
-
     const commitEditLayer = (layer) => {
       if (!layer || editingLayerKey.value !== layer.key) return;
-
       const component = layer.el.__component;
       if (component && typeof component.getOperation === "function") {
         const op = component.getOperation();
         op.text = editingLayerValue.value;
       }
-
       editingLayerKey.value = null;
       editingLayerValue.value = "";
       refreshLayers();
     };
-
     const cancelEditLayer = () => {
       editingLayerKey.value = null;
       editingLayerValue.value = "";
     };
-
     const updateToolbarPosition = () => {
       const toolbar = document.querySelector(".floating-toolbar");
       if (!toolbar || !pdfEditor || !pdfEditor.pdfPages.length) return;
-
       // Get the first PDF page to calculate positioning
       const firstPage = pdfEditor.pdfPages[0];
       if (!firstPage || !firstPage.container) return;
-
       // Get the PDF view container
       const pdfViewContainer = document.querySelector(".body-pdf-view");
       if (!pdfViewContainer) return;
-
       // Skip if on mobile (toolbar positioning handled by CSS on mobile)
       if (window.innerWidth <= 768) {
         toolbar.style.left = ""; // Clear any JavaScript-set positioning
         return;
       }
-
       // Calculate the PDF page position with current zoom
       const pdfPageRect = firstPage.container.getBoundingClientRect();
       const viewContainerRect = pdfViewContainer.getBoundingClientRect();
-
       // Calculate the left edge of the PDF page relative to the view container
       const pdfPageLeft = pdfPageRect.left - viewContainerRect.left;
-
       // Position toolbar 20px to the left of the PDF page
       const toolbarWidth = 54; // Toolbar width
       const spacing = 20; // Desired spacing from PDF page
       const minLeftPosition = 20; // Minimum distance from left edge
-
       const desiredLeft = pdfPageLeft - toolbarWidth - spacing;
       const toolbarLeft = Math.max(minLeftPosition, desiredLeft);
-
       // Only update if position has changed significantly (avoid unnecessary updates)
       const currentLeft = parseInt(toolbar.style.left) || 20;
       if (Math.abs(currentLeft - toolbarLeft) > 5) {
         toolbar.style.left = `${toolbarLeft}px`;
       }
     };
-
     const applyZoom = () => {
-      console.log("applyZoom called with zoomLevel:", zoomLevel.value);
       if (pdfEditor) {
         pdfEditor.applyZoom(zoomLevel.value);
         // Update toolbar position after zoom is applied
@@ -2529,7 +2192,6 @@ export default {
         console.error("PDFEditor not initialized yet");
       }
     };
-
     // Update freehand canvas style when options change
     const updateFreehandOptions = () => {
       freehandDrawing.updateCanvasStyle({
@@ -2537,21 +2199,17 @@ export default {
         width: freehandOptions.value.width,
       });
     };
-
     // Watch for changes in freehand options
     watch(() => [freehandOptions.value.color, freehandOptions.value.width], updateFreehandOptions);
-
     // SVG property helper functions
     const getSvgStrokeColor = (operation) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return "#000000";
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         const svgString = atob(base64Data);
-
         // Extract stroke color from SVG
         const strokeMatch = svgString.match(/stroke="([^"]+)"/);
         return strokeMatch ? strokeMatch[1] : "#000000";
@@ -2560,17 +2218,14 @@ export default {
         return "#000000";
       }
     };
-
     const getSvgStrokeWidth = (operation) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return 2;
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         const svgString = atob(base64Data);
-
         // Extract stroke width from SVG
         const strokeWidthMatch = svgString.match(/stroke-width="([^"]+)"/);
         return strokeWidthMatch ? parseFloat(strokeWidthMatch[1]) : 2;
@@ -2579,17 +2234,14 @@ export default {
         return 2;
       }
     };
-
     const updateSvgStrokeColor = (operation, newColor) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return;
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         let svgString = atob(base64Data);
-
         // Update stroke color in SVG
         if (svgString.includes("stroke=")) {
           svgString = svgString.replace(/stroke="[^"]*"/g, `stroke="${newColor}"`);
@@ -2597,11 +2249,9 @@ export default {
           // Add stroke attribute if it doesn't exist
           svgString = svgString.replace(/<path([^>]*)>/g, `<path$1 stroke="${newColor}">`);
         }
-
         // Re-encode to base64
         const newBase64 = btoa(svgString);
         operation.url = `data:image/svg+xml;base64,${newBase64}`;
-
         // Trigger visual update
         const event = new CustomEvent("pdfeditor.operationChanged", {
           detail: { operation, property: "url" },
@@ -2612,17 +2262,14 @@ export default {
         console.error("Error updating SVG stroke color:", error);
       }
     };
-
     const updateSvgStrokeWidth = (operation, newWidth) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return;
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         let svgString = atob(base64Data);
-
         // Update stroke width in SVG
         if (svgString.includes("stroke-width=")) {
           svgString = svgString.replace(/stroke-width="[^"]*"/g, `stroke-width="${newWidth}"`);
@@ -2630,11 +2277,9 @@ export default {
           // Add stroke-width attribute if it doesn't exist
           svgString = svgString.replace(/<path([^>]*)>/g, `<path$1 stroke-width="${newWidth}">`);
         }
-
         // Re-encode to base64
         const newBase64 = btoa(svgString);
         operation.url = `data:image/svg+xml;base64,${newBase64}`;
-
         // Trigger visual update
         const event = new CustomEvent("pdfeditor.operationChanged", {
           detail: { operation, property: "url" },
@@ -2645,18 +2290,14 @@ export default {
         console.error("Error updating SVG stroke width:", error);
       }
     };
-
     const getSvgFillColor = (operation) => {
-      console.log("getSvgFillColor called with operation:", operation);
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return "#000000";
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         const svgString = atob(base64Data);
-
         // Extract fill color from SVG
         const fillMatch = svgString.match(/fill="([^"]+)"/);
         return fillMatch ? fillMatch[1] : "#000000";
@@ -2665,17 +2306,14 @@ export default {
         return "#000000";
       }
     };
-
     const updateSvgFillColor = (operation, newColor) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
         return;
       }
-
       try {
         // Decode base64 SVG
         const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
         let svgString = atob(base64Data);
-
         // Update fill color in SVG
         if (svgString.includes("fill=")) {
           svgString = svgString.replace(/fill="[^"]*"/g, `fill="${newColor}"`);
@@ -2683,11 +2321,9 @@ export default {
           // Add fill attribute if it doesn't exist
           svgString = svgString.replace(/<svg([^>]*)>/g, `<svg$1 fill="${newColor}">`);
         }
-
         // Re-encode to base64
         const newBase64 = btoa(svgString);
         operation.url = `data:image/svg+xml;base64,${newBase64}`;
-
         // Trigger visual update
         const event = new CustomEvent("pdfeditor.operationChanged", {
           detail: { operation, property: "url" },
@@ -2698,26 +2334,17 @@ export default {
         console.error("Error updating SVG fill color:", error);
       }
     };
-
     onMounted(async () => {
-      console.log(`onMounted - starting`);
-
       // Wait for DOM to be updated
       await nextTick();
 
-      console.log("DOM has been updated, initializing PDFEditor...");
-      console.log("Container element (ref):", pdfViewContainer.value);
-
       if (pdfViewContainer.value) {
-        console.log("Creating PDFEditor with container:", pdfViewContainer.value);
         try {
           pdfEditor = new PDFEditor(pdfViewContainer.value);
-
           document.addEventListener("pdfeditor.componentSelected", updatePropertyPanel);
           document.addEventListener("pdfeditor.componentDragging", updatePropertyPanel);
           document.addEventListener("pdfeditor.componentResizing", updatePropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
-
           // Keep the Layers panel in sync as components are added/removed.
           const layersObserver = new MutationObserver((mutations) => {
             const hasComponentChange = mutations.some((m) =>
@@ -2733,17 +2360,12 @@ export default {
             childList: true,
             subtree: true,
           });
-
-          console.log("PDFEditor initialized successfully");
         } catch (error) {
           console.error("Error creating PDFEditor:", error);
         }
       } else {
         console.error("Could not find container element!");
-        console.log("pdfViewContainer.value:", pdfViewContainer.value);
-        console.log("Available elements:", document.querySelectorAll(".body-pdf-view"));
       }
-
       // Listen for file load from landing page
       window.addEventListener("loadPdfFromLanding", (event) => {
         const { fileData, fileName } = event.detail;
@@ -2751,7 +2373,6 @@ export default {
           // Convert data URL to binary string
           const base64Data = fileData.split(",")[1];
           const binaryString = atob(base64Data);
-
           clearPdfPages();
           isLoaded.value = true;
           pdfEditor.renderPDF("", binaryString).then(() => {
@@ -2765,10 +2386,8 @@ export default {
           });
         }
       });
-
       // Setup dynamic tooltip positioning
       setupTooltipPositioning();
-
       // Setup click outside listener for dropdown
       document.addEventListener("click", (event) => {
         const dropdown = event.target.closest(".dropdown");
@@ -2776,16 +2395,13 @@ export default {
           showConfigDropdown.value = false;
         }
       });
-
       // Setup drag and drop for PDF files
       document.addEventListener("dragenter", handleDragEnter);
       document.addEventListener("dragover", handleDragOver);
       document.addEventListener("dragleave", handleDragLeave);
       document.addEventListener("drop", handleDrop);
-
       // Load and cache icon SVGs at startup
       await loadIconCache();
-
       // Setup window resize listener to update toolbar position
       window.addEventListener("resize", () => {
         setTimeout(() => {
@@ -2793,65 +2409,51 @@ export default {
         }, 100);
       });
     });
-
     const setupTooltipPositioning = () => {
       // Wait for DOM to be ready
       nextTick(() => {
         // Handle toolbar buttons (positioned to the right)
         const toolButtons = document.querySelectorAll(".body-tool[title]");
-
         toolButtons.forEach((button) => {
           // Remove default title to prevent browser tooltip
           const tooltipText = button.getAttribute("title");
           button.removeAttribute("title");
           button.setAttribute("data-tooltip", tooltipText);
-
           button.addEventListener("mouseenter", (e) => {
             showCustomTooltip(e.target, tooltipText, "right");
           });
-
           button.addEventListener("mouseleave", hideCustomTooltip);
         });
-
         // Handle top bar buttons (positioned below)
         const topBarButtons = document.querySelectorAll(
           ".header-actions .btn[title], .element-container .btn[title], .element-container select[title], .dropdown-item[title]",
         );
-
         topBarButtons.forEach((button) => {
           // Remove default title to prevent browser tooltip
           const tooltipText = button.getAttribute("title");
           button.removeAttribute("title");
           button.setAttribute("data-tooltip", tooltipText);
-
           button.addEventListener("mouseenter", (e) => {
             showCustomTooltip(e.target, tooltipText, "below");
           });
-
           button.addEventListener("mouseleave", hideCustomTooltip);
         });
       });
     };
-
     const showCustomTooltip = (element, text, position = "right") => {
       // Remove any existing tooltip
       hideCustomTooltip();
-
       // Create tooltip element
       const tooltip = document.createElement("div");
       tooltip.className = "custom-tooltip";
       tooltip.textContent = text;
       tooltip.id = "active-tooltip";
-
       // Add to body to ensure it's above everything
       document.body.appendChild(tooltip);
-
       // Position tooltip
       const rect = element.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
-
       let left, top;
-
       if (position === "below") {
         // Position below and to the right of the element
         left = rect.left;
@@ -2861,28 +2463,23 @@ export default {
         left = rect.right + 10;
         top = rect.top + rect.height / 2 - tooltipRect.height / 2;
       }
-
       tooltip.style.left = `${left}px`;
       tooltip.style.top = `${top}px`;
-
       // Add arrow
       const arrow = document.createElement("div");
       arrow.className = `custom-tooltip-arrow ${position === "below" ? "above" : "left"}`;
       tooltip.appendChild(arrow);
-
       // Trigger animation
       setTimeout(() => {
         tooltip.classList.add("show");
       }, 10);
     };
-
     const hideCustomTooltip = () => {
       const existingTooltip = document.getElementById("active-tooltip");
       if (existingTooltip) {
         existingTooltip.remove();
       }
     };
-
     // Load and cache icon SVGs at startup
     const loadIconCache = async () => {
       // Build icon URLs from the dynamic iconTools array
@@ -2890,7 +2487,6 @@ export default {
       iconTools.value.forEach((iconTool) => {
         iconUrls[iconTool.id] = iconTool.icon;
       });
-
       for (const [iconName, url] of Object.entries(iconUrls)) {
         try {
           const response = await fetch(url);
@@ -2900,7 +2496,6 @@ export default {
             const base64Data = btoa(svgText);
             const dataUrl = `data:image/svg+xml;base64,${base64Data}`;
             iconCache.value[iconName] = dataUrl;
-            console.log(`Cached icon: ${iconName}`);
           } else {
             console.error(`Failed to fetch icon: ${iconName} from ${url}`);
           }
@@ -2909,19 +2504,16 @@ export default {
         }
       }
     };
-
     // Apply fill color to cached SVG icon
     const getColoredIcon = (iconName, fillColor) => {
       const cachedIcon = iconCache.value[iconName];
       if (!cachedIcon || !cachedIcon.startsWith("data:image/svg+xml;base64,")) {
         return cachedIcon || `/images/${iconName}.svg`;
       }
-
       try {
         // Decode base64 SVG
         const base64Data = cachedIcon.replace("data:image/svg+xml;base64,", "");
         let svgString = atob(base64Data);
-
         // Update fill color in SVG
         if (svgString.includes("fill=")) {
           svgString = svgString.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
@@ -2929,7 +2521,6 @@ export default {
           // Add fill attribute if it doesn't exist
           svgString = svgString.replace(/<svg([^>]*)>/g, `<svg$1 fill="${fillColor}">`);
         }
-
         // Re-encode to base64
         const newBase64 = btoa(svgString);
         return `data:image/svg+xml;base64,${newBase64}`;
@@ -2938,34 +2529,29 @@ export default {
         return cachedIcon;
       }
     };
-
     // Measurement utility functions
     const calculateDistance = (point1, point2) => {
       const dx = point2.x - point1.x;
       const dy = point2.y - point1.y;
       return Math.sqrt(dx * dx + dy * dy);
     };
-
     const convertPixelsToUnits = (pixels) => {
       //const inches = pixels / 96; // 96 DPI standard
       //const mm = pixels * 0.2646; // 1 pixel = 0.2646 mm
       const px = pixels * zoomLevel.value;
       const inches = px / (zoomLevel.value * 72); // 96 DPI standard
       const mm = inches * 25.4; // 1 pixel = 0.2646 mm
-
       return {
         px: Math.round(px * 100) / 100,
         inches: Math.round(inches * 1000) / 1000,
         mm: Math.round(mm * 100) / 100,
       };
     };
-
     const clearMeasurements = () => {
       // Clear all measurement overlays
       document.querySelectorAll(".measurement-overlay").forEach((overlay) => {
         overlay.remove();
       });
-
       // Reset measurement state
       measurementState.value = {
         isActive: false,
@@ -2974,58 +2560,44 @@ export default {
         measurements: [],
         liveMeasurement: null,
       };
-
-      console.log("All measurements cleared");
     };
-
     const createMeasurementOverlay = (point1, point2, isLive = false) => {
       const distance = calculateDistance(point1, point2);
       const units = convertPixelsToUnits(distance);
-
       // Create measurement line
       const line = document.createElement("div");
       line.className = `measurement-overlay measurement-line ${isLive ? "live" : "final"}`;
-
       // Calculate line position and rotation
       const dx = point2.x - point1.x;
       const dy = point2.y - point1.y;
       const length = distance;
       const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-
       line.style.left = `${point1.x}px`;
       line.style.top = `${point1.y}px`;
       line.style.width = `${length}px`;
       line.style.transform = `rotate(${angle}deg)`;
-
       // Create measurement label
       const label = document.createElement("div");
       label.className = `measurement-overlay measurement-label ${isLive ? "live" : "final"}`;
-
       const midX = (point1.x + point2.x) / 2;
       const midY = (point1.y + point2.y) / 2;
-
       const labelContent = document.createElement("div");
       labelContent.className = `measurement-label-content ${isLive ? "live" : "final"}`;
       labelContent.style.left = `${midX}px`;
       labelContent.style.top = `${midY - 30}px`;
       labelContent.textContent = `${units.inches} in  /  ${units.mm} mm`;
-
       label.appendChild(labelContent);
-
       // Create start and end points
       const startPoint = document.createElement("div");
       startPoint.className = `measurement-overlay measurement-point ${isLive ? "live" : "final"}`;
       startPoint.style.left = `${point1.x}px`;
       startPoint.style.top = `${point1.y}px`;
-
       const endPoint = document.createElement("div");
       endPoint.className = `measurement-overlay measurement-point ${isLive ? "live" : "final"}`;
       endPoint.style.left = `${point2.x}px`;
       endPoint.style.top = `${point2.y}px`;
-
       return { line, label, startPoint, endPoint };
     };
-
     const addMeasurementOverlay = (point1, point2, container, isLive = false) => {
       // Remove existing live measurement if adding a new live one
       if (isLive) {
@@ -3033,23 +2605,18 @@ export default {
           overlay.remove();
         });
       }
-
       const { line, label, startPoint, endPoint } = createMeasurementOverlay(
         point1,
         point2,
         isLive,
       );
-
       container.appendChild(line);
       container.appendChild(label);
       container.appendChild(startPoint);
       container.appendChild(endPoint);
-
       return { line, label, startPoint, endPoint };
     };
-
     const scrollToEditor = () => {
-      console.log("scrollToEditor called");
       const pdfEditor = document.querySelector(".pdf-editor");
       if (pdfEditor) {
         pdfEditor.scrollIntoView({
@@ -3059,10 +2626,8 @@ export default {
         });
         showToast("Focused on PDF editor", "info", 1500);
       } else {
-        console.log("PDF editor container not found");
       }
     };
-
     return {
       pdfViewContainer,
       file,
@@ -3144,49 +2709,38 @@ export default {
   },
 };
 </script>
-
 <style>
 @reference "./css/tailwind.css";
-
 .pdf-editor {
   background: transparent;
 }
-
 .pdf-placeholder {
   background: #f8f9fa;
   border: 2px dashed #dee2e6;
   border-radius: 12px;
   @apply flex items-center justify-center h-full w-full;
 }
-
 .pdf-placeholder-content {
   @apply text-center p-12 max-w-md;
 }
-
 .pdf-placeholder-icon {
   @apply text-6xl text-gray-300 mb-6;
 }
-
 .pdf-placeholder-title {
   @apply text-xl font-semibold text-gray-700 mb-4;
 }
-
 .pdf-placeholder-text {
   @apply text-gray-500 text-base mb-2 leading-relaxed;
 }
-
 .pdf-placeholder-text-secondary {
   @apply text-gray-400 text-sm mb-6 leading-relaxed;
 }
-
 .pdf-placeholder-formats {
   @apply mt-4;
 }
-
 .pdf-placeholder-format {
   @apply inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full border;
 }
-
 /* Freehand options styling */
 .element-container {
   display: flex;
@@ -3199,29 +2753,24 @@ export default {
   border: 1px solid #dee2e6;
   position: absolute;
   min-width: 1100px;
-
   .option-element {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 14px;
     color: #2d2d2d;
-
     label {
       font-weight: 500;
       white-space: nowrap;
-
       padding-left: 10px;
       margin-left: 15px;
     }
-
     input[type="range"] {
       width: 80px;
       height: 4px;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 2px;
       outline: none;
-
       &::-webkit-slider-thumb {
         width: 14px;
         height: 14px;
@@ -3229,7 +2778,6 @@ export default {
         border-radius: 50%;
         cursor: pointer;
       }
-
       &::-moz-range-thumb {
         width: 14px;
         height: 14px;
@@ -3239,7 +2787,6 @@ export default {
         border: none;
       }
     }
-
     input[type="color"] {
       width: 30px;
       height: 24px;
@@ -3248,14 +2795,12 @@ export default {
       cursor: pointer;
       background: none;
     }
-
     .value-display {
       font-size: 14px;
       color: rgba(45, 45, 45, 0.8);
       min-width: 20px;
       text-align: center;
     }
-
     .font-select {
       padding: 2px 6px;
       border: 1px solid #ccc;
@@ -3265,7 +2810,6 @@ export default {
       color: #333;
       cursor: pointer;
       min-width: 120px;
-
       &:focus {
         outline: none;
         border-color: #007bff;

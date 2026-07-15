@@ -3,13 +3,10 @@ class BasicOperationComponent {
   htmlNode = null;
   canvasContainer = null;
   wrapperContainer = null;
-
   renderDirections = ["n", "e", "s", "w", "nw", "ne", "sw", "se"];
-
   constructor(operation, canvasContainer) {
     this.canvasContainer = canvasContainer;
     this.operation = operation;
-
     this.wrapperContainer = document.createElement("div");
     this.wrapperContainer.classList.add("component");
     this.wrapperContainer.classList.add(`${this.operation.type}-component`);
@@ -18,28 +15,22 @@ class BasicOperationComponent {
     this.wrapperContainer.style.top = `${this.operation.y}px`;
     this.wrapperContainer.style.height = `${this.operation.height}px`;
     this.wrapperContainer.style.width = `${this.operation.width}px`;
-
     this.wrapperContainer.operation = operation;
     this.wrapperContainer.__component = this;
-
     this.canvasContainer.appendChild(this.wrapperContainer);
-
     this.wrapperContainer.addEventListener("click", (event) => {
       const pdfView = document.querySelector(".body-pdf-view");
       const isDrawingMode = pdfView && pdfView.classList.contains("drawing-mode");
-
       if (!isDrawingMode) {
         event.stopPropagation();
         this.setSelected(true);
       }
     });
-
     document.addEventListener("pdfeditor.shouldClearAllSelection", (e) => {
       if (e.detail.target != this) {
         this.setSelected(false);
       }
     });
-
     document.addEventListener("keydown", (e) => {
       if (
         e.key === "Delete" &&
@@ -50,52 +41,40 @@ class BasicOperationComponent {
       }
     });
   }
-
   // Start dragging the component from the move handle
   startMoveDrag = (e) => {
     e.stopPropagation();
     e.preventDefault();
-
     const startClientX = e.clientX;
     const startClientY = e.clientY;
     const startX = this.operation.x;
     const startY = this.operation.y;
-
     // Account for canvas zoom (the container is scaled via CSS transform)
     const rect = this.canvasContainer.getBoundingClientRect();
     const scale = this.canvasContainer.offsetWidth
       ? rect.width / this.canvasContainer.offsetWidth
       : 1;
-
     const onMouseMove = (moveEvent) => {
       const deltaX = (moveEvent.clientX - startClientX) / scale;
       const deltaY = (moveEvent.clientY - startClientY) / scale;
-
       const newLeft = startX + deltaX;
       const newTop = startY + deltaY;
-
       this.wrapperContainer.style.left = `${newLeft}px`;
       this.wrapperContainer.style.top = `${newTop}px`;
-
       this.operation.x = newLeft;
       this.operation.y = newTop;
-
       if (this.wrapperContainer.moveable) {
         this.wrapperContainer.moveable.updateRect();
       }
-
       this.fireEvent("pdfeditor.componentDragging");
     };
-
     const onMouseUp = () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
-
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
   };
-
   // Create the controls able (move + delete) for Moveable
   createDeleteAble = () => {
     const deleteAble = {
@@ -156,20 +135,16 @@ class BasicOperationComponent {
         );
       },
     };
-
     return deleteAble;
   };
-
   deleteComponent = () => {
     this.removeMoveable();
     this.wrapperContainer.remove();
-
     // Set a temporary flag to prevent immediate component creation
     window.preventComponentCreation = true;
     setTimeout(() => {
       window.preventComponentCreation = false;
     }, 200); // 200ms delay
-
     // Clear selection in property panel
     const clearEvent = new CustomEvent("pdfeditor.shouldClearAllSelection", {
       detail: { target: null },
@@ -178,16 +153,13 @@ class BasicOperationComponent {
     });
     document.dispatchEvent(clearEvent);
   };
-
   initializeOperation = () => {
     Object.keys(this.operation).forEach((key) => {
       if (this.operationChanged) this.operationChanged(key, this.operation[key]);
     });
   };
-
   makeMoveable = () => {
     const deleteAble = this.createDeleteAble();
-
     this.wrapperContainer.moveable = new Moveable(this.canvasContainer, {
       target: this.wrapperContainer,
       container: this.canvasContainer,
@@ -198,83 +170,63 @@ class BasicOperationComponent {
       ables: [deleteAble],
       props: { deleteViewable: true },
     });
-
     this.wrapperContainer.moveable.on("drag", ({ target, left, top }) => {
       target.style.left = `${left}px`;
       target.style.top = `${top}px`;
-
       this.operation.x = left;
       this.operation.y = top;
-
       this.fireEvent("pdfeditor.componentDragging");
     });
-
     this.wrapperContainer.moveable.on("resize", ({ target, width, height, direction, delta }) => {
       // Handle resizing based on direction
       // direction[0]: -1 (left), 0 (center), 1 (right)
       // direction[1]: -1 (top), 0 (center), 1 (bottom)
-
       let newLeft = parseInt(target.style.left);
       let newTop = parseInt(target.style.top);
       let newWidth = width;
       let newHeight = height;
-
       // Handle horizontal resizing (left edge movement)
       if (direction[0] === -1) {
         newLeft = parseInt(target.style.left) - delta[0];
         newWidth = parseInt(target.style.width) + delta[0];
       }
-
       // Handle vertical resizing (top edge movement)
       if (direction[1] === -1) {
         newTop = parseInt(target.style.top) - delta[1];
         newHeight = parseInt(target.style.height) + delta[1];
       }
-
       // Apply the changes
       target.style.left = `${newLeft}px`;
       target.style.top = `${newTop}px`;
       target.style.width = `${newWidth}px`;
       target.style.height = `${newHeight}px`;
-
       // Update operation
       this.operation.x = newLeft;
       this.operation.y = newTop;
       this.operation.width = newWidth;
       this.operation.height = newHeight;
-
       this.fireEvent("pdfeditor.componentResizing");
       this.wrapperContainer.moveable.updateRect();
     });
-
     this.wrapperContainer.moveable.updateRect();
   };
-
   removeMoveable = () => {
     if (this.wrapperContainer.moveable) {
       this.wrapperContainer.moveable.destroy();
       this.wrapperContainer.moveable = null;
     }
   };
-
   getOperation = () => {
     const handler = {
       set: (target, property, value) => {
-        console.log(`Property ${property} set to ${value}`);
-
         target[property] = value;
-
         if (this.operationChanged) this.operationChanged(property, value);
-
         this.handleBasicOperation(property, value);
-
         return true;
       },
     };
-
     return new Proxy(this.operation, handler);
   };
-
   handleBasicOperation = (property, value) => {
     switch (property) {
       case "x":
@@ -290,19 +242,15 @@ class BasicOperationComponent {
         this.wrapperContainer.style.height = `${value}px`;
         break;
     }
-
     if (this.wrapperContainer.moveable) {
       this.wrapperContainer.moveable.updateRect();
     }
   };
-
   setSelected = (selected) => {
     if (selected) {
       this.fireEvent("pdfeditor.shouldClearAllSelection");
       this.fireEvent("pdfeditor.componentSelected");
-
       this.wrapperContainer.classList.add("selected");
-
       if (!this.wrapperContainer.moveable) {
         this.makeMoveable();
       }
@@ -311,7 +259,6 @@ class BasicOperationComponent {
       this.removeMoveable();
     }
   };
-
   fireEvent = (eventName) => {
     const componentSelected = new CustomEvent(eventName, {
       detail: {
@@ -320,25 +267,19 @@ class BasicOperationComponent {
       bubbles: true,
       cancelable: true,
     });
-
     document.dispatchEvent(componentSelected);
   };
 }
-
 class ImageOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     const url = "/images/default_image.jpg";
-
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
     this.shadow.setAttribute("src", url);
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "imageHeight":
@@ -356,7 +297,6 @@ class ImageOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (
     id,
     x,
@@ -385,18 +325,14 @@ class ImageOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class RectangleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "borderWidth":
@@ -416,7 +352,6 @@ class RectangleOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (
     id,
     x,
@@ -447,18 +382,14 @@ class RectangleOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class CircleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "borderWidth":
@@ -483,7 +414,6 @@ class CircleOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (
     id,
     x,
@@ -515,11 +445,9 @@ class CircleOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class TextOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");
     this.shadow.style.width = "auto";
@@ -529,13 +457,11 @@ class TextOperationComponent extends BasicOperationComponent {
     this.shadow.style.display = "inline-block";
     this.shadow.style.paddingTop = "1px";
     this.shadow.contentEditable = false;
-
     this.wrapperContainer.addEventListener("dblclick", (event) => {
       event.stopPropagation();
       this.shadow.contentEditable = true;
       this.shadow.focus();
     });
-
     this.shadow.addEventListener("blur", (event) => {
       event.stopPropagation();
       this.shadow.contentEditable = false;
@@ -543,17 +469,13 @@ class TextOperationComponent extends BasicOperationComponent {
       this.updateSize();
       this.setSelected(true);
     });
-
     // Auto-resize while typing
     this.shadow.addEventListener("input", this.updateSize);
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
-
     // Initial size update
     setTimeout(this.updateSize, 0);
   }
-
   updateSize = () => {
     // Create a temporary element to measure text size
     const temp = document.createElement("div");
@@ -565,28 +487,23 @@ class TextOperationComponent extends BasicOperationComponent {
     temp.style.fontSize = this.shadow.style.fontSize;
     temp.style.fontFamily = this.shadow.style.fontFamily;
     temp.innerText = this.shadow.innerText || "sample text";
-
     document.body.appendChild(temp);
     const width = Math.max(temp.offsetWidth + 4, 20); // Add small padding
     const height = Math.max(temp.offsetHeight + 4, 20); // Add small padding
     document.body.removeChild(temp);
-
     // Update operation and wrapper size
     this.operation.width = width;
     this.operation.height = height;
     this.wrapperContainer.style.width = `${width}px`;
     this.wrapperContainer.style.height = `${height}px`;
-
     // Update moveable if it exists
     if (this.wrapperContainer.moveable) {
       this.wrapperContainer.moveable.updateRect();
     }
   };
-
   // Override makeMoveable to disable resizing for text components
   makeMoveable = () => {
     const deleteAble = this.createDeleteAble();
-
     this.wrapperContainer.moveable = new Moveable(this.canvasContainer, {
       target: this.wrapperContainer,
       container: this.canvasContainer,
@@ -596,20 +513,15 @@ class TextOperationComponent extends BasicOperationComponent {
       ables: [deleteAble],
       props: { deleteViewable: true },
     });
-
     this.wrapperContainer.moveable.on("drag", ({ target, left, top }) => {
       target.style.left = `${left}px`;
       target.style.top = `${top}px`;
-
       this.operation.x = left;
       this.operation.y = top;
-
       this.fireEvent("pdfeditor.componentDragging");
     });
-
     this.wrapperContainer.moveable.updateRect();
   };
-
   operationChanged = (property, value) => {
     switch (property) {
       case "text":
@@ -639,7 +551,6 @@ class TextOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (
     id,
     x,
@@ -672,32 +583,26 @@ class TextOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class TextFieldOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");
     this.shadow.contentEditable = false;
-
     this.wrapperContainer.addEventListener("dblclick", (event) => {
       event.stopPropagation();
       this.shadow.contentEditable = true;
       this.shadow.focus();
     });
-
     this.shadow.addEventListener("blur", (event) => {
       event.stopPropagation();
       this.shadow.contentEditable = false;
       this.getOperation().text = this.shadow.innerText;
       this.setSelected(true);
     });
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "backgroundColor":
@@ -726,7 +631,6 @@ class TextFieldOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (id, x, y, width = 150, height = 25) => {
     return {
       type: "textfield",
@@ -752,7 +656,6 @@ class TextFieldOperationComponent extends BasicOperationComponent {
       alignment: "Left",
     };
   };
-
   static updateDefaultOperation = (
     id,
     x,
@@ -797,23 +700,18 @@ class TextFieldOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class CheckboxOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
     this.shadow.setAttribute("src", "/images/checkbox-checked.png");
-
     this.shadow.style.maxWidth = "100%";
     this.shadow.style.maxHeight = "100%";
     this.shadow.style.objectFit = "contain";
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "width":
@@ -848,7 +746,6 @@ class CheckboxOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (id, x, y, width = 25, height = 25) => {
     return {
       type: "checkbox",
@@ -868,7 +765,6 @@ class CheckboxOperationComponent extends BasicOperationComponent {
       isReadOnly: false,
     };
   };
-
   static updateDefaultOperation = (
     id,
     x,
@@ -901,20 +797,15 @@ class CheckboxOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 class LinkOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content", "link-component");
-
     // Add link visual indicator
-
     this.wrapperContainer.appendChild(this.shadow);
     this.initializeOperation();
   }
-
   operationChanged = (property, value) => {
     switch (property) {
       case "borderWidth":
@@ -933,7 +824,6 @@ class LinkOperationComponent extends BasicOperationComponent {
         break;
     }
   };
-
   static createDefaultOperation = (
     id,
     x,
@@ -965,9 +855,8 @@ class LinkOperationComponent extends BasicOperationComponent {
     };
   };
 }
-
 export {
-  BasicOperationComponent,
+
   ImageOperationComponent,
   RectangleOperationComponent,
   CircleOperationComponent,
