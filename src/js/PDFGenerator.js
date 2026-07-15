@@ -4,7 +4,13 @@ class PDFGenerator {
   constructor() {}
 
   static str2ab(binaryString) {
-    return Uint8Array.from(binaryString, (c) => c.charCodeAt(0)).buffer;
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return bytes.buffer;
   }
 
   static hexToRgb(hexString) {
@@ -60,10 +66,6 @@ class PDFGenerator {
     const pdfDoc = await PDFLib.PDFDocument.create();
     const srcDoc = await PDFLib.PDFDocument.load(PDFGenerator.str2ab(fileContents));
 
-    // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
-    const srcForm = srcDoc.getForm();
-    const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
-
     for (const page of pageOperations) {
       const index = page.pageIndex;
       const pdfURL = page.pdfURL;
@@ -72,11 +74,11 @@ class PDFGenerator {
       const updateOperations = page.operations.filter((item) => item.operation == "update");
 
       for (const op of updateOperations) {
-        const formField = fieldMap.get(op.id);
+        const form = srcDoc.getForm();
+        const formField = form.getFields().find((x) => x.getName() === op.id);
 
         if (formField !== null && formField !== undefined) {
-          srcForm.removeField(formField);
-          fieldMap.delete(op.id); // Prevent Double Remove
+          form.removeField(formField);
         }
       }
 
@@ -84,18 +86,14 @@ class PDFGenerator {
       pdfDoc.addPage(cpage);
     }
 
-    // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
-    const pdfPages = pdfDoc.getPages();
-
-    // Pages themselves can be processed concurrently
-    const pagePromises = pageOperations.map(async (page) => {
+    for (const page of pageOperations) {
       const pageNumber = page.pageNumber;
       const createOperations = page.operations.filter((item) => item.operation == "create");
       const updateOperations = page.operations.filter((item) => item.operation == "update");
 
+      const pdfPages = pdfDoc.getPages();
       const pdfPage = pdfPages[pageNumber - 1];
 
-      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
       for (const op of createOperations) {
         if (op.type === "text") {
           await this.drawTextOnPage(pdfDoc, pdfPage, op);
@@ -123,10 +121,7 @@ class PDFGenerator {
           await this.drawLinkOnPage(pdfDoc, pdfPage, op);
         }
       }
-    });
-
-    // Await all pages concurrently
-    await Promise.all(pagePromises);
+    }
 
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
@@ -147,12 +142,51 @@ class PDFGenerator {
     const width = operation.width;
     const opacity = parseFloat(operation.opacity, 10);
 
-    const fontKey = fontFamily ? fontFamily.replace("-", "") : "Helvetica";
-    const standardFont = PDFLib.StandardFonts[fontKey] || PDFLib.StandardFonts.Helvetica;
-    const embedFont = await pdfDoc.embedFont(standardFont);
+    let embedFont;
 
-    const wordBreaks =
-      fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
+    if (fontFamily === "Helvetica") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    } else if (fontFamily === "Helvetica-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    } else if (fontFamily === "Helvetica-Oblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
+    } else if (fontFamily === "Helvetica-BoldOblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique);
+    } else if (fontFamily === "Times-Roman") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
+    } else if (fontFamily === "Times-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBold);
+    } else if (fontFamily === "Times-Italic") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesItalic);
+    } else if (fontFamily === "Times-BoldItalic") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBoldItalic);
+    } else if (fontFamily === "Courier") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier);
+    } else if (fontFamily === "Courier-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
+    } else if (fontFamily === "Courier-Oblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierOblique);
+    } else if (fontFamily === "Courier-BoldOblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBoldOblique);
+    } else if (fontFamily === "Symbol") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Symbol);
+    } else if (fontFamily === "ZapfDingbats") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats);
+    } else if (fontFamily === "TimesRoman") {
+      // Legacy support for old naming
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
+    } else {
+      // Default fallback
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    }
+
+    let wordBreaks = [];
+
+    if (fontWordBreak === "break-all") {
+      wordBreaks.push("");
+    } else if (fontWordBreak === "break-word") {
+      wordBreaks.push(" ");
+    }
 
     await pdfPage.drawText(text, {
       x: x + xPadding,
@@ -204,11 +238,6 @@ class PDFGenerator {
         const svgText = new TextDecoder("utf-8").decode(arrayBuffer);
 
         // Extract all path elements
-        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
-        /**
-         * Parses SVG `<path>` elements and extracts the 'd' attribute (path data) to enable rendering custom SVG icons.
-         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and inject accessibility labels, standardizing icon rendering via PDF generation.
-         */
         const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
         const paths = [];
         let pathMatch;
@@ -422,9 +451,43 @@ class PDFGenerator {
     const isMultiline = operation.isMultiline;
     const isReadOnly = operation.isReadOnly;
 
-    const fontKey = fontFamily ? fontFamily.replace("-", "") : "Helvetica";
-    const standardFont = PDFLib.StandardFonts[fontKey] || PDFLib.StandardFonts.Helvetica;
-    const embedFont = await pdfDoc.embedFont(standardFont);
+    let embedFont;
+
+    if (fontFamily === "Helvetica") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    } else if (fontFamily === "Helvetica-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    } else if (fontFamily === "Helvetica-Oblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
+    } else if (fontFamily === "Helvetica-BoldOblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique);
+    } else if (fontFamily === "Times-Roman") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
+    } else if (fontFamily === "Times-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBold);
+    } else if (fontFamily === "Times-Italic") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesItalic);
+    } else if (fontFamily === "Times-BoldItalic") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBoldItalic);
+    } else if (fontFamily === "Courier") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier);
+    } else if (fontFamily === "Courier-Bold") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
+    } else if (fontFamily === "Courier-Oblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierOblique);
+    } else if (fontFamily === "Courier-BoldOblique") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBoldOblique);
+    } else if (fontFamily === "Symbol") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Symbol);
+    } else if (fontFamily === "ZapfDingbats") {
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats);
+    } else if (fontFamily === "TimesRoman") {
+      // Legacy support for old naming
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
+    } else {
+      // Default fallback
+      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    }
 
     const form = pdfDoc.getForm();
 
@@ -522,11 +585,6 @@ class PDFGenerator {
     if (fill && fill !== "transparent") {
       if (fill.startsWith("rgba(")) {
         // Parse rgba(r, g, b, a) format
-        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
-        /**
-         * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
-         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and allow transparent/semi-transparent background fills on link annotations.
-         */
         const rgba = fill.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
         if (rgba) {
           fillColor = {

@@ -1,3 +1,0 @@
-- Standardized `uploadPropertyPanel` to `updatePropertyPanel` (Noun drift)
-- Standardized `pendingImageData` to `pendingImageParams` (Ambiguous variable)
-- Standardized `pendingLinkData` to `pendingLinkParams` (Ambiguous variable)

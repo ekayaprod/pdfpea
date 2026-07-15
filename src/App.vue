@@ -608,7 +608,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'select' }"
             @click="selectTool('select')"
-            title="Select Tool - Select and move components"
+            title="Select Tool - Click and drag to select and move components"
           >
             <i class="fa-solid fa-mouse-pointer"></i>
           </div>
@@ -617,7 +617,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'text' }"
             @click="selectTool('text')"
-            title="Text Tool - Add text to the document"
+            title="Text Tool - Click to add text to the document"
           >
             <i class="fa-solid fa-font"></i>
           </div>
@@ -626,7 +626,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'image' }"
             @click="selectTool('image')"
-            title="Image Tool - Add images to the document"
+            title="Image Tool - Click and drag to add images to the document"
           >
             <i class="fa-regular fa-image"></i>
           </div>
@@ -635,7 +635,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'rectangle' }"
             @click="selectTool('rectangle')"
-            title="Rectangle Tool - Draw rectangles"
+            title="Rectangle Tool - Click and drag to draw rectangles"
           >
             <i class="fa-regular fa-square"></i>
           </div>
@@ -644,7 +644,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'circle' }"
             @click="selectTool('circle')"
-            title="Circle Tool - Draw circles and ellipses"
+            title="Circle Tool - Click and drag to draw circles and ellipses"
           >
             <i class="fa-regular fa-circle"></i>
           </div>
@@ -653,7 +653,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'white-out' }"
             @click="selectTool('white-out')"
-            title="White-out Tool - Cover text with white rectangles"
+            title="White-out Tool - Click and drag to cover text with white rectangles"
           >
             <i class="fa fa-window-close-o" aria-hidden="true"></i>
           </div>
@@ -662,7 +662,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'highlight' }"
             @click="selectTool('highlight')"
-            title="Highlight Tool - Highlight text with colored rectangles"
+            title="Highlight Tool - Click and drag to highlight text with colored rectangles"
           >
             <img
               src="/images/highlight.svg"
@@ -676,7 +676,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'link' }"
             @click="selectTool('link')"
-            title="Link Tool - Add hyperlinks or page links to the document"
+            title="Link Tool - Click and drag to add hyperlinks or page links to the document"
           >
             <i class="fa-solid fa-link"></i>
           </div>
@@ -685,7 +685,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'line' }"
             @click="selectTool('line')"
-            title="Line Tool - Draw straight lines. Hold Shift for horizontal/vertical lines"
+            title="Line Tool - Click and drag to draw straight lines. Hold Shift for horizontal/vertical lines"
           >
             <i class="fa-solid fa-minus"></i>
           </div>
@@ -694,7 +694,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'freehand' }"
             @click="selectTool('freehand')"
-            title="Freehand Tool - Draw freehand lines and shapes"
+            title="Freehand Tool - Click and drag to draw freehand lines and shapes"
           >
             <i class="fa-solid fa-pencil"></i>
           </div>
@@ -703,7 +703,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'measure' }"
             @click="selectTool('measure')"
-            title="Measurement Tool - Select two points to measure distance. Hold Shift for horizontal/vertical measurements"
+            title="Measurement Tool - Click two points to measure distance. Hold Shift for horizontal/vertical measurements"
           >
             <i class="fa-solid fa-ruler"></i>
           </div>
@@ -712,7 +712,7 @@
             class="body-tool"
             :class="{ active: selectedTool === 'date' }"
             @click="selectTool('date')"
-            title="Date Tool - Add a text element with the current date (YYYY-MM-DD)"
+            title="Date Tool - Click to add a text element with the current date (YYYY-MM-DD)"
           >
             <i class="fa-regular fa-calendar"></i>
           </div>
@@ -872,7 +872,6 @@
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
 import ImageDialog from "./components/ImageDialog.vue";
-import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
 
@@ -907,37 +906,37 @@ export default {
     const iconTools = ref([
       {
         id: "tick",
-        title: "Tick Tool - Add checkmark icons to the document",
+        title: "Tick Tool - Click to add checkmark icons to the document",
         icon: "/images/tick.svg",
         alt: "svg-tick",
       },
       {
         id: "cross",
-        title: "Cross Tool - Add cross/X mark icons to the document",
+        title: "Cross Tool - Click to add cross/X mark icons to the document",
         icon: "/images/cross.svg",
         alt: "svg-cross",
       },
       {
         id: "star",
-        title: "Star Tool - Add star icons to the document",
+        title: "Star Tool - Click to add star icons to the document",
         icon: "/images/star.svg",
         alt: "svg-star",
       },
       {
         id: "thumb-up",
-        title: "Thumbs Up Tool - Add thumbs up icons to the document",
+        title: "Thumbs Up Tool - Click to add thumbs up icons to the document",
         icon: "/images/thumb-up.svg",
         alt: "svg-thumb-up",
       },
       {
         id: "thumb-down",
-        title: "Thumbs Down Tool - Add thumbs down icons to the document",
+        title: "Thumbs Down Tool - Click to add thumbs down icons to the document",
         icon: "/images/thumb-down.svg",
         alt: "svg-thumb-down",
       },
       {
         id: "love",
-        title: "Heart Tool - Add heart icons to the document",
+        title: "Heart Tool - Click to add heart icons to the document",
         icon: "/images/love.svg",
         alt: "svg-love",
       },
@@ -1016,11 +1015,11 @@ export default {
 
     // Image dialog state - simplified
     const showImageDialog = ref(false);
-    const pendingImageParams = ref(null);
+    const pendingImageData = ref(null);
 
     // Link dialog state
     const showLinkDialog = ref(false);
-    const pendingLinkParams = ref(null);
+    const pendingLinkData = ref(null);
 
     // Config dropdown state
     const showConfigDropdown = ref(false);
@@ -1038,14 +1037,14 @@ export default {
 
     // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
-      pendingImageParams.value = { page, id, x, y, width, height };
+      pendingImageData.value = { page, id, x, y, width, height };
       showImageDialog.value = true;
     };
 
     const handleImageConfirm = (imageDataUrl) => {
-      if (!pendingImageParams.value) return;
+      if (!pendingImageData.value) return;
 
-      const { page, id, x, y, width, height } = pendingImageParams.value;
+      const { page, id, x, y, width, height } = pendingImageData.value;
 
       // Create image component with base64 data
       const component = page.createComponentWithDimensions(
@@ -1062,25 +1061,25 @@ export default {
       //  component.setSelected(true);
       //}
 
-      pendingImageParams.value = null;
+      pendingImageData.value = null;
     };
 
     const closeImageDialog = () => {
       showImageDialog.value = false;
-      pendingImageParams.value = null;
+      pendingImageData.value = null;
     };
 
     // Link dialog functions
     const openLinkDialog = (page, id, x, y, width, height) => {
-      pendingLinkParams.value = { page, id, x, y, width, height };
+      pendingLinkData.value = { page, id, x, y, width, height };
       showLinkDialog.value = true;
     };
 
     const handleLinkConfirm = ({ type, value }) => {
       console.log(`handleLinkConfirm`);
-      if (!pendingLinkParams.value) return;
+      if (!pendingLinkData.value) return;
 
-      const { page, id, x, y, width, height } = pendingLinkParams.value;
+      const { page, id, x, y, width, height } = pendingLinkData.value;
 
       // Create link component
       const component = page.createComponentWithDimensions(
@@ -1100,12 +1099,12 @@ export default {
         height,
       );
 
-      pendingLinkParams.value = null;
+      pendingLinkData.value = null;
     };
 
     const closeLinkDialog = () => {
       showLinkDialog.value = false;
-      pendingLinkParams.value = null;
+      pendingLinkData.value = null;
     };
 
     // Config dropdown functions
@@ -1367,7 +1366,7 @@ export default {
 
             // For icon tools, create component immediately with default size
             if (iconTools.value.some((tool) => tool.id === selectedTool.value)) {
-              const id = generateId();
+              const id = Math.random().toString(36).substring(2, 11);
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1400,7 +1399,7 @@ export default {
                 return;
               }
 
-              const id = generateId();
+              const id = Math.random().toString(36).substring(2, 11);
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1435,7 +1434,7 @@ export default {
                 return;
               }
 
-              const id = generateId();
+              const id = Math.random().toString(36).substring(2, 11);
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -1757,7 +1756,7 @@ export default {
                 );
 
                 if (boundingBox) {
-                  const id = generateId();
+                  const id = Math.random().toString(36).substring(2, 11);
                   const component = page.createComponentWithDimensions(
                     "image",
                     { subType: "freehand", url: svgDataUrl },
@@ -1823,7 +1822,7 @@ export default {
                   );
 
                   if (boundingBox) {
-                    const id = generateId();
+                    const id = Math.random().toString(36).substring(2, 11);
                     const component = page.createComponentWithDimensions(
                       "image",
                       { subType: "line", url: svgDataUrl },
@@ -1862,7 +1861,7 @@ export default {
 
             // Only create component if there's a meaningful size
             if (width > 5 && height > 5) {
-              const id = generateId();
+              const id = Math.random().toString(36).substring(2, 11);
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
 
@@ -2278,7 +2277,7 @@ export default {
       }
     };
 
-    const updatePropertyPanel = (e) => {
+    const uploadPropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
       if (e.detail.target && e.detail.target.wrapperContainer) {
         selectedLayerEl.value = e.detail.target.wrapperContainer;
@@ -2713,9 +2712,9 @@ export default {
         try {
           pdfEditor = new PDFEditor(pdfViewContainer.value);
 
-          document.addEventListener("pdfeditor.componentSelected", updatePropertyPanel);
-          document.addEventListener("pdfeditor.componentDragging", updatePropertyPanel);
-          document.addEventListener("pdfeditor.componentResizing", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentSelected", uploadPropertyPanel);
+          document.addEventListener("pdfeditor.componentDragging", uploadPropertyPanel);
+          document.addEventListener("pdfeditor.componentResizing", uploadPropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
 
           // Keep the Layers panel in sync as components are added/removed.
@@ -3101,11 +3100,11 @@ export default {
       iconOptions,
       linkOptions,
       showImageDialog,
-      pendingImageParams,
+      pendingImageData,
       openImageDialog,
       closeImageDialog,
       handleImageConfirm,
-      updatePropertyPanel,
+      uploadPropertyPanel,
       clearPropertyPanel,
       downloadConfig,
       clickRestoreConfigInput,
@@ -3120,7 +3119,7 @@ export default {
       loadIconCache,
       getColoredIcon,
       showLinkDialog,
-      pendingLinkParams,
+      pendingLinkData,
       openLinkDialog,
       handleLinkConfirm,
       closeLinkDialog,

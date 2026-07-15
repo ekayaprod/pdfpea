@@ -43,23 +43,26 @@ class PDFEditor {
           ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
           data: fileContents,
         }).promise;
-        // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, (_, i) => {
-          const pageNum = i + 1;
-          const pdfURL = fileName;
-          const pdfPageNumber = pageNum;
+        const promises = [];
 
-          const pdfPageContainer = document.createElement("div");
-          this.container.appendChild(pdfPageContainer);
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          const promise = await pdfDoc.getPage(pageNum).then(async () => {
+            const pdfURL = fileName;
+            const pdfPageNumber = pageNum;
 
-          const pdfPage = new PDFPage(pdfPageContainer);
-          // Wait for initialization to complete and return the page
-          return pdfPage.initialize(pdfURL, pdfPageNumber, fileContents).then(() => pdfPage);
-        });
+            const pdfPageContainer = document.createElement("div");
+            this.container.appendChild(pdfPageContainer);
 
-        // Await all page renders simultaneously instead of sequential blocking
-        const pages = await Promise.all(promises);
-        this.pdfPages.push(...pages);
+            const pdfPage = new PDFPage(pdfPageContainer);
+            await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+
+            this.pdfPages.push(pdfPage);
+          });
+
+          promises.push(promise);
+        }
+
+        await Promise.all(promises);
         resolve();
       } catch (error) {
         console.error("Error processing PDF:", error);

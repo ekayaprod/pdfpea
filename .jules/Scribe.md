@@ -1,6 +1,3 @@
 - Injected JSDoc for `getImageType` in `src/js/PDFGenerator.js` explaining magic numbers.
 - Injected JSDoc for `catmullRomInterpolate` in `src/utils/FreehandDrawing.js` explaining math coefficients.
-- Injected AST-driven JSDoc for `pathRegex` in `src/js/PDFGenerator.js` explaining SVG path extraction.
-- Injected AST-driven JSDoc for `rgba` regex in `src/js/PDFGenerator.js` explaining color channel parsing.
-- Aggregated recent git commit a36a5ae (elevate UI copy) into CHANGELOG.md
 - Aggregated recent git commit 7c1af7e (format code) into CHANGELOG.md
