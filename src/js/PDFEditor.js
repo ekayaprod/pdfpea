@@ -16,9 +16,7 @@ import {
   CheckboxOperationComponent,
   LinkOperationComponent,
 } from "./OperationComponents.js";
-
 import { PDFGenerator } from "./PDFGenerator.js";
-
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
@@ -27,21 +25,17 @@ import {
   EVENTS,
   IMAGE_PATHS,
 } from "./constants.js";
-
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {
   cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
   iccUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/iccs/`,
   wasmUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/wasm/`,
 };
-
 class PDFEditor {
   container = null;
   pdfPages = [];
-
   constructor(container) {
     this.container = container;
   }
-
   async renderPDF(fileName, fileContents) {
     this.fileContents = fileContents;
     this.pdfPages = [];
@@ -56,15 +50,12 @@ class PDFEditor {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
-
           const pdfPageContainer = document.createElement("div");
           this.container.appendChild(pdfPageContainer);
-
           const pdfPage = new PDFPage(pdfPageContainer);
           // Wait for initialization to complete and return the page
           return pdfPage.initialize(pdfURL, pdfPageNumber, fileContents).then(() => pdfPage);
         });
-
         // Await all page renders simultaneously instead of sequential blocking
         const pages = await Promise.all(promises);
         this.pdfPages.push(...pages);
@@ -75,38 +66,30 @@ class PDFEditor {
       }
     });
   }
-
   async downloadPDF() {
     const pageOperations = this.pdfPages.map((page) => ({
       pageNumber: page.pageNumber,
       operations: page.getOperations(),
     }));
-
     return await PDFGenerator.generatePDF(this.fileContents, pageOperations);
   }
-
   applyZoom(zoomLevel) {
-    console.log("Applying zoom level:", zoomLevel);
     this.pdfPages.forEach((page) => {
       page.applyZoom(zoomLevel);
     });
   }
 }
-
 class PDFPage {
   constructor(container) {
     this.container = container;
     this.container.classList.add("pdf-page");
-
     this.canvas = document.createElement("canvas");
     this.canvas.setAttribute("id", "body-pdf-canvas");
     this.canvas.setAttribute("class", "body-pdf-canvas");
     this.canvas.style.display = "block";
     this.context = this.canvas.getContext("2d");
-
     this.setupEventListeners();
   }
-
   setupEventListeners() {
     // Basic click handler for selection - drawing handlers will be added by App.vue
     this.canvas.addEventListener("click", (event) => {
@@ -114,25 +97,20 @@ class PDFPage {
       this.setSelected();
     });
   }
-
   rgbToHex(red, green, blue) {
     const redHex = red.toString(16).padStart(2, "0");
     const greenHex = green.toString(16).padStart(2, "0");
     const blueHex = blue.toString(16).padStart(2, "0");
-
     return `#${redHex}${greenHex}${blueHex}`;
   }
-
   async initialize(pdfURL, pageNumber, fileContents) {
     const scale = DEFAULT_VALUES.SCALE;
     // Render the canvas at a higher resolution than the layout scale. This only
     // affects the canvas backing store, not the on-screen size or form-field
     // coordinate math (which keep using the layout `viewport`).
     const renderScale = scale * DEFAULT_VALUES.RENDER_RESOLUTION_MULTIPLIER;
-
     this.pdfURL = pdfURL;
     this.pageNumber = pageNumber;
-
     try {
       const pdfDoc = await pdfjsLib.getDocument({
         ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
@@ -141,31 +119,24 @@ class PDFPage {
       const page = await pdfDoc.getPage(pageNumber);
       const viewport = page.getViewport({ scale });
       const renderViewport = page.getViewport({ scale: renderScale });
-
       // Set canvas backing store to the high-resolution viewport size
       this.canvas.height = renderViewport.height;
       this.canvas.width = renderViewport.width;
-
       // Set container style to display size (independent of render resolution)
       const displayHeight = viewport.height / scale;
       const displayWidth = viewport.width / scale;
       this.container.style.height = `${displayHeight}px`;
       this.container.style.width = `${displayWidth}px`;
-
       // Scale canvas style to fit container
       this.canvas.style.height = `${displayHeight}px`;
       this.canvas.style.width = `${displayWidth}px`;
-
       this.container.appendChild(this.canvas);
-
       const formFields = await page.getAnnotations();
-
       await page.render({
         annotationMode: pdfjsLib.AnnotationMode.DISABLE,
         canvasContext: this.context,
         viewport: renderViewport,
       });
-
       this.processFormFields(formFields, viewport);
     } catch (error) {
       console.error("Error initializing PDF page:", {
@@ -176,7 +147,6 @@ class PDFPage {
       throw new PDFInitializationError("Failed to initialize PDF page", { cause: error });
     }
   }
-
   processFormFields(formFields, viewport) {
     for (let field of formFields) {
       if (field.fieldType === FIELD_TYPES.TEXT_FIELD) {
@@ -186,7 +156,6 @@ class PDFPage {
       }
     }
   }
-
   createTextFieldFromPDF(field, viewport) {
     const rect = field.rect;
     const id = field.fieldName;
@@ -210,12 +179,10 @@ class PDFPage {
     const fontFamily = field.defaultAppearanceData.fontName;
     const fontSize = field.defaultAppearanceData.fontSize;
     const text = field.fieldValue;
-
     const isRequired = field.required;
     const isMultiline = field.multiLine;
     const isReadOnly = field.readOnly;
     const maxLength = field.maxLen;
-
     const alignment =
       field.textAlignment === 0
         ? ALIGNMENT.LEFT
@@ -224,7 +191,6 @@ class PDFPage {
           : field.textAlignment === 2
             ? ALIGNMENT.RIGHT
             : ALIGNMENT.LEFT;
-
     new TextFieldOperationComponent(
       TextFieldOperationComponent.updateDefaultOperation(
         id,
@@ -248,7 +214,6 @@ class PDFPage {
       this.container,
     );
   }
-
   createCheckboxFromPDF(field, viewport) {
     const rect = field.rect;
     const id = field.fieldName;
@@ -271,7 +236,6 @@ class PDFPage {
     );
     const isChecked = field.fieldFlags === 1;
     const isReadOnly = field.readOnly;
-
     new CheckboxOperationComponent(
       CheckboxOperationComponent.updateDefaultOperation(
         id,
@@ -289,7 +253,6 @@ class PDFPage {
       this.container,
     );
   }
-
   createComponentWithDimensions(toolType, settings, id, x, y, width, height) {
     switch (toolType) {
       case COMPONENT_TYPES.CIRCLE:
@@ -318,7 +281,6 @@ class PDFPage {
             this.container,
           );
         }
-
       case COMPONENT_TYPES.RECTANGLE:
         if (settings?.subType === "highlight") {
           return new RectangleOperationComponent(
@@ -376,7 +338,6 @@ class PDFPage {
             this.container,
           );
         }
-
       case COMPONENT_TYPES.TEXT:
         if (settings?.fontFamily || settings?.fontSize || settings?.color || settings?.opacity) {
           return new TextOperationComponent(
@@ -399,7 +360,6 @@ class PDFPage {
             this.container,
           );
         }
-
       case COMPONENT_TYPES.IMAGE:
         if (settings?.subType === "icon") {
           return new ImageOperationComponent(
@@ -462,19 +422,16 @@ class PDFPage {
             this.container,
           );
         }
-
       case COMPONENT_TYPES.TEXT_FIELD:
         return new TextFieldOperationComponent(
           TextFieldOperationComponent.createDefaultOperation(id, x, y, width, height),
           this.container,
         );
-
       case COMPONENT_TYPES.CHECKBOX:
         return new CheckboxOperationComponent(
           CheckboxOperationComponent.createDefaultOperation(id, x, y, width, height),
           this.container,
         );
-
       case COMPONENT_TYPES.LINK:
         return new LinkOperationComponent(
           LinkOperationComponent.createDefaultOperation(
@@ -492,21 +449,17 @@ class PDFPage {
           ),
           this.container,
         );
-
       default:
         return null;
     }
   }
-
   getOperations = () => {
     const components = Array.from(this.container.getElementsByClassName("component"));
     return components.map((element) => element.operation);
   };
-
   setSelected = () => {
     this.fireEvent(EVENTS.SHOULD_CLEAR_ALL_SELECTION);
   };
-
   fireEvent = (eventName) => {
     const event = new CustomEvent(eventName, {
       detail: {
@@ -515,26 +468,20 @@ class PDFPage {
       bubbles: true,
       cancelable: true,
     });
-
     document.dispatchEvent(event);
   };
-
   applyZoom(zoomLevel) {
-    console.log("Applying zoom to page:", this.pageNumber, "zoom:", zoomLevel);
     this.container.style.transform = `scale(${zoomLevel})`;
     this.container.style.transformOrigin = "top left";
-
     // Calculate the actual dimensions after scaling
     const originalHeight = this.container.offsetHeight;
     const originalWidth = this.container.offsetWidth;
     const scaledHeight = originalHeight * zoomLevel;
     const scaledWidth = originalWidth * zoomLevel;
-
     // Set margins to account for the increased size after scaling
     // This ensures the next page is pushed down by the full scaled height
     this.container.style.marginBottom = `${scaledHeight - originalHeight + 20}px`; // +20px for gap between pages
     this.container.style.marginRight = `${scaledWidth - originalWidth}px`;
   }
 }
-
 export { PDFEditor };
