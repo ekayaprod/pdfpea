@@ -30,7 +30,7 @@ describe("PDFEditor", () => {
 
     // Make getDocument return an object with a rejecting promise
     pdfjsLib.getDocument.mockReturnValueOnce({
-      promise: Promise.reject(new Error("Mocked PDF error"))
+      promise: Promise.reject(new Error("Mocked PDF error")),
     });
 
     let error = null;
