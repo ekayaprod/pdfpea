@@ -17,8 +17,10 @@ class ImageOperationComponent extends BasicOperationComponent {
     switch (property) {
       case "imageHeight":
         this.shadow.style.height = `${value}%`;
+        break;
       case "imageWidth":
         this.shadow.style.width = `${value}%`;
+        break;
       case "opacity":
         this.shadow.style.opacity = value;
         break;
