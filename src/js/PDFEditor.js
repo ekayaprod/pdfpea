@@ -29,6 +29,9 @@ class PDFEditor {
     this.container = container;
   }
   async renderPDF(fileName, fileContents) {
+    if (fileName == null || fileContents == null) {
+      return Promise.reject(new Error("Cannot be null"));
+    }
     this.fileContents = fileContents;
     this.pdfPages = [];
     return new Promise(async (resolve, reject) => {

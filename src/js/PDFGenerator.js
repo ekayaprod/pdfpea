@@ -142,6 +142,9 @@ class PDFGenerator {
     });
   }
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
+    if (!pdfDoc || !pdfPage || !operation || !operation.url) {
+      throw new Error("Cannot be null");
+    }
     const pageHeight = pdfPage.getHeight();
     const { x, y, width, height, opacity: opacityStr, url } = operation;
     const opacity = parseFloat(opacityStr, 10);
