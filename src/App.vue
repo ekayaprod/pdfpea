@@ -1015,11 +1015,11 @@ export default {
 
     // Image dialog state - simplified
     const showImageDialog = ref(false);
-    const pendingImageData = ref(null);
+    const pendingImageParams = ref(null);
 
     // Link dialog state
     const showLinkDialog = ref(false);
-    const pendingLinkData = ref(null);
+    const pendingLinkParams = ref(null);
 
     // Config dropdown state
     const showConfigDropdown = ref(false);
@@ -1037,14 +1037,14 @@ export default {
 
     // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
-      pendingImageData.value = { page, id, x, y, width, height };
+      pendingImageParams.value = { page, id, x, y, width, height };
       showImageDialog.value = true;
     };
 
     const handleImageConfirm = (imageDataUrl) => {
-      if (!pendingImageData.value) return;
+      if (!pendingImageParams.value) return;
 
-      const { page, id, x, y, width, height } = pendingImageData.value;
+      const { page, id, x, y, width, height } = pendingImageParams.value;
 
       // Create image component with base64 data
       const component = page.createComponentWithDimensions(
@@ -1061,25 +1061,25 @@ export default {
       //  component.setSelected(true);
       //}
 
-      pendingImageData.value = null;
+      pendingImageParams.value = null;
     };
 
     const closeImageDialog = () => {
       showImageDialog.value = false;
-      pendingImageData.value = null;
+      pendingImageParams.value = null;
     };
 
     // Link dialog functions
     const openLinkDialog = (page, id, x, y, width, height) => {
-      pendingLinkData.value = { page, id, x, y, width, height };
+      pendingLinkParams.value = { page, id, x, y, width, height };
       showLinkDialog.value = true;
     };
 
     const handleLinkConfirm = ({ type, value }) => {
       console.log(`handleLinkConfirm`);
-      if (!pendingLinkData.value) return;
+      if (!pendingLinkParams.value) return;
 
-      const { page, id, x, y, width, height } = pendingLinkData.value;
+      const { page, id, x, y, width, height } = pendingLinkParams.value;
 
       // Create link component
       const component = page.createComponentWithDimensions(
@@ -1099,12 +1099,12 @@ export default {
         height,
       );
 
-      pendingLinkData.value = null;
+      pendingLinkParams.value = null;
     };
 
     const closeLinkDialog = () => {
       showLinkDialog.value = false;
-      pendingLinkData.value = null;
+      pendingLinkParams.value = null;
     };
 
     // Config dropdown functions
@@ -2277,7 +2277,7 @@ export default {
       }
     };
 
-    const uploadPropertyPanel = (e) => {
+    const updatePropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
       if (e.detail.target && e.detail.target.wrapperContainer) {
         selectedLayerEl.value = e.detail.target.wrapperContainer;
@@ -2712,9 +2712,9 @@ export default {
         try {
           pdfEditor = new PDFEditor(pdfViewContainer.value);
 
-          document.addEventListener("pdfeditor.componentSelected", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentDragging", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentResizing", uploadPropertyPanel);
+          document.addEventListener("pdfeditor.componentSelected", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentDragging", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentResizing", updatePropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
 
           // Keep the Layers panel in sync as components are added/removed.
@@ -3100,11 +3100,11 @@ export default {
       iconOptions,
       linkOptions,
       showImageDialog,
-      pendingImageData,
+      pendingImageParams,
       openImageDialog,
       closeImageDialog,
       handleImageConfirm,
-      uploadPropertyPanel,
+      updatePropertyPanel,
       clearPropertyPanel,
       downloadConfig,
       clickRestoreConfigInput,
@@ -3119,7 +3119,7 @@ export default {
       loadIconCache,
       getColoredIcon,
       showLinkDialog,
-      pendingLinkData,
+      pendingLinkParams,
       openLinkDialog,
       handleLinkConfirm,
       closeLinkDialog,
