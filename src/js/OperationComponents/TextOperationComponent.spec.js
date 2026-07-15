@@ -54,10 +54,10 @@ describe("TextOperationComponent", () => {
 
     expect(String(comp.shadow.contentEditable)).toBe("false");
 
-    vi.spyOn(comp.shadow, 'focus');
+    vi.spyOn(comp.shadow, "focus");
 
-    const event = new MouseEvent('dblclick');
-    vi.spyOn(event, 'stopPropagation');
+    const event = new MouseEvent("dblclick");
+    vi.spyOn(event, "stopPropagation");
 
     comp.wrapperContainer.dispatchEvent(event);
 
@@ -78,8 +78,8 @@ describe("TextOperationComponent", () => {
     const setSelectedSpy = vi.fn();
     comp.setSelected = setSelectedSpy;
 
-    const event = new Event('blur');
-    vi.spyOn(event, 'stopPropagation');
+    const event = new Event("blur");
+    vi.spyOn(event, "stopPropagation");
 
     comp.shadow.dispatchEvent(event);
 
@@ -100,11 +100,11 @@ describe("TextOperationComponent", () => {
     comp.shadow.style.fontFamily = "Arial";
 
     const originalCreateElement = document.createElement.bind(document);
-    const createElementSpy = vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+    const createElementSpy = vi.spyOn(document, "createElement").mockImplementation((tag) => {
       const el = originalCreateElement(tag);
-      if (tag === 'div') {
-        Object.defineProperty(el, 'offsetWidth', { value: 100, configurable: true });
-        Object.defineProperty(el, 'offsetHeight', { value: 30, configurable: true });
+      if (tag === "div") {
+        Object.defineProperty(el, "offsetWidth", { value: 100, configurable: true });
+        Object.defineProperty(el, "offsetHeight", { value: 30, configurable: true });
       }
       return el;
     });
@@ -124,45 +124,45 @@ describe("TextOperationComponent", () => {
 
   it("should handle operationChanged for various properties", () => {
     const comp = new TextOperationComponent(operation, canvasContainer);
-    vi.spyOn(comp, 'updateSize');
+    vi.spyOn(comp, "updateSize");
 
     // text
-    comp.operationChanged('text', 'new text content');
-    expect(comp.shadow.innerText).toBe('new text content');
+    comp.operationChanged("text", "new text content");
+    expect(comp.shadow.innerText).toBe("new text content");
     expect(comp.updateSize).toHaveBeenCalledTimes(1);
 
     // color
-    comp.operationChanged('color', '#ff0000');
-    expect(comp.shadow.style.color).toBe('rgb(255, 0, 0)'); // JSDOM normalizes hex to rgb
+    comp.operationChanged("color", "#ff0000");
+    expect(comp.shadow.style.color).toBe("rgb(255, 0, 0)"); // JSDOM normalizes hex to rgb
 
     // fontSize
-    comp.operationChanged('fontSize', '24');
-    expect(comp.shadow.style.fontSize).toBe('24px');
+    comp.operationChanged("fontSize", "24");
+    expect(comp.shadow.style.fontSize).toBe("24px");
     expect(comp.updateSize).toHaveBeenCalledTimes(2);
 
     // fontFamily
-    comp.operationChanged('fontFamily', 'Courier');
-    expect(comp.shadow.style.fontFamily).toBe('Courier');
+    comp.operationChanged("fontFamily", "Courier");
+    expect(comp.shadow.style.fontFamily).toBe("Courier");
     expect(comp.updateSize).toHaveBeenCalledTimes(3);
 
     // opacity
-    comp.operationChanged('opacity', '0.5');
-    expect(comp.shadow.style.opacity).toBe('0.5');
+    comp.operationChanged("opacity", "0.5");
+    expect(comp.shadow.style.opacity).toBe("0.5");
 
     // lineHeight
-    comp.operationChanged('lineHeight', '1.5');
-    expect(comp.shadow.style.lineHeight).toBe('1.5');
+    comp.operationChanged("lineHeight", "1.5");
+    expect(comp.shadow.style.lineHeight).toBe("1.5");
 
     // wordBreak
-    comp.operationChanged('wordBreak', 'break-word');
-    expect(comp.shadow.style.whiteSpace).toBe('pre-wrap');
-    expect(comp.shadow.style.wordBreak).toBe('break-word');
+    comp.operationChanged("wordBreak", "break-word");
+    expect(comp.shadow.style.whiteSpace).toBe("pre-wrap");
+    expect(comp.shadow.style.wordBreak).toBe("break-word");
   });
 
   it("should setup Moveable with resizable: false and drag events in makeMoveable", () => {
     const comp = new TextOperationComponent(operation, canvasContainer);
 
-    vi.spyOn(comp, 'createDeleteAble').mockReturnValue('mock-delete-able');
+    vi.spyOn(comp, "createDeleteAble").mockReturnValue("mock-delete-able");
 
     comp.makeMoveable();
 
@@ -174,25 +174,33 @@ describe("TextOperationComponent", () => {
 
     // Test the drag event logic
     const onCalls = comp.wrapperContainer.moveable.on.mock.calls;
-    const dragCall = onCalls.find(call => call[0] === 'drag');
+    const dragCall = onCalls.find((call) => call[0] === "drag");
     expect(dragCall).toBeDefined();
 
     const dragHandler = dragCall[1];
-    vi.spyOn(comp, 'fireEvent').mockImplementation(() => {});
+    vi.spyOn(comp, "fireEvent").mockImplementation(() => {});
 
-    const mockTarget = { style: { left: '', top: '' } };
+    const mockTarget = { style: { left: "", top: "" } };
     dragHandler({ target: mockTarget, left: 100, top: 200 });
 
-    expect(mockTarget.style.left).toBe('100px');
-    expect(mockTarget.style.top).toBe('200px');
+    expect(mockTarget.style.left).toBe("100px");
+    expect(mockTarget.style.top).toBe("200px");
     expect(comp.operation.x).toBe(100);
     expect(comp.operation.y).toBe(200);
-    expect(comp.fireEvent).toHaveBeenCalledWith('pdfeditor.componentDragging');
+    expect(comp.fireEvent).toHaveBeenCalledWith("pdfeditor.componentDragging");
   });
 
   it("should create a valid default operation", () => {
     const defaultOp = TextOperationComponent.createDefaultOperation(
-      "test-id", 50, 60, 200, 30, "Times New Roman", 20, "#ff0000", 0.8
+      "test-id",
+      50,
+      60,
+      200,
+      30,
+      "Times New Roman",
+      20,
+      "#ff0000",
+      0.8,
     );
 
     expect(defaultOp).toEqual({
