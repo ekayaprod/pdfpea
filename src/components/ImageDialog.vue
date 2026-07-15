@@ -192,7 +192,8 @@ export default {
 
         preview.value = canvas.toDataURL("image/png");
       } catch (error) {
-        error.value = "Unable to load the image from the provided URL. Verify the link and try again.";
+        error.value =
+          "Unable to load the image from the provided URL. Verify the link and try again.";
       }
     };
 

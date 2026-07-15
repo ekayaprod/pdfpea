@@ -2172,7 +2172,10 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config from dropped file:", error);
-        showToast("Unable to restore configuration. Verify the file format and try again.", "error");
+        showToast(
+          "Unable to restore configuration. Verify the file format and try again.",
+          "error",
+        );
       }
     };
 
@@ -2274,7 +2277,10 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config:", error);
-        showToast("Unable to restore configuration. Verify the file format and try again.", "error");
+        showToast(
+          "Unable to restore configuration. Verify the file format and try again.",
+          "error",
+        );
       }
     };
 
