@@ -8,7 +8,10 @@ describe("FreehandDrawing - Pure Functions Boundary Stress Tests", () => {
   });
 
   it("smoothPath handles insufficient points gracefully", () => {
-    const shortPath = [{ x: 10, y: 10 }, { x: 20, y: 20 }];
+    const shortPath = [
+      { x: 10, y: 10 },
+      { x: 20, y: 20 },
+    ];
     const result = freehandDrawing.smoothPath(shortPath, 5);
     expect(result).toEqual(shortPath);
   });
