@@ -151,7 +151,8 @@ class PDFGenerator {
     const standardFont = PDFLib.StandardFonts[fontKey] || PDFLib.StandardFonts.Helvetica;
     const embedFont = await pdfDoc.embedFont(standardFont);
 
-    const wordBreaks = fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
+    const wordBreaks =
+      fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
 
     await pdfPage.drawText(text, {
       x: x + xPadding,
