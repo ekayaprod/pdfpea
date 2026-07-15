@@ -6,8 +6,8 @@ vi.mock("moveable", () => {
     default: vi.fn().mockImplementation(() => ({
       on: vi.fn(),
       updateRect: vi.fn(),
-      destroy: vi.fn()
-    }))
+      destroy: vi.fn(),
+    })),
   };
 });
 
@@ -25,7 +25,7 @@ describe("LinkOperationComponent", () => {
       height: 100,
       width: 100,
       operation: "create",
-      linkValue: "https://example.com"
+      linkValue: "https://example.com",
     };
   });
 
@@ -33,7 +33,14 @@ describe("LinkOperationComponent", () => {
     document.body.innerHTML = "";
   });
 
+  it("should create successfully with valid operation", () => {
+    const comp = new LinkOperationComponent(operation, canvasContainer);
+    expect(comp).toBeDefined();
+  });
+
   it("should aggressively reject null urls for links", () => {
-    expect(() => new LinkOperationComponent({ ...operation, linkValue: null }, canvasContainer)).toThrow(TypeError);
+    expect(
+      () => new LinkOperationComponent({ ...operation, linkValue: null }, canvasContainer),
+    ).toThrow(TypeError);
   });
 });

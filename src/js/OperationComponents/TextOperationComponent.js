@@ -6,7 +6,7 @@ class TextOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
     if (!operation || operation.text == null) {
-        throw new TypeError("TextOperationComponent: text cannot be null or undefined");
+      throw new TypeError("TextOperationComponent: text cannot be null or undefined");
     }
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");

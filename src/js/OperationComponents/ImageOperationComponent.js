@@ -3,8 +3,8 @@ import { BasicOperationComponent } from "./BasicOperationComponent.js";
 class ImageOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-    if (!operation || (!operation.url && !operation.src)) {
-        throw new TypeError("ImageOperationComponent: image operation must have a url");
+    if (!operation) {
+      throw new TypeError("ImageOperationComponent: image operation must exist");
     }
     const url = "/images/default_image.jpg";
     this.shadow = document.createElement("img");

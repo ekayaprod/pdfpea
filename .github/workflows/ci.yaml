@@ -15,16 +15,13 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24.x]
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: latest
           cache: npm
 
       - name: Install node_modules

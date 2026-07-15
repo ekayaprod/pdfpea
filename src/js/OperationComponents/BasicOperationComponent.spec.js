@@ -6,8 +6,8 @@ vi.mock("moveable", () => {
     default: vi.fn().mockImplementation(() => ({
       on: vi.fn(),
       updateRect: vi.fn(),
-      destroy: vi.fn()
-    }))
+      destroy: vi.fn(),
+    })),
   };
 });
 
@@ -24,7 +24,7 @@ describe("BasicOperationComponent", () => {
       y: 20,
       height: 100,
       width: 100,
-      operation: "create"
+      operation: "create",
     };
   });
 

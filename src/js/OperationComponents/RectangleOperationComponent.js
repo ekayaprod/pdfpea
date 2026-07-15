@@ -3,7 +3,7 @@ import { BasicOperationComponent } from "./BasicOperationComponent.js";
 class RectangleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-    if (!operation || typeof operation.borderWidth === 'undefined') {
+    if (!operation || typeof operation.borderWidth === "undefined") {
       throw new TypeError("RectangleOperationComponent: operation must define a borderWidth");
     }
     this.shadow = document.createElement("div");
