@@ -3,6 +3,9 @@ import { BasicOperationComponent } from "./BasicOperationComponent.js";
 class LinkOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
+    if (!operation || operation.linkValue == null) {
+      throw new TypeError("LinkOperationComponent: linkValue cannot be null or empty");
+    }
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content", "link-component");
     // Add link visual indicator
