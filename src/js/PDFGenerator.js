@@ -1,20 +1,9 @@
 import svgpath from "svgpath";
+import { hexToRgb } from "./utils/colors.js";
 class PDFGenerator {
   constructor() {}
   static str2ab(binaryString) {
     return Uint8Array.from(binaryString, (char) => char.charCodeAt(0)).buffer;
-  }
-  static hexToRgb(hexString) {
-    hexString = hexString.replace("#", "");
-    const bigint = parseInt(hexString, 16);
-    const red = (bigint >> 16) & 255;
-    const green = (bigint >> 8) & 255;
-    const blue = bigint & 255;
-    return {
-      red: red / 255,
-      green: green / 255,
-      blue: blue / 255,
-    };
   }
   // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
   /**
@@ -117,7 +106,7 @@ class PDFGenerator {
     const y = operation.y;
     const fontFamily = operation.fontFamily;
     const fontSize = parseInt(operation.fontSize);
-    const fontColor = PDFGenerator.hexToRgb(operation.color);
+    const fontColor = hexToRgb(operation.color);
     const fontLineHeight = operation.fontSize * operation.lineHeight;
     const fontWordBreak = operation.wordBreak;
     const width = operation.width;
@@ -242,13 +231,13 @@ class PDFGenerator {
           // Determine fill color (path-specific > global > none)
           const fillColor = pathFillMatch?.[1] ?? globalFillMatch?.[1];
           if (fillColor && fillColor !== "none") {
-            const c = PDFGenerator.hexToRgb(fillColor);
+            const c = hexToRgb(fillColor);
             opts.color = PDFLib.rgb(c.red, c.green, c.blue);
           }
           // Determine stroke color (path-specific > global > none)
           const strokeColor = pathStrokeMatch?.[1] ?? globalStrokeMatch?.[1];
           if (strokeColor && strokeColor !== "none") {
-            const c = PDFGenerator.hexToRgb(strokeColor);
+            const c = hexToRgb(strokeColor);
             opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
           }
           // Determine stroke width (path-specific > global > default)
@@ -287,12 +276,12 @@ class PDFGenerator {
     const height = operation.height;
     const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth);
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
+    const borderColor = hexToRgb(operation.borderColor);
     const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
     const isTransparent =
       !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
-    const fillColor = isTransparent ? null : PDFGenerator.hexToRgb(fill);
+    const fillColor = isTransparent ? null : hexToRgb(fill);
     const rectangleOptions = {
       x: x + borderWidth / 2,
       y: operationPageHeight + borderWidth / 2 - y - height,
@@ -316,14 +305,14 @@ class PDFGenerator {
     const height = operation.height;
     const width = operation.width;
     const borderWidth = operation.borderWidth;
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
+    const borderColor = hexToRgb(operation.borderColor);
     const xScale = (width - borderWidth) / 2;
     const yScale = (height - borderWidth) / 2;
     const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
     const isTransparent =
       !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
-    const fillColor = isTransparent ? null : PDFGenerator.hexToRgb(fill);
+    const fillColor = isTransparent ? null : hexToRgb(fill);
     const ellipseOptions = {
       x: x + width / 2,
       y: operationPageHeight - y - height / 2,
@@ -350,11 +339,11 @@ class PDFGenerator {
     const width = operation.width;
     const text = operation.text;
     const borderWidth = parseFloat(operation.borderWidth, 10);
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
-    const fontColor = PDFGenerator.hexToRgb(operation.color);
+    const borderColor = hexToRgb(operation.borderColor);
+    const fontColor = hexToRgb(operation.color);
     const fontFamily = operation.fontFamily;
     const fontSize = parseFloat(operation.fontSize, 10);
-    const backgroundColor = PDFGenerator.hexToRgb(operation.backgroundColor);
+    const backgroundColor = hexToRgb(operation.backgroundColor);
     const maxLength = parseFloat(operation.maxLength, 10);
     const alignment = operation.alignment;
     const isRequired = operation.isRequired;
@@ -403,9 +392,9 @@ class PDFGenerator {
     const width = operation.width;
     const rotate = 0;
     const borderWidth = parseFloat(operation.borderWidth, 10);
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
-    const fontColor = PDFGenerator.hexToRgb(operation.color);
-    const backgroundColor = PDFGenerator.hexToRgb(operation.backgroundColor);
+    const borderColor = hexToRgb(operation.borderColor);
+    const fontColor = hexToRgb(operation.color);
+    const backgroundColor = hexToRgb(operation.backgroundColor);
     const isChecked = operation.isChecked;
     const isReadOnly = operation.isReadOnly;
     const form = pdfDoc.getForm();
@@ -432,7 +421,7 @@ class PDFGenerator {
     const height = operation.height;
     const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth) || 0;
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor ?? "#007acc");
+    const borderColor = hexToRgb(operation.borderColor ?? "#007acc");
     const fill = operation.fill ?? "rgba(0, 122, 204, 0.1)";
     const opacity = parseFloat(operation.opacity, 10) || 1.0;
     const linkType = operation.linkType;
@@ -458,7 +447,7 @@ class PDFGenerator {
         }
       } else if (fill.startsWith("#")) {
         // Parse hex color
-        const rgb = PDFGenerator.hexToRgb(fill);
+        const rgb = hexToRgb(fill);
         fillColor = { ...rgb, alpha: 1.0 };
       }
     }

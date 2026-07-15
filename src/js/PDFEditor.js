@@ -9,6 +9,7 @@ import {
   LinkOperationComponent,
 } from "./OperationComponents/index.js";
 import { PDFGenerator } from "./PDFGenerator.js";
+import { rgbToHex } from "./utils/colors.js";
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
@@ -93,12 +94,6 @@ class PDFPage {
       this.setSelected();
     });
   }
-  rgbToHex(red, green, blue) {
-    const redHex = red.toString(16).padStart(2, "0");
-    const greenHex = green.toString(16).padStart(2, "0");
-    const blueHex = blue.toString(16).padStart(2, "0");
-    return `#${redHex}${greenHex}${blueHex}`;
-  }
   async initialize(pdfURL, pageNumber, fileContents) {
     const scale = DEFAULT_VALUES.SCALE;
     // Render the canvas at a higher resolution than the layout scale. This only
@@ -156,13 +151,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
@@ -214,13 +205,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
