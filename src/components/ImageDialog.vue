@@ -63,7 +63,7 @@
 
         <div v-if="preview" class="image-preview-section">
           <h4>Preview:</h4>
-          <img :src="preview" alt="Preview" class="image-preview" />
+          <img :src="preview" alt="Preview" class="image-preview" loading="lazy" decoding="async" />
         </div>
 
         <div v-if="error" class="image-error">
