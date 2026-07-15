@@ -8,7 +8,10 @@ describe("FreehandDrawing - Pure Functions Boundary Stress Tests", () => {
   });
 
   it("smoothPath handles insufficient points gracefully", () => {
-    const shortPath = [{ x: 10, y: 10 }, { x: 20, y: 20 }];
+    const shortPath = [
+      { x: 10, y: 10 },
+      { x: 20, y: 20 },
+    ];
     const result = freehandDrawing.smoothPath(shortPath, 5);
     expect(result).toEqual(shortPath);
   });
@@ -83,7 +86,10 @@ describe("FreehandDrawing - Canvas and State Management", () => {
     expect(mockContext.moveTo).toHaveBeenCalledWith(10, 20);
 
     drawing.addPoint(30, 40);
-    expect(drawing.getCurrentPath()).toEqual([{ x: 10, y: 20 }, { x: 30, y: 40 }]);
+    expect(drawing.getCurrentPath()).toEqual([
+      { x: 10, y: 20 },
+      { x: 30, y: 40 },
+    ]);
   });
 
   it("resetPath clears the current path", () => {
@@ -95,7 +101,11 @@ describe("FreehandDrawing - Canvas and State Management", () => {
 
   it("drawPath strokes the path properly", () => {
     drawing.createCanvas(container);
-    drawing.drawPath([{ x: 10, y: 10 }, { x: 20, y: 20 }, { x: 30, y: 30 }]);
+    drawing.drawPath([
+      { x: 10, y: 10 },
+      { x: 20, y: 20 },
+      { x: 30, y: 30 },
+    ]);
 
     expect(mockContext.beginPath).toHaveBeenCalled();
     expect(mockContext.moveTo).toHaveBeenCalled();
@@ -115,7 +125,12 @@ describe("FreehandDrawing - Canvas and State Management", () => {
     drawing.createCanvas(container);
     drawing.clearCanvas();
 
-    expect(mockContext.clearRect).toHaveBeenCalledWith(0, 0, drawing.canvas.width, drawing.canvas.height);
+    expect(mockContext.clearRect).toHaveBeenCalledWith(
+      0,
+      0,
+      drawing.canvas.width,
+      drawing.canvas.height,
+    );
   });
 
   it("cleanup removes canvas and resets references", () => {
