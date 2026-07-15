@@ -68,7 +68,7 @@ class PDFGenerator {
 
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
-    const fieldMap = new Map(srcForm.getFields().map(f => [f.getName(), f]));
+    const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
 
     for (const page of pageOperations) {
       const index = page.pageIndex;
