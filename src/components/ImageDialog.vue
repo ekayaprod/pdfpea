@@ -143,7 +143,7 @@ export default {
         if (file.type.startsWith("image/")) {
           processFile(file);
         } else {
-          error.value = "Please select a valid image file.";
+          error.value = "Select a valid image file.";
         }
       }
     };
@@ -162,7 +162,7 @@ export default {
         preview.value = e.target.result;
       };
       reader.onerror = () => {
-        error.value = "Error reading file.";
+        error.value = "Unable to read the file. Try uploading again.";
       };
       reader.readAsDataURL(file);
     };
@@ -192,7 +192,8 @@ export default {
 
         preview.value = canvas.toDataURL("image/png");
       } catch (error) {
-        error.value = "Failed to load image from URL. Please check the URL and try again.";
+        error.value =
+          "Unable to load the image from the provided URL. Verify the link and try again.";
       }
     };
 

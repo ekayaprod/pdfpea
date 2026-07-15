@@ -1695,7 +1695,7 @@ export default {
         fileToProcess.type !== "application/pdf" &&
         !fileToProcess.name.toLowerCase().endsWith(".pdf")
       ) {
-        showToast("Please select a PDF file.", "warning");
+        showToast("Select a valid PDF file to open.", "warning");
         return;
       }
       const reader = new FileReader();
@@ -1754,7 +1754,7 @@ export default {
       } else if (jsonFile) {
         processConfigFile(jsonFile);
       } else if (files.length > 0) {
-        showToast("Please drop a PDF file or JSON config file.", "warning");
+        showToast("Drop a valid PDF or JSON config file.", "warning");
       }
     };
     const downloadPDF = async () => {
@@ -1815,7 +1815,7 @@ export default {
         configFileToProcess.type !== "application/json" &&
         !configFileToProcess.name.toLowerCase().endsWith(".json")
       ) {
-        showToast("Please select a JSON config file.", "warning");
+        showToast("Select a valid JSON config file.", "warning");
         return;
       }
       try {
@@ -1893,7 +1893,10 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config from dropped file:", error);
-        showToast("Unable to restore configuration. Please check the file format.", "error");
+        showToast(
+          "Unable to restore configuration. Verify the file format and try again.",
+          "error",
+        );
       }
     };
     const handleConfigRestore = async () => {
@@ -1976,7 +1979,10 @@ export default {
         }
       } catch (error) {
         console.error("Error restoring config:", error);
-        showToast("Unable to restore configuration. Please check the file format.", "error");
+        showToast(
+          "Unable to restore configuration. Verify the file format and try again.",
+          "error",
+        );
       }
     };
     const updatePropertyPanel = (e) => {
