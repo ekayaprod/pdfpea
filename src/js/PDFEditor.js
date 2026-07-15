@@ -38,7 +38,7 @@ class PDFEditor {
           data: fileContents,
         }).promise;
         // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, (_, i) => {
+        const promises = Array.from({ length: pdfDoc.numPages }, async (_, i) => {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
@@ -46,7 +46,8 @@ class PDFEditor {
           this.container.appendChild(pdfPageContainer);
           const pdfPage = new PDFPage(pdfPageContainer);
           // Wait for initialization to complete and return the page
-          return pdfPage.initialize(pdfURL, pdfPageNumber, fileContents).then(() => pdfPage);
+          await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+          return pdfPage;
         });
         // Await all page renders simultaneously instead of sequential blocking
         const pages = await Promise.all(promises);
@@ -255,10 +256,10 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "transparent",
-              settings.borderColor || "#FF0000",
-              settings.borderWidth || 2,
-              settings.opacity || 1.0,
+              settings.fill ?? "transparent",
+              settings.borderColor ?? "#FF0000",
+              settings.borderWidth ?? 2,
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -277,11 +278,11 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "#FFFF00",
+              settings.fill ?? "#FFFF00",
               "",
               0,
               "solid",
-              settings.opacity || 0.5,
+              settings.opacity ?? 0.5,
             ),
             this.container,
           );
@@ -311,11 +312,11 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "transparent",
-              settings.borderColor || "#FF0000",
-              settings.borderWidth || 2,
+              settings.fill ?? "transparent",
+              settings.borderColor ?? "#FF0000",
+              settings.borderWidth ?? 2,
               "solid",
-              settings.opacity || 1.0,
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -334,10 +335,10 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fontFamily || "Helvetica",
-              settings.fontSize || 16,
-              settings.color || "#000000",
-              settings.opacity || 1.0,
+              settings.fontFamily ?? "Helvetica",
+              settings.fontSize ?? 16,
+              settings.color ?? "#000000",
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -401,7 +402,7 @@ class PDFPage {
               y,
               width,
               height,
-              settings.url || "/images/default_image.jpg",
+              settings.url ?? "/images/default_image.jpg",
               100,
               100,
               settings?.subType,
@@ -427,12 +428,12 @@ class PDFPage {
             y,
             width,
             height,
-            settings.linkType || "url",
-            settings.linkValue || "",
-            settings.fill || "rgba(0, 122, 204, 0.1)",
-            settings.borderColor || "#007acc",
-            settings.borderWidth || 1,
-            settings.opacity || 1.0,
+            settings.linkType ?? "url",
+            settings.linkValue ?? "",
+            settings.fill ?? "rgba(0, 122, 204, 0.1)",
+            settings.borderColor ?? "#007acc",
+            settings.borderWidth ?? 1,
+            settings.opacity ?? 1.0,
           ),
           this.container,
         );
