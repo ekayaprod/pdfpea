@@ -123,8 +123,8 @@ describe("LinkDialog", () => {
     expect(onConfirm).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "url",
-        value: "https://example.com"
-      })
+        value: "https://example.com",
+      }),
     );
   });
 
@@ -160,8 +160,8 @@ describe("LinkDialog", () => {
     expect(onConfirm).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "page",
-        value: 5
-      })
+        value: 5,
+      }),
     );
   });
 
