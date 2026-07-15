@@ -156,7 +156,7 @@ class PDFPage {
         annotationMode: pdfjsLib.AnnotationMode.DISABLE,
         canvasContext: this.context,
         viewport: renderViewport,
-      });
+      }).promise;
 
       this.processFormFields(formFields, viewport);
     } catch (error) {
