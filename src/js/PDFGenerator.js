@@ -218,7 +218,8 @@ class PDFGenerator {
     const opacity = parseFloat(opacityStr, 10);
 
     // Fetch image data
-    const arrayBuffer = await fetch(url).then((res) => res.arrayBuffer());
+    const res = await fetch(url);
+    const arrayBuffer = await res.arrayBuffer();
     const type = PDFGenerator.getImageType(arrayBuffer);
 
     // Helper for JPG/PNG
@@ -325,21 +326,21 @@ class PDFGenerator {
           const opts = { x: drawX, y: drawY, opacity };
 
           // Determine fill color (path-specific > global > none)
-          const fillColor = pathFillMatch?.[1] || globalFillMatch?.[1];
+          const fillColor = pathFillMatch?.[1] ?? globalFillMatch?.[1];
           if (fillColor && fillColor !== "none") {
             const c = PDFGenerator.hexToRgb(fillColor);
             opts.color = PDFLib.rgb(c.red, c.green, c.blue);
           }
 
           // Determine stroke color (path-specific > global > none)
-          const strokeColor = pathStrokeMatch?.[1] || globalStrokeMatch?.[1];
+          const strokeColor = pathStrokeMatch?.[1] ?? globalStrokeMatch?.[1];
           if (strokeColor && strokeColor !== "none") {
             const c = PDFGenerator.hexToRgb(strokeColor);
             opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
           }
 
           // Determine stroke width (path-specific > global > default)
-          const strokeWidth = pathStrokeWidthMatch?.[1] || globalStrokeWidthMatch?.[1];
+          const strokeWidth = pathStrokeWidthMatch?.[1] ?? globalStrokeWidthMatch?.[1];
           if (strokeWidth) {
             opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY); // Scale stroke width
           }
@@ -381,7 +382,7 @@ class PDFGenerator {
     const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth);
     const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
-    const fill = operation.fill || operation.color;
+    const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
 
     const isTransparent =
@@ -418,7 +419,7 @@ class PDFGenerator {
     const borderColor = PDFGenerator.hexToRgb(operation.borderColor);
     const xScale = (width - borderWidth) / 2;
     const yScale = (height - borderWidth) / 2;
-    const fill = operation.fill || operation.color;
+    const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
 
     const isTransparent =
@@ -590,8 +591,8 @@ class PDFGenerator {
     const height = operation.height;
     const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth) || 0;
-    const borderColor = PDFGenerator.hexToRgb(operation.borderColor || "#007acc");
-    const fill = operation.fill || "rgba(0, 122, 204, 0.1)";
+    const borderColor = PDFGenerator.hexToRgb(operation.borderColor ?? "#007acc");
+    const fill = operation.fill ?? "rgba(0, 122, 204, 0.1)";
     const opacity = parseFloat(operation.opacity, 10) || 1.0;
     const linkType = operation.linkType;
     const linkValue = operation.linkValue;

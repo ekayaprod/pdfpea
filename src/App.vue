@@ -1943,17 +1943,16 @@ export default {
           // Clear PDF pages before loading new PDF
           clearPdfPages();
           isLoaded.value = true;
-          await pdfEditor.renderPDF("", e.target.result).then(() => {
-            pdfEditor.applyZoom(zoomLevel.value);
-            // Setup drawing listeners after PDF is rendered
-            setupCanvasDrawingListeners();
-            // Update toolbar position after PDF is loaded
-            setTimeout(() => {
-              updateToolbarPosition();
-            }, 100);
-            isLoaded.value = true;
-            showToast("File loaded", "success");
-          });
+          await pdfEditor.renderPDF("", e.target.result);
+          pdfEditor.applyZoom(zoomLevel.value);
+          // Setup drawing listeners after PDF is rendered
+          setupCanvasDrawingListeners();
+          // Update toolbar position after PDF is loaded
+          setTimeout(() => {
+            updateToolbarPosition();
+          }, 100);
+          isLoaded.value = true;
+          showToast("File loaded", "success");
         } else {
           console.error("PDFEditor not initialized yet");
         }
@@ -2745,7 +2744,7 @@ export default {
       }
 
       // Listen for file load from landing page
-      window.addEventListener("loadPdfFromLanding", (event) => {
+      window.addEventListener("loadPdfFromLanding", async (event) => {
         const { fileData, fileName } = event.detail;
         if (pdfEditor && fileData) {
           // Convert data URL to binary string
@@ -2754,15 +2753,14 @@ export default {
 
           clearPdfPages();
           isLoaded.value = true;
-          pdfEditor.renderPDF("", binaryString).then(() => {
-            pdfEditor.applyZoom(zoomLevel.value);
-            setupCanvasDrawingListeners();
-            setTimeout(() => {
-              updateToolbarPosition();
-            }, 100);
-            isLoaded.value = true;
-            showToast(`${fileName} loaded successfully`, "success");
-          });
+          await pdfEditor.renderPDF("", binaryString);
+          pdfEditor.applyZoom(zoomLevel.value);
+          setupCanvasDrawingListeners();
+          setTimeout(() => {
+            updateToolbarPosition();
+          }, 100);
+          isLoaded.value = true;
+          showToast(`${fileName} loaded successfully`, "success");
         }
       });
 
