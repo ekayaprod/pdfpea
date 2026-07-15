@@ -72,6 +72,12 @@ describe("ImageOperationComponent", () => {
       comp.operationChanged("url", "/images/new_image.jpg");
       expect(comp.shadow.getAttribute("src")).toBe("/images/new_image.jpg");
     });
+
+    it("should safely ignore unknown properties", () => {
+      expect(() => {
+        comp.operationChanged("unknownProperty", "someValue");
+      }).not.toThrow();
+    });
   });
 
   describe("createDefaultOperation", () => {
