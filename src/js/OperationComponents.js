@@ -856,7 +856,6 @@ class LinkOperationComponent extends BasicOperationComponent {
   };
 }
 export {
-
   ImageOperationComponent,
   RectangleOperationComponent,
   CircleOperationComponent,
