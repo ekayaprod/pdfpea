@@ -40,20 +40,19 @@ class PDFEditor {
           ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
           data: fileContents,
         }).promise;
-        // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, async (_, i) => {
+        // Prevent concurrent race conditions by initializing sequentially
+        const pages = [];
+        for (let i = 0; i < pdfDoc.numPages; i++) {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
           const pdfPageContainer = document.createElement("div");
           this.container.appendChild(pdfPageContainer);
           const pdfPage = new PDFPage(pdfPageContainer);
-          // Wait for initialization to complete and return the page
+          // Wait for initialization to complete before moving to the next page
           await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
-          return pdfPage;
-        });
-        // Await all page renders simultaneously instead of sequential blocking
-        const pages = await Promise.all(promises);
+          pages.push(pdfPage);
+        }
         this.pdfPages.push(...pages);
         resolve();
       } catch (error) {
