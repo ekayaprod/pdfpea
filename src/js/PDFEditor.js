@@ -7,7 +7,7 @@ import {
   TextFieldOperationComponent,
   CheckboxOperationComponent,
   LinkOperationComponent,
-} from "./OperationComponents.js";
+} from "./OperationComponents/index.js";
 import { PDFGenerator } from "./PDFGenerator.js";
 import {
   DEFAULT_VALUES,
