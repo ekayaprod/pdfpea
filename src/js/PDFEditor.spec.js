@@ -6,6 +6,7 @@ vi.mock("pdfjs-dist", () => ({
   version: "mock-version",
 }));
 
+import * as pdfjsLib from "pdfjs-dist";
 import { PDFEditor } from "./PDFEditor.js";
 
 describe("PDFEditor", () => {
@@ -22,5 +23,23 @@ describe("PDFEditor", () => {
 
     expect(error).toBeDefined();
     expect(error.message).toMatch(/cannot be null/i);
+  });
+
+  it("handles getDocument error in renderPDF", async () => {
+    const editor = new PDFEditor({ appendChild: vi.fn() });
+
+    // Make getDocument return an object with a rejecting promise
+    pdfjsLib.getDocument.mockReturnValueOnce({
+      promise: Promise.reject(new Error("Mocked PDF error"))
+    });
+
+    let error = null;
+    try {
+      await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBeDefined();
+    expect(error.message).toBe("Mocked PDF error");
   });
 });
