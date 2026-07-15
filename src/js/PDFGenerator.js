@@ -1,4 +1,50 @@
 import svgpath from "svgpath";
+import { z } from "zod";
+
+// 🐺 FORTIFY: The three-headed defense is active: rate limited, strictly validated, and safely caught.
+const ImageOperationSchema = z.object({
+  type: z.string().optional(),
+  id: z.string().optional(),
+  x: z.number(),
+  y: z.number(),
+  width: z.number(),
+  height: z.number(),
+  opacity: z.union([z.string(), z.number()]),
+  url: z.string().url(),
+}).strip(); // neutralize prototype pollution and unknown keys
+
+class TokenBucketRateLimiter {
+  constructor(windowMs, maxTokens) {
+    this.windowMs = windowMs;
+    this.maxTokens = maxTokens;
+    this.tokens = maxTokens;
+    this.lastRefill = Date.now();
+  }
+  consume() {
+    this.refill();
+    if (this.tokens >= 1) {
+      this.tokens -= 1;
+      return true;
+    }
+    return false;
+  }
+  refill() {
+    const now = Date.now();
+    const timePassed = now - this.lastRefill;
+    if (timePassed > this.windowMs) {
+      this.tokens = this.maxTokens;
+      this.lastRefill = now;
+    }
+  }
+  reset() {
+    this.tokens = this.maxTokens;
+    this.lastRefill = Date.now();
+  }
+}
+
+// Global fetch limiter: 100 requests per 1 minute window
+export const fetchLimiter = new TokenBucketRateLimiter(60 * 1000, 100);
+
 class PDFGenerator {
   constructor() {}
   static str2ab(binaryString) {
@@ -142,16 +188,30 @@ class PDFGenerator {
     });
   }
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
-    if (!pdfDoc || !pdfPage || !operation || !operation.url) {
+    if (!pdfDoc || !pdfPage || !operation) {
       throw new Error("Cannot be null");
     }
-    const pageHeight = pdfPage.getHeight();
-    const { x, y, width, height, opacity: opacityStr, url } = operation;
-    const opacity = parseFloat(opacityStr, 10);
-    // Fetch image data
-    const res = await fetch(url);
-    const arrayBuffer = await res.arrayBuffer();
-    const type = PDFGenerator.getImageType(arrayBuffer);
+
+    try {
+      // 1. Defense Injection: Strict Schema Rejection
+      const validOperation = ImageOperationSchema.parse(operation);
+
+      // 2. Defense Injection: Token Bucket Throttling
+      if (!fetchLimiter.consume()) {
+        throw new Error("Rate limit exceeded for image fetching (429)");
+      }
+
+      const pageHeight = pdfPage.getHeight();
+      const { x, y, width, height, opacity: opacityStr, url } = validOperation;
+      const opacity = parseFloat(opacityStr, 10);
+
+      // Fetch image data
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch image: ${res.statusText}`);
+      }
+      const arrayBuffer = await res.arrayBuffer();
+      const type = PDFGenerator.getImageType(arrayBuffer);
     // Helper for JPG/PNG
     const drawRaster = async (embeddedImg) => {
       // Preserve aspect ratio (object-fit: contain) and center within the box
@@ -279,6 +339,10 @@ class PDFGenerator {
       default:
         console.warn(`Unsupported image type: ${type}`);
     }
+} catch (error) {
+  console.error("Cerberus Defense: Operation blocked or failed", error);
+  // Graceful degradation: log error but do not crash the document generation
+}
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();

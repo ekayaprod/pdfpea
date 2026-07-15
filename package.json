@@ -42,7 +42,8 @@
     "pdfjs-dist": "5.4.530",
     "svgpath": "2.6.0",
     "tailwindcss": "4.1.17",
-    "vue": "3.5.25"
+    "vue": "3.5.25",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tsconfig/node24": "24.0.3",
