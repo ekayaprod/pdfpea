@@ -1943,7 +1943,8 @@ export default {
           // Clear PDF pages before loading new PDF
           clearPdfPages();
           isLoaded.value = true;
-          await pdfEditor.renderPDF("", e.target.result).then(() => {
+          try {
+            await pdfEditor.renderPDF("", e.target.result);
             pdfEditor.applyZoom(zoomLevel.value);
             // Setup drawing listeners after PDF is rendered
             setupCanvasDrawingListeners();
@@ -1953,7 +1954,11 @@ export default {
             }, 100);
             isLoaded.value = true;
             showToast("File loaded", "success");
-          });
+          } catch (error) {
+            console.error("Error loading PDF file:", error);
+            isLoaded.value = false;
+            showToast("Failed to load PDF file.", "error");
+          }
         } else {
           console.error("PDFEditor not initialized yet");
         }
@@ -2116,8 +2121,15 @@ export default {
 
         // Load the PDF
         if (pdfEditor) {
-          await pdfEditor.renderPDF("", pdfData);
-          isLoaded.value = true;
+          try {
+            await pdfEditor.renderPDF("", pdfData);
+            isLoaded.value = true;
+          } catch (error) {
+            console.error("Error loading PDF during config restore:", error);
+            isLoaded.value = false;
+            showToast("Failed to load PDF from config.", "error");
+            return;
+          }
 
           // Restore operations for each page
           config.pages.forEach((pageConfig, index) => {
@@ -2218,8 +2230,15 @@ export default {
 
         // Load the PDF
         if (pdfEditor) {
-          await pdfEditor.renderPDF("", pdfData);
-          isLoaded.value = true;
+          try {
+            await pdfEditor.renderPDF("", pdfData);
+            isLoaded.value = true;
+          } catch (error) {
+            console.error("Error loading PDF during config restore from drop:", error);
+            isLoaded.value = false;
+            showToast("Failed to load PDF from config.", "error");
+            return;
+          }
 
           // Restore operations for each page
           config.pages.forEach((pageConfig, index) => {
@@ -2745,7 +2764,7 @@ export default {
       }
 
       // Listen for file load from landing page
-      window.addEventListener("loadPdfFromLanding", (event) => {
+      window.addEventListener("loadPdfFromLanding", async (event) => {
         const { fileData, fileName } = event.detail;
         if (pdfEditor && fileData) {
           // Convert data URL to binary string
@@ -2754,7 +2773,8 @@ export default {
 
           clearPdfPages();
           isLoaded.value = true;
-          pdfEditor.renderPDF("", binaryString).then(() => {
+          try {
+            await pdfEditor.renderPDF("", binaryString);
             pdfEditor.applyZoom(zoomLevel.value);
             setupCanvasDrawingListeners();
             setTimeout(() => {
@@ -2762,7 +2782,11 @@ export default {
             }, 100);
             isLoaded.value = true;
             showToast(`${fileName} loaded successfully`, "success");
-          });
+          } catch (error) {
+            console.error(`Error loading PDF from landing page (${fileName}):`, error);
+            isLoaded.value = false;
+            showToast(`Failed to load ${fileName}.`, "error");
+          }
         }
       });
 

@@ -1,4 +1,12 @@
 import * as pdfjsLib from "pdfjs-dist";
+
+export class PDFInitializationError extends Error {
+  constructor(message, options) {
+    super(message, options);
+    this.name = "PDFInitializationError";
+  }
+}
+
 import {
   ImageOperationComponent,
   RectangleOperationComponent,
@@ -160,7 +168,12 @@ class PDFPage {
 
       this.processFormFields(formFields, viewport);
     } catch (error) {
-      console.error("Error initializing PDF page:", error);
+      console.error("Error initializing PDF page:", {
+        error,
+        pageNumber: this.pageNumber,
+        pdfURL: this.pdfURL,
+      });
+      throw new PDFInitializationError("Failed to initialize PDF page", { cause: error });
     }
   }
 
