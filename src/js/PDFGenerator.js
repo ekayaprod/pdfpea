@@ -45,8 +45,15 @@ class PDFGenerator {
       const index = page.pageIndex;
       const pdfURL = page.pdfURL;
       const pageNumber = page.pageNumber;
-      const createOperations = page.operations.filter((item) => item.operation == "create");
-      const updateOperations = page.operations.filter((item) => item.operation == "update");
+      const createOperations = [];
+      const updateOperations = [];
+      for (const item of page.operations) {
+        if (item.operation === "create") {
+          createOperations.push(item);
+        } else if (item.operation === "update") {
+          updateOperations.push(item);
+        }
+      }
       for (const op of updateOperations) {
         const formField = fieldMap.get(op.id);
         if (formField !== null && formField !== undefined) {
@@ -62,8 +69,15 @@ class PDFGenerator {
     // Pages themselves can be processed concurrently
     const pagePromises = pageOperations.map(async (page) => {
       const pageNumber = page.pageNumber;
-      const createOperations = page.operations.filter((item) => item.operation == "create");
-      const updateOperations = page.operations.filter((item) => item.operation == "update");
+      const createOperations = [];
+      const updateOperations = [];
+      for (const item of page.operations) {
+        if (item.operation === "create") {
+          createOperations.push(item);
+        } else if (item.operation === "update") {
+          updateOperations.push(item);
+        }
+      }
       const pdfPage = pdfPages[pageNumber - 1];
       // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
       for (const op of createOperations) {
