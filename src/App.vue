@@ -2277,7 +2277,7 @@ export default {
       }
     };
 
-    const uploadPropertyPanel = (e) => {
+    const updatePropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
       if (e.detail.target && e.detail.target.wrapperContainer) {
         selectedLayerEl.value = e.detail.target.wrapperContainer;
@@ -2712,9 +2712,9 @@ export default {
         try {
           pdfEditor = new PDFEditor(pdfViewContainer.value);
 
-          document.addEventListener("pdfeditor.componentSelected", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentDragging", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentResizing", uploadPropertyPanel);
+          document.addEventListener("pdfeditor.componentSelected", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentDragging", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentResizing", updatePropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
 
           // Keep the Layers panel in sync as components are added/removed.
@@ -3104,7 +3104,7 @@ export default {
       openImageDialog,
       closeImageDialog,
       handleImageConfirm,
-      uploadPropertyPanel,
+      updatePropertyPanel,
       clearPropertyPanel,
       downloadConfig,
       clickRestoreConfigInput,
