@@ -3,9 +3,10 @@
     <div class="link-dialog" @click.stop>
       <div class="link-dialog-header">
         <h3>Add Link</h3>
-        <button @click="closeDialog" class="dialog-close-btn">&times;</button>
+        <button @click="closeDialog" class="dialog-close-btn" aria-label="Close dialog">
+          &times;
+        </button>
       </div>
-
       <div class="link-dialog-content">
         <div class="link-dialog-tabs">
           <button
@@ -23,7 +24,6 @@
             Page Link
           </button>
         </div>
-
         <div v-if="activeTab === 'url'" class="link-url-section">
           <label for="linkUrl">URL:</label>
           <input
@@ -35,7 +35,6 @@
             @keyup.enter="confirmSelection"
           />
         </div>
-
         <div v-if="activeTab === 'page'" class="link-page-section">
           <label for="pageNumber">Page Number:</label>
           <input
@@ -48,12 +47,10 @@
             @keyup.enter="confirmSelection"
           />
         </div>
-
         <div v-if="error" class="link-error">
           <p>{{ error }}</p>
         </div>
       </div>
-
       <div class="link-dialog-footer">
         <button @click="closeDialog" class="btn-secondary">Cancel</button>
         <button @click="confirmSelection" :disabled="!isValid" class="btn-primary">Add Link</button>
@@ -61,10 +58,8 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { ref, watch, computed } from "vue";
-
 export default {
   name: "LinkDialog",
   props: {
@@ -79,7 +74,6 @@ export default {
     const linkUrl = ref("");
     const pageNumber = ref("");
     const error = ref("");
-
     // Reset state when dialog is opened
     watch(
       () => props.show,
@@ -89,14 +83,12 @@ export default {
         }
       },
     );
-
     const resetState = () => {
       activeTab.value = "url";
       linkUrl.value = "";
       pageNumber.value = "";
       error.value = "";
     };
-
     const isValid = computed(() => {
       if (activeTab.value === "url") {
         return linkUrl.value.trim() !== "";
@@ -105,20 +97,15 @@ export default {
         return !isNaN(num) && num > 0;
       }
     });
-
     const handleOverlayClick = () => {
       closeDialog();
     };
-
     const closeDialog = () => {
       emit("close");
     };
-
     const confirmSelection = () => {
       if (!isValid.value) return;
-
       error.value = "";
-
       try {
         if (activeTab.value === "url") {
           // Validate URL format
@@ -126,7 +113,6 @@ export default {
             error.value = "URL must start with http:// or https://";
             return;
           }
-          console.log(`confirmSelection`);
           emit("confirm", {
             type: "url",
             value: linkUrl.value.trim(),
@@ -134,22 +120,19 @@ export default {
         } else {
           const num = parseInt(pageNumber.value);
           if (isNaN(num) || num < 1) {
-            error.value = "Please enter a valid page number (1 or greater)";
+            error.value = "Enter a valid page number (1 or greater).";
             return;
           }
-
           emit("confirm", {
             type: "page",
             value: num,
           });
         }
-
         closeDialog();
       } catch (error) {
-        error.value = "Invalid input. Please check your values.";
+        error.value = "Invalid input. Verify your values and try again.";
       }
     };
-
     return {
       activeTab,
       linkUrl,
