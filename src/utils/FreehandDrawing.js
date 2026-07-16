@@ -277,5 +277,6 @@ class FreehandDrawing {
     };
   }
 }
-// Export singleton instance for convenience
+// Export class and singleton instance
+export { FreehandDrawing };
 export const freehandDrawing = new FreehandDrawing();
