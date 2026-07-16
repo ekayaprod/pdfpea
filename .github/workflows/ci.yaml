@@ -30,6 +30,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test
+        run: npx vitest run
+
   prettier:
     runs-on: ubuntu-latest
 

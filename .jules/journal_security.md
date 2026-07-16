@@ -1,5 +1,0 @@
-- [x] 🔒 Vulnerability Mitigated: SSRF via fetch and img.src
-- [x] 🛡️ Defense Hardened: Enforced strict URL protocol validation allowlist.
-- [x] ⚙️ Secure Implementation: Native SEARCH/REPLACE applied safely.
-- [x] ✅ Validation: Passes vitest.
-- [x] 📈 Risk Reduced: Minor vite bump implemented.

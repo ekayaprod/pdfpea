@@ -9,6 +9,7 @@ import {
   LinkOperationComponent,
 } from "./OperationComponents/index.js";
 import { PDFGenerator } from "./PDFGenerator.js";
+import { rgbToHex } from "./utils/colors.js";
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
@@ -40,20 +41,19 @@ class PDFEditor {
           ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
           data: fileContents,
         }).promise;
-        // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, async (_, i) => {
+        // Prevent concurrent race conditions by initializing sequentially
+        const pages = [];
+        for (let i = 0; i < pdfDoc.numPages; i++) {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
           const pdfPageContainer = document.createElement("div");
           this.container.appendChild(pdfPageContainer);
           const pdfPage = new PDFPage(pdfPageContainer);
-          // Wait for initialization to complete and return the page
+          // Wait for initialization to complete before moving to the next page
           await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
-          return pdfPage;
-        });
-        // Await all page renders simultaneously instead of sequential blocking
-        const pages = await Promise.all(promises);
+          pages.push(pdfPage);
+        }
         this.pdfPages.push(...pages);
         resolve();
       } catch (error) {
@@ -92,12 +92,6 @@ class PDFPage {
       event.stopPropagation();
       this.setSelected();
     });
-  }
-  rgbToHex(red, green, blue) {
-    const redHex = red.toString(16).padStart(2, "0");
-    const greenHex = green.toString(16).padStart(2, "0");
-    const blueHex = blue.toString(16).padStart(2, "0");
-    return `#${redHex}${greenHex}${blueHex}`;
   }
   async initialize(pdfURL, pageNumber, fileContents) {
     const scale = DEFAULT_VALUES.SCALE;
@@ -156,13 +150,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
@@ -214,13 +204,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
