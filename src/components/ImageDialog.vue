@@ -41,7 +41,7 @@
               style="display: none"
             />
             <i class="fa-solid fa-cloud-upload-alt upload-icon"></i>
-            <p>Click to upload or drag and drop an image</p>
+            <p>Select or drag and drop an image</p>
             <p class="upload-hint">Supports: JPG, PNG, GIF, WebP</p>
           </div>
         </div>
@@ -63,7 +63,7 @@
 
         <div v-if="preview" class="image-preview-section">
           <h4>Preview:</h4>
-          <img :src="preview" alt="Preview" class="image-preview" />
+          <img :src="preview" alt="Preview" class="image-preview" loading="lazy" decoding="async" />
         </div>
 
         <div v-if="error" class="image-error">
@@ -143,7 +143,7 @@ export default {
         if (file.type.startsWith("image/")) {
           processFile(file);
         } else {
-          error.value = "Please select a valid image file.";
+          error.value = "Select a valid image file.";
         }
       }
     };
@@ -162,7 +162,7 @@ export default {
         preview.value = e.target.result;
       };
       reader.onerror = () => {
-        error.value = "Error reading file.";
+        error.value = "Unable to read the file. Try uploading again.";
       };
       reader.readAsDataURL(file);
     };
@@ -191,8 +191,9 @@ export default {
         ctx.drawImage(img, 0, 0);
 
         preview.value = canvas.toDataURL("image/png");
-      } catch (error) {
-        error.value = "Failed to load image from URL. Please check the URL and try again.";
+      } catch {
+        error.value =
+          "Unable to load the image from the provided URL. Verify the link and try again.";
       }
     };
 
