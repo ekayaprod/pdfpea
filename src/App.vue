@@ -1828,7 +1828,7 @@ export default {
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData = parsePdfData(config.pdfURL);
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
@@ -1906,7 +1906,7 @@ export default {
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData = parsePdfData(config.pdfURL);
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
