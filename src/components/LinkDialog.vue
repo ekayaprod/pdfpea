@@ -120,7 +120,7 @@ export default {
         } else {
           const num = parseInt(pageNumber.value);
           if (isNaN(num) || num < 1) {
-            error.value = "Please enter a valid page number (1 or greater)";
+            error.value = "Enter a valid page number (1 or greater).";
             return;
           }
           emit("confirm", {
@@ -130,7 +130,7 @@ export default {
         }
         closeDialog();
       } catch (error) {
-        error.value = "Invalid input. Please check your values.";
+        error.value = "Invalid input. Verify your values and try again.";
       }
     };
     return {
