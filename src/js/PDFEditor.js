@@ -7,8 +7,9 @@ import {
   TextFieldOperationComponent,
   CheckboxOperationComponent,
   LinkOperationComponent,
-} from "./OperationComponents.js";
+} from "./OperationComponents/index.js";
 import { PDFGenerator } from "./PDFGenerator.js";
+import { rgbToHex } from "./utils/colors.js";
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
@@ -29,6 +30,9 @@ class PDFEditor {
     this.container = container;
   }
   async renderPDF(fileName, fileContents) {
+    if (fileName == null || fileContents == null) {
+      return Promise.reject(new Error("Cannot be null"));
+    }
     this.fileContents = fileContents;
     this.pdfPages = [];
     return new Promise(async (resolve, reject) => {
@@ -37,19 +41,19 @@ class PDFEditor {
           ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
           data: fileContents,
         }).promise;
-        // ⚡ THE WATERFALL COLLAPSE: Batch page initialization concurrently
-        const promises = Array.from({ length: pdfDoc.numPages }, (_, i) => {
+        // Prevent concurrent race conditions by initializing sequentially
+        const pages = [];
+        for (let i = 0; i < pdfDoc.numPages; i++) {
           const pageNum = i + 1;
           const pdfURL = fileName;
           const pdfPageNumber = pageNum;
           const pdfPageContainer = document.createElement("div");
           this.container.appendChild(pdfPageContainer);
           const pdfPage = new PDFPage(pdfPageContainer);
-          // Wait for initialization to complete and return the page
-          return pdfPage.initialize(pdfURL, pdfPageNumber, fileContents).then(() => pdfPage);
-        });
-        // Await all page renders simultaneously instead of sequential blocking
-        const pages = await Promise.all(promises);
+          // Wait for initialization to complete before moving to the next page
+          await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+          pages.push(pdfPage);
+        }
         this.pdfPages.push(...pages);
         resolve();
       } catch (error) {
@@ -89,12 +93,6 @@ class PDFPage {
       this.setSelected();
     });
   }
-  rgbToHex(red, green, blue) {
-    const redHex = red.toString(16).padStart(2, "0");
-    const greenHex = green.toString(16).padStart(2, "0");
-    const blueHex = blue.toString(16).padStart(2, "0");
-    return `#${redHex}${greenHex}${blueHex}`;
-  }
   async initialize(pdfURL, pageNumber, fileContents) {
     const scale = DEFAULT_VALUES.SCALE;
     // Render the canvas at a higher resolution than the layout scale. This only
@@ -128,7 +126,7 @@ class PDFPage {
         annotationMode: pdfjsLib.AnnotationMode.DISABLE,
         canvasContext: this.context,
         viewport: renderViewport,
-      });
+      }).promise;
       this.processFormFields(formFields, viewport);
     } catch (error) {
       console.error("Error initializing PDF page:", error);
@@ -152,13 +150,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
@@ -210,13 +204,9 @@ class PDFPage {
     const width = Math.floor(rect[2]) - x - 2 * borderWidth;
     const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
     const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = this.rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = this.rgbToHex(
-      field.borderColor[0],
-      field.borderColor[1],
-      field.borderColor[2],
-    );
-    const backgroundColor = this.rgbToHex(
+    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
+    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
+    const backgroundColor = rgbToHex(
       field.backgroundColor[0],
       field.backgroundColor[1],
       field.backgroundColor[2],
@@ -255,10 +245,10 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "transparent",
-              settings.borderColor || "#FF0000",
-              settings.borderWidth || 2,
-              settings.opacity || 1.0,
+              settings.fill ?? "transparent",
+              settings.borderColor ?? "#FF0000",
+              settings.borderWidth ?? 2,
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -277,11 +267,11 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "#FFFF00",
+              settings.fill ?? "#FFFF00",
               "",
               0,
               "solid",
-              settings.opacity || 0.5,
+              settings.opacity ?? 0.5,
             ),
             this.container,
           );
@@ -311,11 +301,11 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fill || "transparent",
-              settings.borderColor || "#FF0000",
-              settings.borderWidth || 2,
+              settings.fill ?? "transparent",
+              settings.borderColor ?? "#FF0000",
+              settings.borderWidth ?? 2,
               "solid",
-              settings.opacity || 1.0,
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -334,10 +324,10 @@ class PDFPage {
               y,
               width,
               height,
-              settings.fontFamily || "Helvetica",
-              settings.fontSize || 16,
-              settings.color || "#000000",
-              settings.opacity || 1.0,
+              settings.fontFamily ?? "Helvetica",
+              settings.fontSize ?? 16,
+              settings.color ?? "#000000",
+              settings.opacity ?? 1.0,
             ),
             this.container,
           );
@@ -401,7 +391,7 @@ class PDFPage {
               y,
               width,
               height,
-              settings.url || "/images/default_image.jpg",
+              settings.url ?? "/images/default_image.jpg",
               100,
               100,
               settings?.subType,
@@ -427,12 +417,12 @@ class PDFPage {
             y,
             width,
             height,
-            settings.linkType || "url",
-            settings.linkValue || "",
-            settings.fill || "rgba(0, 122, 204, 0.1)",
-            settings.borderColor || "#007acc",
-            settings.borderWidth || 1,
-            settings.opacity || 1.0,
+            settings.linkType ?? "url",
+            settings.linkValue ?? "",
+            settings.fill ?? "rgba(0, 122, 204, 0.1)",
+            settings.borderColor ?? "#007acc",
+            settings.borderWidth ?? 1,
+            settings.opacity ?? 1.0,
           ),
           this.container,
         );
