@@ -140,20 +140,12 @@ class PDFGenerator {
       maxWidth: width,
     });
   }
-  static async drawImageOnPage(pdfDoc, pdfPage, operation) {
-    if (!pdfDoc || !pdfPage || !operation || !operation.url) {
-      throw new Error("Cannot be null");
-    }
+  static async drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation) {
     const pageHeight = pdfPage.getHeight();
-    const { x, y, width, height, opacity: opacityStr, url } = operation;
+    const { x, y, width, height, opacity: opacityStr } = operation;
     const opacity = parseFloat(opacityStr, 10);
-    // Fetch image data
-    const res = await fetch(url);
-    const arrayBuffer = await res.arrayBuffer();
-    const type = PDFGenerator.getImageType(arrayBuffer);
-    // Helper for JPG/PNG
+
     const drawRaster = async (embeddedImg) => {
-      // Preserve aspect ratio (object-fit: contain) and center within the box
       const scaled = embeddedImg.scaleToFit(width, height);
       const offsetX = (width - scaled.width) / 2;
       const offsetY = (height - scaled.height) / 2;
@@ -165,116 +157,133 @@ class PDFGenerator {
         opacity,
       });
     };
+
+    if (type === "jpg") {
+      await drawRaster(await pdfDoc.embedJpg(arrayBuffer));
+    } else if (type === "png") {
+      await drawRaster(await pdfDoc.embedPng(arrayBuffer));
+    }
+  }
+
+  static async drawSvgImageOnPage(pdfPage, arrayBuffer, operation) {
+    const pageHeight = pdfPage.getHeight();
+    const { x, y, width, height, opacity: opacityStr } = operation;
+    const opacity = parseFloat(opacityStr, 10);
+
+    const svgText = new TextDecoder("utf-8").decode(arrayBuffer);
+
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Parses SVG `<path>` elements and extracts the 'd' attribute (path data) to enable rendering custom SVG icons.
+     * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and inject accessibility labels, standardizing icon rendering via PDF generation.
+     */
+    const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
+    const paths = [];
+    let pathMatch;
+    while ((pathMatch = pathRegex.exec(svgText)) !== null) {
+      paths.push({
+        data: pathMatch[1],
+        element: pathMatch[0],
+      });
+    }
+    if (paths.length === 0) throw new Error("No SVG paths found");
+
+    const globalFillMatch = svgText.match(/<svg[^>]*fill="([^"]+)"/);
+    const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
+    const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
+
+    const preserveAspectRatioMatch = svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/);
+    const preserveAspectRatio = preserveAspectRatioMatch ? preserveAspectRatioMatch[1] : null;
+    const shouldMaintainAspectRatio = preserveAspectRatio !== "none";
+
+    const vbMatch = svgText.match(/viewBox="([^"]+)"/);
+    if (!vbMatch) throw new Error("SVG viewBox not found");
+    const [, vb] = vbMatch;
+    const [, , vbW, vbH] = vb.split(/\s+/).map(parseFloat);
+
+    let scaleX,
+      scaleY,
+      offsetX = 0,
+      offsetY = 0;
+    if (shouldMaintainAspectRatio) {
+      const scale = Math.min(width / vbW, height / vbH);
+      scaleX = scale;
+      scaleY = scale;
+      const scaledW = vbW * scale;
+      const scaledH = vbH * scale;
+      offsetX = (width - scaledW) / 2;
+      offsetY = (height - scaledH) / 2;
+    } else {
+      scaleX = width / vbW;
+      scaleY = height / vbH;
+      offsetX = 0;
+      offsetY = 0;
+    }
+
+    const drawX = x + offsetX;
+    const drawY = pageHeight - y - offsetY;
+
+    for (const path of paths) {
+      const pathFillMatch = path.element.match(/fill="([^"]+)"/);
+      const pathStrokeMatch = path.element.match(/stroke="([^"]+)"/);
+      const pathStrokeWidthMatch = path.element.match(/stroke-width="([^"]+)"/);
+      const lineJoinMatch = path.element.match(/stroke-linejoin="([^"]+)"/);
+      const opts = { x: drawX, y: drawY, opacity };
+
+      const fillColor = pathFillMatch?.[1] ?? globalFillMatch?.[1];
+      if (fillColor && fillColor !== "none") {
+        const c = hexToRgb(fillColor);
+        opts.color = PDFLib.rgb(c.red, c.green, c.blue);
+      }
+
+      const strokeColor = pathStrokeMatch?.[1] ?? globalStrokeMatch?.[1];
+      if (strokeColor && strokeColor !== "none") {
+        const c = hexToRgb(strokeColor);
+        opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
+      }
+
+      const strokeWidth = pathStrokeWidthMatch?.[1] ?? globalStrokeWidthMatch?.[1];
+      if (strokeWidth) {
+        opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+      }
+
+      if (lineJoinMatch) {
+        switch (lineJoinMatch[1]) {
+          case "butt":
+            opts.borderLineCap = PDFLib.LineCapStyle.Butt;
+            break;
+          case "projecting":
+            opts.borderLineCap = PDFLib.LineCapStyle.Projecting;
+            break;
+          case "round":
+            opts.borderLineCap = PDFLib.LineCapStyle.Round;
+            break;
+        }
+      }
+
+      const scaledPathData = svgpath(path.data).scale(scaleX, scaleY).toString();
+      await pdfPage.drawSvgPath(scaledPathData, opts);
+    }
+  }
+
+  static async drawImageOnPage(pdfDoc, pdfPage, operation) {
+    if (!pdfDoc || !pdfPage || !operation || !operation.url) {
+      throw new Error("Cannot be null");
+    }
+    const { url } = operation;
+    // Fetch image data
+    const res = await fetch(url);
+    const arrayBuffer = await res.arrayBuffer();
+    const type = PDFGenerator.getImageType(arrayBuffer);
+
     switch (type) {
       case "jpg":
-        await drawRaster(await pdfDoc.embedJpg(arrayBuffer));
-        break;
       case "png":
-        await drawRaster(await pdfDoc.embedPng(arrayBuffer));
+        await PDFGenerator.drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation);
         break;
-      case "svg": {
-        // Decode SVG text
-        const svgText = new TextDecoder("utf-8").decode(arrayBuffer);
-        // Extract all path elements
-        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
-        /**
-         * Parses SVG `<path>` elements and extracts the 'd' attribute (path data) to enable rendering custom SVG icons.
-         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and inject accessibility labels, standardizing icon rendering via PDF generation.
-         */
-        const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
-        const paths = [];
-        let pathMatch;
-        while ((pathMatch = pathRegex.exec(svgText)) !== null) {
-          paths.push({
-            data: pathMatch[1],
-            element: pathMatch[0], // Store full element for individual styling
-          });
-        }
-        if (paths.length === 0) throw new Error("No SVG paths found");
-        // Extract global SVG styles (fallbacks)
-        const globalFillMatch = svgText.match(/<svg[^>]*fill="([^"]+)"/);
-        const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
-        const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
-        // Check preserveAspectRatio attribute
-        const preserveAspectRatioMatch = svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/);
-        const preserveAspectRatio = preserveAspectRatioMatch ? preserveAspectRatioMatch[1] : null;
-        const shouldMaintainAspectRatio = preserveAspectRatio !== "none";
-        // Parse viewBox for scaling
-        const vbMatch = svgText.match(/viewBox="([^"]+)"/);
-        if (!vbMatch) throw new Error("SVG viewBox not found");
-        const [, vb] = vbMatch;
-        const [, , vbW, vbH] = vb.split(/\s+/).map(parseFloat);
-        // Calculate scales based on preserveAspectRatio attribute
-        let scaleX,
-          scaleY,
-          offsetX = 0,
-          offsetY = 0;
-        if (shouldMaintainAspectRatio) {
-          // Maintain aspect ratio - use the smaller scale to ensure the SVG fits within bounds
-          const scale = Math.min(width / vbW, height / vbH);
-          scaleX = scale;
-          scaleY = scale;
-          // Calculate offsets to center the scaled SVG within the target dimensions
-          const scaledW = vbW * scale;
-          const scaledH = vbH * scale;
-          offsetX = (width - scaledW) / 2;
-          offsetY = (height - scaledH) / 2;
-        } else {
-          // preserveAspectRatio="none" - stretch to fit exact dimensions
-          scaleX = width / vbW;
-          scaleY = height / vbH;
-          // No offsets needed when stretching to fit
-          offsetX = 0;
-          offsetY = 0;
-        }
-        // Calculate position for drawing (convert to PDF coordinate system)
-        const drawX = x + offsetX;
-        const drawY = pageHeight - y - offsetY;
-        // Draw each path
-        for (const path of paths) {
-          // Extract individual path styles, with global styles as fallbacks
-          const pathFillMatch = path.element.match(/fill="([^"]+)"/);
-          const pathStrokeMatch = path.element.match(/stroke="([^"]+)"/);
-          const pathStrokeWidthMatch = path.element.match(/stroke-width="([^"]+)"/);
-          const lineJoinMatch = path.element.match(/stroke-linejoin="([^"]+)"/);
-          const opts = { x: drawX, y: drawY, opacity };
-          // Determine fill color (path-specific > global > none)
-          const fillColor = pathFillMatch?.[1] ?? globalFillMatch?.[1];
-          if (fillColor && fillColor !== "none") {
-            const c = hexToRgb(fillColor);
-            opts.color = PDFLib.rgb(c.red, c.green, c.blue);
-          }
-          // Determine stroke color (path-specific > global > none)
-          const strokeColor = pathStrokeMatch?.[1] ?? globalStrokeMatch?.[1];
-          if (strokeColor && strokeColor !== "none") {
-            const c = hexToRgb(strokeColor);
-            opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
-          }
-          // Determine stroke width (path-specific > global > default)
-          const strokeWidth = pathStrokeWidthMatch?.[1] ?? globalStrokeWidthMatch?.[1];
-          if (strokeWidth) {
-            opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY); // Scale stroke width
-          }
-          if (lineJoinMatch) {
-            switch (lineJoinMatch[1]) {
-              case "butt":
-                opts.borderLineCap = PDFLib.LineCapStyle.Butt;
-                break;
-              case "projecting":
-                opts.borderLineCap = PDFLib.LineCapStyle.Projecting;
-                break;
-              case "round":
-                opts.borderLineCap = PDFLib.LineCapStyle.Round;
-                break;
-            }
-          }
-          // Use svgpath to prescale the path data
-          const scaledPathData = svgpath(path.data).scale(scaleX, scaleY).toString();
-          // Draw the prescaled SVG path at the target position
-          await pdfPage.drawSvgPath(scaledPathData, opts);
-        }
+      case "svg":
+        await PDFGenerator.drawSvgImageOnPage(pdfPage, arrayBuffer, operation);
         break;
-      }
       default:
         console.warn(`Unsupported image type: ${type}`);
     }
