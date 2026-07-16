@@ -607,8 +607,11 @@
             <img
               src="/images/highlight.svg"
               alt="highlight"
-              class="body-tool-image"
-              style="padding: 3px"
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+              class="body-tool-image p-[3px]"
             />
           </div>
           <div
@@ -662,7 +665,15 @@
             @click="selectTool(iconTool.id)"
             :title="iconTool.title"
           >
-            <img :src="iconTool.icon" :alt="iconTool.alt" class="body-tool-image" />
+            <img
+              :src="iconTool.icon"
+              :alt="iconTool.alt"
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+              class="body-tool-image"
+            />
           </div>
         </div>
       </div>
@@ -760,35 +771,19 @@
   <!-- Dynamic toast -->
   <div
     v-if="toast.show"
-    style="
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      background: #4ade80;
-      color: white;
-      padding: 16px;
-      border-radius: 8px;
-      z-index: 99999;
-      min-width: 300px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    "
+    :class="['toast-notification', `toast-${toast.type || 'success'}`]"
     @click="hideToast"
   >
-    <div style="display: flex; align-items: center; justify-content: space-between">
-      <span>{{ toast.message }}</span>
-      <button
-        @click.stop="hideToast"
-        aria-label="Close notification"
-        style="
-          background: none;
-          border: none;
-          color: white;
-          font-size: 18px;
-          cursor: pointer;
-          margin-left: 10px;
-        "
-      >
-        ×
+    <div class="toast-content">
+      <i
+        class="fa-solid fa-circle-check toast-icon"
+        v-if="toast.type === 'success' || !toast.type"
+      ></i>
+      <i class="fa-solid fa-circle-exclamation toast-icon" v-else-if="toast.type === 'error'"></i>
+      <i class="fa-solid fa-circle-info toast-icon" v-else></i>
+      <span class="toast-message">{{ toast.message }}</span>
+      <button @click.stop="hideToast" aria-label="Close notification" class="toast-close">
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
   </div>
@@ -800,6 +795,7 @@ import ImageDialog from "./components/ImageDialog.vue";
 import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
+import { parsePdfData } from "./utils/pdfData.js";
 import { readFileAsBinaryString, readFileAsText } from "./utils/fileUtils.js";
 export default {
   name: "App",
@@ -1765,6 +1761,7 @@ export default {
         link.href = URL.createObjectURL(blob);
         link.download = `modified_pdf.pdf`;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
       } else {
         console.error("PDFEditor not initialized yet");
       }
@@ -1797,6 +1794,7 @@ export default {
         link.href = URL.createObjectURL(blob);
         link.download = `pdf-config-${new Date().toISOString().split("T")[0]}-pdfso.json`;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
         showToast("Configuration exported successfully!", "success");
       } catch (error) {
         console.error("Error creating config file:", error);
@@ -1822,21 +1820,21 @@ export default {
         const fileContent = await readFileAsText(configFileToProcess);
         const config = JSON.parse(fileContent);
         // Validate config structure
-        if (!config.pdfURL || !config.pages) {
+        if (
+          !config ||
+          typeof config !== "object" ||
+          typeof config.pdfURL !== "string" ||
+          !Array.isArray(config.pages) ||
+          !config.pages.every(
+            (page) => page && typeof page === "object" && Array.isArray(page.operations),
+          )
+        ) {
           throw new Error("Invalid config file format");
         }
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData;
-        if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
-          // Extract base64 data and convert to binary string
-          const base64Data = config.pdfURL.replace("data:application/pdf;base64,", "");
-          pdfData = atob(base64Data);
-        } else {
-          // It's a regular URL, we'll pass it as is
-          pdfData = config.pdfURL;
-        }
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
@@ -1903,21 +1901,21 @@ export default {
         const fileContent = await readFileAsText(configFileInput);
         const config = JSON.parse(fileContent);
         // Validate config structure
-        if (!config.pdfURL || !config.pages) {
+        if (
+          !config ||
+          typeof config !== "object" ||
+          typeof config.pdfURL !== "string" ||
+          !Array.isArray(config.pages) ||
+          !config.pages.every(
+            (page) => page && typeof page === "object" && Array.isArray(page.operations),
+          )
+        ) {
           throw new Error("Invalid config file format");
         }
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData;
-        if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
-          // Extract base64 data and convert to binary string
-          const base64Data = config.pdfURL.replace("data:application/pdf;base64,", "");
-          pdfData = atob(base64Data);
-        } else {
-          // It's a regular URL, we'll pass it as is
-          pdfData = config.pdfURL;
-        }
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
@@ -2482,22 +2480,24 @@ export default {
       iconTools.value.forEach((iconTool) => {
         iconUrls[iconTool.id] = iconTool.icon;
       });
-      for (const [iconName, url] of Object.entries(iconUrls)) {
-        try {
-          const response = await fetch(url);
-          if (response.ok) {
-            const svgText = await response.text();
-            // Convert to base64 data URL
-            const base64Data = btoa(svgText);
-            const dataUrl = `data:image/svg+xml;base64,${base64Data}`;
-            iconCache.value[iconName] = dataUrl;
-          } else {
-            console.error(`Failed to fetch icon: ${iconName} from ${url}`);
+      await Promise.all(
+        Object.entries(iconUrls).map(async ([iconName, url]) => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              const svgText = await response.text();
+              // Convert to base64 data URL
+              const base64Data = btoa(svgText);
+              const dataUrl = `data:image/svg+xml;base64,${base64Data}`;
+              iconCache.value[iconName] = dataUrl;
+            } else {
+              console.error(`Failed to fetch icon: ${iconName} from ${url}`);
+            }
+          } catch (error) {
+            console.error(`Error loading icon ${iconName}:`, error);
           }
-        } catch (error) {
-          console.error(`Error loading icon ${iconName}:`, error);
-        }
-      }
+        }),
+      );
     };
     // Apply fill color to cached SVG icon
     const getColoredIcon = (iconName, fillColor) => {
@@ -2746,8 +2746,9 @@ export default {
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #dee2e6;
-  position: absolute;
-  min-width: 1100px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
   .option-element {
     display: flex;
     align-items: center;

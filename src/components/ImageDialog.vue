@@ -63,7 +63,7 @@
 
         <div v-if="preview" class="image-preview-section">
           <h4>Preview:</h4>
-          <img :src="preview" alt="Preview" class="image-preview" />
+          <img :src="preview" alt="Preview" class="image-preview" loading="lazy" decoding="async" />
         </div>
 
         <div v-if="error" class="image-error">
@@ -191,7 +191,7 @@ export default {
         ctx.drawImage(img, 0, 0);
 
         preview.value = canvas.toDataURL("image/png");
-      } catch (error) {
+      } catch {
         error.value =
           "Unable to load the image from the provided URL. Verify the link and try again.";
       }

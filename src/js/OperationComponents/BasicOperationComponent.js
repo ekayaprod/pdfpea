@@ -7,6 +7,12 @@ class BasicOperationComponent {
   wrapperContainer = null;
   renderDirections = ["n", "e", "s", "w", "nw", "ne", "sw", "se"];
   constructor(operation, canvasContainer) {
+    if (!operation) {
+      throw new TypeError("BasicOperationComponent: operation cannot be null or undefined");
+    }
+    if (!canvasContainer) {
+      throw new TypeError("BasicOperationComponent: canvasContainer cannot be null or undefined");
+    }
     this.canvasContainer = canvasContainer;
     this.operation = operation;
     this.wrapperContainer = document.createElement("div");
