@@ -83,6 +83,7 @@
 
 <script lang="ts">
 import { ref, watch } from "vue";
+import { readFileAsDataURL } from "../utils/fileUtils.js";
 
 export default {
   name: "ImageDialog",
@@ -157,14 +158,13 @@ export default {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.value = e.target.result;
-      };
-      reader.onerror = () => {
-        error.value = "Unable to read the file. Try uploading again.";
-      };
-      reader.readAsDataURL(file);
+      readFileAsDataURL(file)
+        .then((result) => {
+          preview.value = result;
+        })
+        .catch(() => {
+          error.value = "Unable to read the file. Try uploading again.";
+        });
     };
 
     const loadFromUrl = async () => {

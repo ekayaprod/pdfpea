@@ -800,6 +800,7 @@ import ImageDialog from "./components/ImageDialog.vue";
 import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
+import { readFileAsBinaryString, readFileAsText } from "./utils/fileUtils.js";
 export default {
   name: "App",
   components: {
@@ -1698,27 +1699,27 @@ export default {
         showToast("Select a valid PDF file to open.", "warning");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        if (pdfEditor) {
-          // Clear PDF pages before loading new PDF
-          clearPdfPages();
-          isLoaded.value = true;
-          await pdfEditor.renderPDF("", e.target.result);
-          pdfEditor.applyZoom(zoomLevel.value);
-          // Setup drawing listeners after PDF is rendered
-          setupCanvasDrawingListeners();
-          // Update toolbar position after PDF is loaded
-          setTimeout(() => {
-            updateToolbarPosition();
-          }, 100);
-          isLoaded.value = true;
-          showToast("File loaded", "success");
-        } else {
-          console.error("PDFEditor not initialized yet");
-        }
-      };
-      reader.readAsBinaryString(fileToProcess);
+      readFileAsBinaryString(fileToProcess)
+        .then(async (result) => {
+          if (pdfEditor) {
+            clearPdfPages();
+            isLoaded.value = true;
+            await pdfEditor.renderPDF("", result);
+            pdfEditor.applyZoom(zoomLevel.value);
+            setupCanvasDrawingListeners();
+            setTimeout(() => {
+              updateToolbarPosition();
+            }, 100);
+            isLoaded.value = true;
+            showToast("File loaded", "success");
+          } else {
+            console.error("PDFEditor not initialized yet");
+          }
+        })
+        .catch((error) => {
+          console.error("Error reading PDF file:", error);
+          showToast("Unable to read PDF file.", "error");
+        });
     };
     const handleDragEnter = (e) => {
       e.preventDefault();
@@ -1818,12 +1819,7 @@ export default {
         return;
       }
       try {
-        const fileContent = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (e) => reject(e);
-          reader.readAsText(configFileToProcess);
-        });
+        const fileContent = await readFileAsText(configFileToProcess);
         const config = JSON.parse(fileContent);
         // Validate config structure
         if (!config.pdfURL || !config.pages) {
@@ -1904,12 +1900,7 @@ export default {
         return;
       }
       try {
-        const fileContent = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (e) => reject(e);
-          reader.readAsText(configFileInput);
-        });
+        const fileContent = await readFileAsText(configFileInput);
         const config = JSON.parse(fileContent);
         // Validate config structure
         if (!config.pdfURL || !config.pages) {
