@@ -115,7 +115,17 @@ class PDFGenerator {
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
-    const embedFont = await pdfDoc.embedFont(fontToEmbed);
+
+    if (!pdfDoc.__fontCache) {
+      pdfDoc.__fontCache = new Map();
+    }
+    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
+    if (!embedFontPromise) {
+      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
+      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
+    }
+    const embedFont = await embedFontPromise;
+
     const wordBreaks =
       fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
     await pdfPage.drawText(text, {
@@ -353,7 +363,17 @@ class PDFGenerator {
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
-    const embedFont = await pdfDoc.embedFont(fontToEmbed);
+
+    if (!pdfDoc.__fontCache) {
+      pdfDoc.__fontCache = new Map();
+    }
+    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
+    if (!embedFontPromise) {
+      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
+      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
+    }
+    const embedFont = await embedFontPromise;
+
     const form = pdfDoc.getForm();
     const textField = form.createTextField(id);
     await textField.addToPage(pdfPage, {
