@@ -9,7 +9,6 @@
 
 ## The [REFACTORER] Queue
 * 🏗️ `src/App.vue`: 3268 lines. Split into smaller domain modules and composables to reduce monolithic complexity.
-* 🏗️ `src/js/OperationComponents.js`: 978 lines. Extract sub-components and improve modularity.
 * 🏗️ `src/js/PDFGenerator.js`: 698 lines. Break down into smaller helper functions.
 
 ## The [PRUNER] Queue
