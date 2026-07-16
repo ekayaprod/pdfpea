@@ -443,6 +443,47 @@ class PDFGenerator {
     isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
     isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
+  static _parseFillColor(fill) {
+    if (!fill || fill === "transparent") {
+      return null;
+    }
+    if (fill.startsWith("rgba(")) {
+      // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+      /**
+       * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
+       * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and allow transparent/semi-transparent background fills on link annotations.
+       */
+      const rgba = fill.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+      if (rgba) {
+        return {
+          red: parseInt(rgba[1]) / 255,
+          green: parseInt(rgba[2]) / 255,
+          blue: parseInt(rgba[3]) / 255,
+          alpha: parseFloat(rgba[4]),
+        };
+      }
+    } else if (fill.startsWith("#")) {
+      const rgb = hexToRgb(fill);
+      return { ...rgb, alpha: 1.0 };
+    }
+    return null;
+  }
+
+  static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
+    pdfPage.node.set(
+      PDFLib.PDFName.of("Annots"),
+      pdfPage.node.get(PDFLib.PDFName.of("Annots")) || [],
+    );
+    const linkDict = pdfDoc.context.obj(linkDictData);
+    const linkRef = pdfDoc.context.register(linkDict);
+    const annots = pdfPage.node.get(PDFLib.PDFName.of("Annots"));
+    if (annots) {
+      annots.push(linkRef);
+    } else {
+      pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
+    }
+  }
+
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();
     const x = operation.x;
@@ -456,30 +497,7 @@ class PDFGenerator {
     const linkType = operation.linkType;
     const linkValue = operation.linkValue;
     // Parse fill color (handle rgba format)
-    let fillColor = null;
-    if (fill && fill !== "transparent") {
-      if (fill.startsWith("rgba(")) {
-        // Parse rgba(r, g, b, a) format
-        // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
-        /**
-         * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
-         * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and allow transparent/semi-transparent background fills on link annotations.
-         */
-        const rgba = fill.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-        if (rgba) {
-          fillColor = {
-            red: parseInt(rgba[1]) / 255,
-            green: parseInt(rgba[2]) / 255,
-            blue: parseInt(rgba[3]) / 255,
-            alpha: parseFloat(rgba[4]),
-          };
-        }
-      } else if (fill.startsWith("#")) {
-        // Parse hex color
-        const rgb = hexToRgb(fill);
-        fillColor = { ...rgb, alpha: 1.0 };
-      }
-    }
+    const fillColor = PDFGenerator._parseFillColor(fill);
     // Draw the visual rectangle for the link area
     const rectangleOptions = {
       x: x + borderWidth / 2,
@@ -502,36 +520,28 @@ class PDFGenerator {
       width: width,
       height: height,
     };
+    const rect = [
+      linkAnnotation.x,
+      linkAnnotation.y,
+      linkAnnotation.x + linkAnnotation.width,
+      linkAnnotation.y + linkAnnotation.height,
+    ];
+
     if (linkType === "url") {
       // External URL link
       if (linkValue && (linkValue.startsWith("http://") || linkValue.startsWith("https://"))) {
-        pdfPage.node.set(
-          PDFLib.PDFName.of("Annots"),
-          pdfPage.node.get(PDFLib.PDFName.of("Annots")) || [],
-        );
-        const linkDict = pdfDoc.context.obj({
+        const linkDictData = {
           Type: "Annot",
           Subtype: "Link",
-          Rect: [
-            linkAnnotation.x,
-            linkAnnotation.y,
-            linkAnnotation.x + linkAnnotation.width,
-            linkAnnotation.y + linkAnnotation.height,
-          ],
+          Rect: rect,
           A: {
             Type: "Action",
             S: "URI",
             URI: PDFLib.PDFString.of(linkValue),
           },
           Border: [0, 0, 0], // No visible border for the annotation
-        });
-        const linkRef = pdfDoc.context.register(linkDict);
-        const annots = pdfPage.node.get(PDFLib.PDFName.of("Annots"));
-        if (annots) {
-          annots.push(linkRef);
-        } else {
-          pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
-        }
+        };
+        PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData);
       }
     } else if (linkType === "page") {
       // Internal page link
@@ -540,30 +550,15 @@ class PDFGenerator {
         const pages = pdfDoc.getPages();
         const targetPageIndex = pageNumber - 1;
         if (targetPageIndex >= 0 && targetPageIndex < pages.length) {
-          pdfPage.node.set(
-            PDFLib.PDFName.of("Annots"),
-            pdfPage.node.get(PDFLib.PDFName.of("Annots")) || [],
-          );
           const targetPage = pages[targetPageIndex];
-          const linkDict = pdfDoc.context.obj({
+          const linkDictData = {
             Type: "Annot",
             Subtype: "Link",
-            Rect: [
-              linkAnnotation.x,
-              linkAnnotation.y,
-              linkAnnotation.x + linkAnnotation.width,
-              linkAnnotation.y + linkAnnotation.height,
-            ],
+            Rect: rect,
             Dest: [targetPage.ref, "XYZ", null, null, null],
             Border: [0, 0, 0], // No visible border for the annotation
-          });
-          const linkRef = pdfDoc.context.register(linkDict);
-          const annots = pdfPage.node.get(PDFLib.PDFName.of("Annots"));
-          if (annots) {
-            annots.push(linkRef);
-          } else {
-            pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
-          }
+          };
+          PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData);
         }
       }
     }
