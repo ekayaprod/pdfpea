@@ -1760,6 +1760,7 @@ export default {
         link.href = URL.createObjectURL(blob);
         link.download = `modified_pdf.pdf`;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
       } else {
         console.error("PDFEditor not initialized yet");
       }
@@ -1792,6 +1793,7 @@ export default {
         link.href = URL.createObjectURL(blob);
         link.download = `pdf-config-${new Date().toISOString().split("T")[0]}-pdfso.json`;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
         showToast("Configuration exported successfully!", "success");
       } catch (error) {
         console.error("Error creating config file:", error);
