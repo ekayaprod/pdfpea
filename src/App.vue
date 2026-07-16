@@ -2090,12 +2090,15 @@ export default {
           reader.readAsText(configFileToProcess);
         });
 
-        const config = JSON.parse(fileContent);
+        const configRaw = JSON.parse(fileContent);
 
-        // Validate config structure
-        if (!config.pdfURL || !config.pages) {
-          throw new Error("Invalid config file format");
-        }
+        const { z } = await import('zod');
+        const ConfigSchema = z.object({
+          pdfURL: z.string().min(1),
+          pages: z.record(z.any()), // Assuming pages is an object map
+        }).passthrough();
+
+        const config = ConfigSchema.parse(configRaw);
 
         console.log("Config loaded:", config);
 
@@ -2192,12 +2195,15 @@ export default {
           reader.readAsText(configFileInput);
         });
 
-        const config = JSON.parse(fileContent);
+        const configRaw = JSON.parse(fileContent);
 
-        // Validate config structure
-        if (!config.pdfURL || !config.pages) {
-          throw new Error("Invalid config file format");
-        }
+        const { z } = await import('zod');
+        const ConfigSchema = z.object({
+          pdfURL: z.string().min(1),
+          pages: z.record(z.any()), // Assuming pages is an object map
+        }).passthrough();
+
+        const config = ConfigSchema.parse(configRaw);
 
         console.log("Config loaded:", config);
 
