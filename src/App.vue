@@ -2493,7 +2493,20 @@ export default {
       });
       for (const [iconName, url] of Object.entries(iconUrls)) {
         try {
-          const response = await fetch(url);
+          // Validate URL protocol to prevent SSRF
+          let safeUrl = url;
+          try {
+            const parsedUrl = new URL(url, window.location.origin);
+            if (!['http:', 'https:', 'data:', 'blob:'].includes(parsedUrl.protocol)) {
+              throw new Error('Invalid URL protocol');
+            }
+            safeUrl = parsedUrl.href;
+          } catch (e) {
+            console.error(`Invalid URL for icon ${iconName}: ${e.message}`);
+            continue;
+          }
+
+          const response = await fetch(safeUrl);
           if (response.ok) {
             const svgText = await response.text();
             // Convert to base64 data URL

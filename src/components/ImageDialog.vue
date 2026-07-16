@@ -173,6 +173,18 @@ export default {
       error.value = "";
 
       try {
+        // Validate URL protocol to prevent malicious payload loading
+        let safeUrl = imageUrl.value;
+        try {
+          const parsedUrl = new URL(imageUrl.value, window.location.origin);
+          if (!['http:', 'https:', 'data:', 'blob:'].includes(parsedUrl.protocol)) {
+            throw new Error('Invalid URL protocol');
+          }
+          safeUrl = parsedUrl.href;
+        } catch (e) {
+          throw new Error(`Invalid URL: ${e.message}`);
+        }
+
         // Create a temporary image to test if URL is valid
         const img = new Image();
         img.crossOrigin = "anonymous";
@@ -180,7 +192,7 @@ export default {
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
-          img.src = imageUrl.value;
+          img.src = safeUrl;
         });
 
         // Convert image to base64

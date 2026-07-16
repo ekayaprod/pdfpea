@@ -148,8 +148,20 @@ class PDFGenerator {
     const pageHeight = pdfPage.getHeight();
     const { x, y, width, height, opacity: opacityStr, url } = operation;
     const opacity = parseFloat(opacityStr, 10);
+    // Validate URL protocol to prevent SSRF
+    let safeUrl = url;
+    try {
+      const parsedUrl = new URL(url, window?.location?.origin || 'http://localhost');
+      if (!['http:', 'https:', 'data:', 'blob:'].includes(parsedUrl.protocol)) {
+        throw new Error('Invalid URL protocol');
+      }
+      safeUrl = parsedUrl.href;
+    } catch (e) {
+      throw new Error(`Invalid image URL: ${e.message}`);
+    }
+
     // Fetch image data
-    const res = await fetch(url);
+    const res = await fetch(safeUrl);
     const arrayBuffer = await res.arrayBuffer();
     const type = PDFGenerator.getImageType(arrayBuffer);
     // Helper for JPG/PNG
