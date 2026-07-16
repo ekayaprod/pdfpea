@@ -142,43 +142,24 @@ class PDFGenerator {
     const width = operation.width;
     const opacity = parseFloat(operation.opacity, 10);
 
-    let embedFont;
-
-    if (fontFamily === "Helvetica") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-    } else if (fontFamily === "Helvetica-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-    } else if (fontFamily === "Helvetica-Oblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
-    } else if (fontFamily === "Helvetica-BoldOblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique);
-    } else if (fontFamily === "Times-Roman") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
-    } else if (fontFamily === "Times-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBold);
-    } else if (fontFamily === "Times-Italic") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesItalic);
-    } else if (fontFamily === "Times-BoldItalic") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBoldItalic);
-    } else if (fontFamily === "Courier") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier);
-    } else if (fontFamily === "Courier-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
-    } else if (fontFamily === "Courier-Oblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierOblique);
-    } else if (fontFamily === "Courier-BoldOblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBoldOblique);
-    } else if (fontFamily === "Symbol") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Symbol);
-    } else if (fontFamily === "ZapfDingbats") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats);
-    } else if (fontFamily === "TimesRoman") {
-      // Legacy support for old naming
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
-    } else {
-      // Default fallback
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-    }
+    const fontMap = {
+      "Helvetica": PDFLib.StandardFonts.Helvetica,
+      "Helvetica-Bold": PDFLib.StandardFonts.HelveticaBold,
+      "Helvetica-Oblique": PDFLib.StandardFonts.HelveticaOblique,
+      "Helvetica-BoldOblique": PDFLib.StandardFonts.HelveticaBoldOblique,
+      "Times-Roman": PDFLib.StandardFonts.TimesRoman,
+      "Times-Bold": PDFLib.StandardFonts.TimesBold,
+      "Times-Italic": PDFLib.StandardFonts.TimesItalic,
+      "Times-BoldItalic": PDFLib.StandardFonts.TimesBoldItalic,
+      "Courier": PDFLib.StandardFonts.Courier,
+      "Courier-Bold": PDFLib.StandardFonts.CourierBold,
+      "Courier-Oblique": PDFLib.StandardFonts.CourierOblique,
+      "Courier-BoldOblique": PDFLib.StandardFonts.CourierBoldOblique,
+      "Symbol": PDFLib.StandardFonts.Symbol,
+      "ZapfDingbats": PDFLib.StandardFonts.ZapfDingbats,
+      "TimesRoman": PDFLib.StandardFonts.TimesRoman // Legacy support for old naming
+    };
+    const embedFont = await pdfDoc.embedFont(fontMap[fontFamily] || PDFLib.StandardFonts.Helvetica);
 
     let wordBreaks = [];
 
@@ -453,43 +434,24 @@ class PDFGenerator {
     const isMultiline = operation.isMultiline;
     const isReadOnly = operation.isReadOnly;
 
-    let embedFont;
-
-    if (fontFamily === "Helvetica") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-    } else if (fontFamily === "Helvetica-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-    } else if (fontFamily === "Helvetica-Oblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
-    } else if (fontFamily === "Helvetica-BoldOblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique);
-    } else if (fontFamily === "Times-Roman") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
-    } else if (fontFamily === "Times-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBold);
-    } else if (fontFamily === "Times-Italic") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesItalic);
-    } else if (fontFamily === "Times-BoldItalic") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesBoldItalic);
-    } else if (fontFamily === "Courier") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier);
-    } else if (fontFamily === "Courier-Bold") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
-    } else if (fontFamily === "Courier-Oblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierOblique);
-    } else if (fontFamily === "Courier-BoldOblique") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBoldOblique);
-    } else if (fontFamily === "Symbol") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Symbol);
-    } else if (fontFamily === "ZapfDingbats") {
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats);
-    } else if (fontFamily === "TimesRoman") {
-      // Legacy support for old naming
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
-    } else {
-      // Default fallback
-      embedFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-    }
+    const fontMap = {
+      "Helvetica": PDFLib.StandardFonts.Helvetica,
+      "Helvetica-Bold": PDFLib.StandardFonts.HelveticaBold,
+      "Helvetica-Oblique": PDFLib.StandardFonts.HelveticaOblique,
+      "Helvetica-BoldOblique": PDFLib.StandardFonts.HelveticaBoldOblique,
+      "Times-Roman": PDFLib.StandardFonts.TimesRoman,
+      "Times-Bold": PDFLib.StandardFonts.TimesBold,
+      "Times-Italic": PDFLib.StandardFonts.TimesItalic,
+      "Times-BoldItalic": PDFLib.StandardFonts.TimesBoldItalic,
+      "Courier": PDFLib.StandardFonts.Courier,
+      "Courier-Bold": PDFLib.StandardFonts.CourierBold,
+      "Courier-Oblique": PDFLib.StandardFonts.CourierOblique,
+      "Courier-BoldOblique": PDFLib.StandardFonts.CourierBoldOblique,
+      "Symbol": PDFLib.StandardFonts.Symbol,
+      "ZapfDingbats": PDFLib.StandardFonts.ZapfDingbats,
+      "TimesRoman": PDFLib.StandardFonts.TimesRoman // Legacy support for old naming
+    };
+    const embedFont = await pdfDoc.embedFont(fontMap[fontFamily] || PDFLib.StandardFonts.Helvetica);
 
     const form = pdfDoc.getForm();
 
@@ -656,11 +618,7 @@ class PDFGenerator {
 
         const linkRef = pdfDoc.context.register(linkDict);
         const annots = pdfPage.node.get(PDFLib.PDFName.of("Annots"));
-        if (annots) {
-          annots.push(linkRef);
-        } else {
-          pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
-        }
+        annots ? annots.push(linkRef) : pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
       }
     } else if (linkType === "page") {
       // Internal page link
