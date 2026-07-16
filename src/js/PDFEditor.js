@@ -71,7 +71,7 @@ class PDFEditor {
     });
   }
 
-  async downloadPDF() {
+  async exportPDF() {
     const pageOperations = this.pdfPages.map((page) => ({
       pageNumber: page.pageNumber,
       operations: page.getOperations(),

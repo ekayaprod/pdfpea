@@ -24,7 +24,7 @@
           <div class="option-element">
             <button
               id="download-pdf-button"
-              @click="downloadPDF()"
+              @click="exportPDF()"
               class="btn"
               title="Export the edited PDF with all annotations"
             >
@@ -47,7 +47,7 @@
               <div class="dropdown-menu" :class="{ show: showConfigDropdown }">
                 <button
                   @click="
-                    downloadConfig();
+                    exportConfig();
                     closeConfigDropdown();
                   "
                   class="dropdown-item"
@@ -2006,10 +2006,10 @@ export default {
       }
     };
 
-    const downloadPDF = async () => {
-      console.log("downloadPDF called");
+    const exportPDF = async () => {
+      console.log("exportPDF called");
       if (pdfEditor) {
-        const pdfBytes = await pdfEditor.downloadPDF();
+        const pdfBytes = await pdfEditor.exportPDF();
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -2020,8 +2020,8 @@ export default {
       }
     };
 
-    const downloadConfig = () => {
-      console.log("downloadConfig called");
+    const exportConfig = () => {
+      console.log("exportConfig called");
       if (!pdfEditor || !pdfEditor.fileContents) {
         console.error("No PDF loaded or PDFEditor not initialized");
         return;
@@ -2277,7 +2277,7 @@ export default {
       }
     };
 
-    const uploadPropertyPanel = (e) => {
+    const updatePropertyPanel = (e) => {
       selectedOperation.value = e.detail.target.getOperation();
       if (e.detail.target && e.detail.target.wrapperContainer) {
         selectedLayerEl.value = e.detail.target.wrapperContainer;
@@ -2712,9 +2712,9 @@ export default {
         try {
           pdfEditor = new PDFEditor(pdfViewContainer.value);
 
-          document.addEventListener("pdfeditor.componentSelected", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentDragging", uploadPropertyPanel);
-          document.addEventListener("pdfeditor.componentResizing", uploadPropertyPanel);
+          document.addEventListener("pdfeditor.componentSelected", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentDragging", updatePropertyPanel);
+          document.addEventListener("pdfeditor.componentResizing", updatePropertyPanel);
           document.addEventListener("pdfeditor.shouldClearAllSelection", clearPropertyPanel);
 
           // Keep the Layers panel in sync as components are added/removed.
@@ -3076,7 +3076,7 @@ export default {
       handleDragOver,
       handleDragLeave,
       handleDrop,
-      downloadPDF,
+      exportPDF,
       zoomLevel,
       applyZoom,
       updateToolbarPosition,
@@ -3104,9 +3104,9 @@ export default {
       openImageDialog,
       closeImageDialog,
       handleImageConfirm,
-      uploadPropertyPanel,
+      updatePropertyPanel,
       clearPropertyPanel,
-      downloadConfig,
+      exportConfig,
       clickRestoreConfigInput,
       handleConfigRestore,
       getSvgStrokeColor,
