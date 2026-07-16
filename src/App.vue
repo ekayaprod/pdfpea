@@ -1822,7 +1822,12 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileToProcess);
         });
-        const config = JSON.parse(fileContent);
+        const config = JSON.parse(fileContent, (key, value) => {
+          if (key === "__proto__" || key === "constructor" || key === "prototype") {
+            return undefined;
+          }
+          return value;
+        });
         // Validate config structure
         if (
           !config ||
@@ -1908,7 +1913,12 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileInput);
         });
-        const config = JSON.parse(fileContent);
+        const config = JSON.parse(fileContent, (key, value) => {
+          if (key === "__proto__" || key === "constructor" || key === "prototype") {
+            return undefined;
+          }
+          return value;
+        });
         // Validate config structure
         if (
           !config ||
