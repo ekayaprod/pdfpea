@@ -795,6 +795,7 @@ import ImageDialog from "./components/ImageDialog.vue";
 import { generateId } from "./utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./utils/FreehandDrawing.js";
+import { parsePdfData } from "./utils/pdfData.js";
 export default {
   name: "App",
   components: {
@@ -1827,15 +1828,7 @@ export default {
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData;
-        if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
-          // Extract base64 data and convert to binary string
-          const base64Data = config.pdfURL.replace("data:application/pdf;base64,", "");
-          pdfData = atob(base64Data);
-        } else {
-          // It's a regular URL, we'll pass it as is
-          pdfData = config.pdfURL;
-        }
+        let pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
@@ -1913,15 +1906,7 @@ export default {
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData;
-        if (config.pdfURL.startsWith("data:application/pdf;base64,")) {
-          // Extract base64 data and convert to binary string
-          const base64Data = config.pdfURL.replace("data:application/pdf;base64,", "");
-          pdfData = atob(base64Data);
-        } else {
-          // It's a regular URL, we'll pass it as is
-          pdfData = config.pdfURL;
-        }
+        let pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
