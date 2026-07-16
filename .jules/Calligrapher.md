@@ -1,0 +1,1 @@
+Applied structural formatting: optimized Google Fonts preload to prevent FOIT, added local fallback font for Barlow to fix CLS layout shifts, and strictly typed fontFamily in OperationComponents using JSDoc literal unions.

@@ -675,9 +675,17 @@ body {
   z-index: 9999;
 }
 
+@font-face {
+  font-family: "Barlow-fallback";
+  src: local("Arial");
+  size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 20%;
+}
+
 /* Headings */
 h3 {
-  font-family: "Barlow", sans-serif;
+  font-family: "Barlow", "Barlow-fallback", sans-serif;
 }
 
 /* Responsive adjustments */
@@ -1108,7 +1116,7 @@ h3 {
 }
 
 .measurement-label {
-  font-family: "Barlow", sans-serif;
+  font-family: "Barlow", "Barlow-fallback", sans-serif;
   pointer-events: none;
 }
 

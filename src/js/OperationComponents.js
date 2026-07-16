@@ -551,6 +551,17 @@ class TextOperationComponent extends BasicOperationComponent {
         break;
     }
   };
+  /**
+   * @param {string} id
+   * @param {number} x
+   * @param {number} y
+   * @param {number} width
+   * @param {number} height
+   * @param {'Helvetica' | 'Helvetica-Bold' | 'Helvetica-Oblique' | 'Helvetica-BoldOblique' | 'Times-Roman' | 'Times-Bold' | 'Times-Italic' | 'Times-BoldItalic' | 'Courier' | 'Courier-Bold' | 'Courier-Oblique' | 'Courier-BoldOblique' | 'Symbol' | 'ZapfDingbats'} fontFamily
+   * @param {number} fontSize
+   * @param {string} color
+   * @param {number} opacity
+   */
   static createDefaultOperation = (
     id,
     x,
@@ -631,7 +642,17 @@ class TextFieldOperationComponent extends BasicOperationComponent {
         break;
     }
   };
+  /**
+   * @param {string} id
+   * @param {number} x
+   * @param {number} y
+   * @param {number} width
+   * @param {number} height
+   */
   static createDefaultOperation = (id, x, y, width = 150, height = 25) => {
+    /** @type {'Helvetica' | 'Helvetica-Bold' | 'Helvetica-Oblique' | 'Helvetica-BoldOblique' | 'Times-Roman' | 'Times-Bold' | 'Times-Italic' | 'Times-BoldItalic' | 'Courier' | 'Courier-Bold' | 'Courier-Oblique' | 'Courier-BoldOblique' | 'Symbol' | 'ZapfDingbats'} */
+    const defaultFontFamily = "Helvetica";
+
     return {
       type: "textfield",
       operation: "create",
@@ -647,7 +668,7 @@ class TextFieldOperationComponent extends BasicOperationComponent {
       borderColor: "#000000",
       backgroundColor: "#ADD8E6",
       opacity: 1,
-      fontFamily: "Helvetica",
+      fontFamily: defaultFontFamily,
       fontSize: 14,
       isRequired: false,
       isMultiline: false,
