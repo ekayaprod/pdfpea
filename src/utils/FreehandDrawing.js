@@ -144,10 +144,12 @@ class FreehandDrawing {
     // Build SVG path with original coordinates translated to start from padding
     let pathData = "";
     if (smoothedPath.length > 0) {
-      pathData = `M ${smoothedPath[0].x - minX} ${smoothedPath[0].y - minY}`;
+      const parts = new Array(smoothedPath.length);
+      parts[0] = `M ${smoothedPath[0].x - minX} ${smoothedPath[0].y - minY}`;
       for (let i = 1; i < smoothedPath.length; i++) {
-        pathData += ` L ${smoothedPath[i].x - minX} ${smoothedPath[i].y - minY}`;
+        parts[i] = ` L ${smoothedPath[i].x - minX} ${smoothedPath[i].y - minY}`;
       }
+      pathData = parts.join("");
     }
     // Create SVG with preserveAspectRatio to maintain stroke width
     const svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
