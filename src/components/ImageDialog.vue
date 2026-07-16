@@ -191,7 +191,7 @@ export default {
         ctx.drawImage(img, 0, 0);
 
         preview.value = canvas.toDataURL("image/png");
-      } catch (e) {
+      } catch {
         error.value =
           "Unable to load the image from the provided URL. Verify the link and try again.";
       }
