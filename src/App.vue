@@ -1822,13 +1822,21 @@ export default {
         });
         const config = JSON.parse(fileContent);
         // Validate config structure
-        if (!config.pdfURL || !config.pages) {
+        if (
+          !config ||
+          typeof config !== "object" ||
+          typeof config.pdfURL !== "string" ||
+          !Array.isArray(config.pages) ||
+          !config.pages.every(
+            (page) => page && typeof page === "object" && Array.isArray(page.operations),
+          )
+        ) {
           throw new Error("Invalid config file format");
         }
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData = parsePdfData(config.pdfURL);
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
@@ -1900,13 +1908,21 @@ export default {
         });
         const config = JSON.parse(fileContent);
         // Validate config structure
-        if (!config.pdfURL || !config.pages) {
+        if (
+          !config ||
+          typeof config !== "object" ||
+          typeof config.pdfURL !== "string" ||
+          !Array.isArray(config.pages) ||
+          !config.pages.every(
+            (page) => page && typeof page === "object" && Array.isArray(page.operations),
+          )
+        ) {
           throw new Error("Invalid config file format");
         }
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
-        let pdfData = parsePdfData(config.pdfURL);
+        const pdfData = parsePdfData(config.pdfURL);
         // Load the PDF
         if (pdfEditor) {
           await pdfEditor.renderPDF("", pdfData);
