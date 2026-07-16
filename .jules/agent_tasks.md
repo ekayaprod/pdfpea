@@ -22,3 +22,5 @@
 ## The [TRANSFORMER] Queue
 * 🎨 `src/components/ImageDialog.vue` (lines 224-304): Replace hardcoded hex colors (`#ccc`, `#fafafa`, `#007acc`, etc.) with CSS variables or design system tokens.
 * 🎨 `src/css/styles.css` (lines 14-56): Replace hardcoded hex colors (`#e3f2fd`, `#2196f3`, `#1976d2`, etc.) with CSS variables or design system tokens.
+## The [REDIRECTOR] Queue
+* 🔀 `index.html` (line 179): Fixed broken relative link \`src="images/landing-editor.png"\` to absolute path \`src="/images/landing-editor.png"\` to preserve architectural routing integrity.
