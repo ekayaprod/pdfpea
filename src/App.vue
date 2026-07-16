@@ -2471,22 +2471,24 @@ export default {
       iconTools.value.forEach((iconTool) => {
         iconUrls[iconTool.id] = iconTool.icon;
       });
-      for (const [iconName, url] of Object.entries(iconUrls)) {
-        try {
-          const response = await fetch(url);
-          if (response.ok) {
-            const svgText = await response.text();
-            // Convert to base64 data URL
-            const base64Data = btoa(svgText);
-            const dataUrl = `data:image/svg+xml;base64,${base64Data}`;
-            iconCache.value[iconName] = dataUrl;
-          } else {
-            console.error(`Failed to fetch icon: ${iconName} from ${url}`);
+      await Promise.all(
+        Object.entries(iconUrls).map(async ([iconName, url]) => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              const svgText = await response.text();
+              // Convert to base64 data URL
+              const base64Data = btoa(svgText);
+              const dataUrl = `data:image/svg+xml;base64,${base64Data}`;
+              iconCache.value[iconName] = dataUrl;
+            } else {
+              console.error(`Failed to fetch icon: ${iconName} from ${url}`);
+            }
+          } catch (error) {
+            console.error(`Error loading icon ${iconName}:`, error);
           }
-        } catch (error) {
-          console.error(`Error loading icon ${iconName}:`, error);
-        }
-      }
+        }),
+      );
     };
     // Apply fill color to cached SVG icon
     const getColoredIcon = (iconName, fillColor) => {
