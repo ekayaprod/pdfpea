@@ -42,18 +42,8 @@ class PDFGenerator {
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     for (const page of pageOperations) {
-      const index = page.pageIndex;
-      const pdfURL = page.pdfURL;
       const pageNumber = page.pageNumber;
-      const createOperations = [];
-      const updateOperations = [];
-      for (const item of page.operations) {
-        if (item.operation === "create") {
-          createOperations.push(item);
-        } else if (item.operation === "update") {
-          updateOperations.push(item);
-        }
-      }
+      const updateOperations = page.operations.filter((op) => op.operation === "update");
       for (const op of updateOperations) {
         const formField = fieldMap.get(op.id);
         if (formField !== null && formField !== undefined) {
@@ -69,15 +59,8 @@ class PDFGenerator {
     // Pages themselves can be processed concurrently
     const pagePromises = pageOperations.map(async (page) => {
       const pageNumber = page.pageNumber;
-      const createOperations = [];
-      const updateOperations = [];
-      for (const item of page.operations) {
-        if (item.operation === "create") {
-          createOperations.push(item);
-        } else if (item.operation === "update") {
-          updateOperations.push(item);
-        }
-      }
+      const createOperations = page.operations.filter((op) => op.operation === "create");
+      const updateOperations = page.operations.filter((op) => op.operation === "update");
       const pdfPage = pdfPages[pageNumber - 1];
       // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
       for (const op of createOperations) {
@@ -215,24 +198,11 @@ class PDFGenerator {
     const [, vb] = vbMatch;
     const [, , vbW, vbH] = vb.split(/\s+/).map(parseFloat);
 
-    let scaleX,
-      scaleY,
-      offsetX = 0,
-      offsetY = 0;
-    if (shouldMaintainAspectRatio) {
-      const scale = Math.min(width / vbW, height / vbH);
-      scaleX = scale;
-      scaleY = scale;
-      const scaledW = vbW * scale;
-      const scaledH = vbH * scale;
-      offsetX = (width - scaledW) / 2;
-      offsetY = (height - scaledH) / 2;
-    } else {
-      scaleX = width / vbW;
-      scaleY = height / vbH;
-      offsetX = 0;
-      offsetY = 0;
-    }
+    const scale = shouldMaintainAspectRatio ? Math.min(width / vbW, height / vbH) : 1;
+    const scaleX = shouldMaintainAspectRatio ? scale : width / vbW;
+    const scaleY = shouldMaintainAspectRatio ? scale : height / vbH;
+    const offsetX = shouldMaintainAspectRatio ? (width - vbW * scale) / 2 : 0;
+    const offsetY = shouldMaintainAspectRatio ? (height - vbH * scale) / 2 : 0;
 
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
@@ -421,9 +391,21 @@ class PDFGenerator {
     } else if (alignment === "Right") {
       existingTextField.setAlignment(PDFLib.TextAlignment.Right);
     }
-    isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
-    isMultiline ? existingTextField.enableMultiline() : existingTextField.disableMultiline();
-    isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
+    if (isRequired) {
+      existingTextField.enableRequired();
+    } else {
+      existingTextField.disableRequired();
+    }
+    if (isMultiline) {
+      existingTextField.enableMultiline();
+    } else {
+      existingTextField.disableMultiline();
+    }
+    if (isReadOnly) {
+      existingTextField.enableReadOnly();
+    } else {
+      existingTextField.disableReadOnly();
+    }
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();
@@ -454,8 +436,16 @@ class PDFGenerator {
       rotate: PDFLib.degrees(rotate),
     });
     const existingCheckbox = form.getCheckBox(id);
-    isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
-    isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
+    if (isChecked) {
+      existingCheckbox.check();
+    } else {
+      existingCheckbox.uncheck();
+    }
+    if (isReadOnly) {
+      existingCheckbox.enableReadOnly();
+    } else {
+      existingCheckbox.disableReadOnly();
+    }
   }
   static _parseFillColor(fill) {
     if (!fill || fill === "transparent") {
@@ -541,39 +531,19 @@ class PDFGenerator {
       linkAnnotation.y + linkAnnotation.height,
     ];
 
-    if (linkType === "url") {
-      // External URL link
-      if (linkValue && (linkValue.startsWith("http://") || linkValue.startsWith("https://"))) {
-        const linkDictData = {
-          Type: "Annot",
-          Subtype: "Link",
-          Rect: rect,
-          A: {
-            Type: "Action",
-            S: "URI",
-            URI: PDFLib.PDFString.of(linkValue),
-          },
-          Border: [0, 0, 0], // No visible border for the annotation
-        };
-        PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData);
-      }
-    } else if (linkType === "page") {
-      // Internal page link
-      const pageNumber = parseInt(linkValue);
-      if (pageNumber && pageNumber > 0) {
-        const pages = pdfDoc.getPages();
-        const targetPageIndex = pageNumber - 1;
-        if (targetPageIndex >= 0 && targetPageIndex < pages.length) {
-          const targetPage = pages[targetPageIndex];
-          const linkDictData = {
-            Type: "Annot",
-            Subtype: "Link",
-            Rect: rect,
-            Dest: [targetPage.ref, "XYZ", null, null, null],
-            Border: [0, 0, 0], // No visible border for the annotation
-          };
-          PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData);
-        }
+    const linkDictData = { Type: "Annot", Subtype: "Link", Rect: rect, Border: [0, 0, 0] };
+    if (linkType === "url" && linkValue?.match(/^https?:\/\//)) {
+      PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
+        ...linkDictData,
+        A: { Type: "Action", S: "URI", URI: PDFLib.PDFString.of(linkValue) },
+      });
+    } else if (linkType === "page" && parseInt(linkValue) > 0) {
+      const targetPage = pdfDoc.getPages()[parseInt(linkValue) - 1];
+      if (targetPage) {
+        PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
+          ...linkDictData,
+          Dest: [targetPage.ref, "XYZ", null, null, null],
+        });
       }
     }
   }
