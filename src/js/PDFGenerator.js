@@ -1,5 +1,5 @@
 import svgpath from "svgpath";
-import { hexToRgb } from "./utils/colors.js";
+import { hexToRgb, parseColor } from "./utils/colors.js";
 class PDFGenerator {
   constructor() {}
   static str2ab(binaryString) {
@@ -312,9 +312,7 @@ class PDFGenerator {
     const borderColor = hexToRgb(operation.borderColor);
     const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
-    const isTransparent =
-      !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
-    const fillColor = isTransparent ? null : hexToRgb(fill);
+    const fillColor = parseColor(fill);
     const rectangleOptions = {
       x: x + borderWidth / 2,
       y: operationPageHeight + borderWidth / 2 - y - height,
@@ -343,9 +341,7 @@ class PDFGenerator {
     const yScale = (height - borderWidth) / 2;
     const fill = operation.fill ?? operation.color;
     const opacity = parseFloat(operation.opacity, 10);
-    const isTransparent =
-      !fill || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "";
-    const fillColor = isTransparent ? null : hexToRgb(fill);
+    const fillColor = parseColor(fill);
     const ellipseOptions = {
       x: x + width / 2,
       y: operationPageHeight - y - height / 2,
@@ -457,32 +453,6 @@ class PDFGenerator {
     isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
     isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
-  static _parseFillColor(fill) {
-    if (!fill || fill === "transparent") {
-      return null;
-    }
-    if (fill.startsWith("rgba(")) {
-      // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
-      /**
-       * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
-       * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and allow transparent/semi-transparent background fills on link annotations.
-       */
-      const rgba = fill.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-      if (rgba) {
-        return {
-          red: parseInt(rgba[1]) / 255,
-          green: parseInt(rgba[2]) / 255,
-          blue: parseInt(rgba[3]) / 255,
-          alpha: parseFloat(rgba[4]),
-        };
-      }
-    } else if (fill.startsWith("#")) {
-      const rgb = hexToRgb(fill);
-      return { ...rgb, alpha: 1.0 };
-    }
-    return null;
-  }
-
   static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
     pdfPage.node.set(
       PDFLib.PDFName.of("Annots"),
@@ -511,7 +481,7 @@ class PDFGenerator {
     const linkType = operation.linkType;
     const linkValue = operation.linkValue;
     // Parse fill color (handle rgba format)
-    const fillColor = PDFGenerator._parseFillColor(fill);
+    const fillColor = parseColor(fill);
     // Draw the visual rectangle for the link area
     const rectangleOptions = {
       x: x + borderWidth / 2,

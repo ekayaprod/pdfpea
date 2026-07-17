@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { hexToRgb, rgbToHex } from "./colors.js";
+import { hexToRgb, rgbToHex, parseColor } from "./colors.js";
 
 describe("colors utils", () => {
   describe("hexToRgb", () => {
@@ -64,6 +64,33 @@ describe("colors utils", () => {
     });
     it("should handle floating point values", () => {
       expect(rgbToHex(254.9, 0.1, 128.5)).toBe("#ff0081");
+    });
+  });
+
+  describe("parseColor", () => {
+    it("should handle transparent strings", () => {
+      expect(parseColor("transparent")).toBeNull();
+      expect(parseColor("rgba(0,0,0,0)")).toBeNull();
+      expect(parseColor("")).toBeNull();
+      expect(parseColor(null)).toBeNull();
+    });
+
+    it("should parse rgba strings", () => {
+      expect(parseColor("rgba(255, 128, 0, 0.5)")).toEqual({
+        red: 1,
+        green: 128 / 255,
+        blue: 0,
+        alpha: 0.5,
+      });
+    });
+
+    it("should parse hex strings", () => {
+      expect(parseColor("#ff0000")).toEqual({
+        red: 1,
+        green: 0,
+        blue: 0,
+        alpha: 1.0,
+      });
     });
   });
 });

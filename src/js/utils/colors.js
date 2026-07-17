@@ -32,3 +32,27 @@ export const rgbToHex = (red, green, blue) => {
     .padStart(2, "0");
   return `#${redHex}${greenHex}${blueHex}`;
 };
+
+// 🥄 SPLICE: Semantic duplicate logic identified and integrated into a single utility block.
+export const parseColor = (colorString) => {
+  if (!colorString || colorString === "transparent" || colorString === "rgba(0,0,0,0)" || colorString === "") {
+    return null;
+  }
+  if (colorString.startsWith("rgba(")) {
+    const rgba = colorString.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+    if (rgba) {
+      return {
+        red: parseInt(rgba[1]) / 255,
+        green: parseInt(rgba[2]) / 255,
+        blue: parseInt(rgba[3]) / 255,
+        alpha: parseFloat(rgba[4]),
+      };
+    }
+  } else if (colorString.startsWith("#")) {
+    const rgb = hexToRgb(colorString);
+    if (rgb) {
+      return { ...rgb, alpha: 1.0 };
+    }
+  }
+  return null;
+};
