@@ -20,6 +20,27 @@ describe("FreehandDrawing - Pure Functions Boundary Stress Tests", () => {
     const result = freehandDrawing.pathToSvgDataUrl([], {});
     expect(result).toBeNull();
   });
+
+  it("pathToSvgDataUrl handles Unicode characters in options securely without throwing", () => {
+    const path = [
+      { x: 10, y: 10 },
+      { x: 20, y: 20 },
+    ];
+    // This previously crashed with `unescape` or invalid Unicode encoding paths.
+    // We pass a Unicode symbol in the color property.
+    const result = freehandDrawing.pathToSvgDataUrl(path, { color: "red-🔥" });
+    expect(result).toMatch(/^data:image\/svg\+xml;base64,/);
+
+    // Decode the base64 back and ensure the Unicode string is present
+    const base64Data = result.split(",")[1];
+    const binString = atob(base64Data);
+    const bytes = new Uint8Array(binString.length);
+    for (let i = 0; i < binString.length; i++) {
+      bytes[i] = binString.charCodeAt(i);
+    }
+    const decodedSvg = new TextDecoder().decode(bytes);
+    expect(decodedSvg).toContain('stroke="red-🔥"');
+  });
 });
 
 describe("FreehandDrawing - Canvas and State Management", () => {
