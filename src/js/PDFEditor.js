@@ -391,7 +391,7 @@ class PDFPage {
               y,
               width,
               height,
-              settings.url ?? "/images/default_image.jpg",
+              settings.url ?? "./images/default_image.jpg",
               100,
               100,
               settings?.subType,

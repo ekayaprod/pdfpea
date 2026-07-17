@@ -35,7 +35,7 @@ describe("ImageOperationComponent", () => {
   it("should create successfully with valid operation", () => {
     const comp = new ImageOperationComponent(operation, canvasContainer);
     expect(comp).toBeDefined();
-    expect(comp.shadow.getAttribute("src")).toBe("/images/default_image.jpg");
+    expect(comp.shadow.getAttribute("src")).toBe("./images/default_image.jpg");
   });
 
   it("should securely reject null or undefined operation", () => {
@@ -69,8 +69,8 @@ describe("ImageOperationComponent", () => {
     });
 
     it("should update src attribute when property is url", () => {
-      comp.operationChanged("url", "/images/new_image.jpg");
-      expect(comp.shadow.getAttribute("src")).toBe("/images/new_image.jpg");
+      comp.operationChanged("url", "./images/new_image.jpg");
+      expect(comp.shadow.getAttribute("src")).toBe("./images/new_image.jpg");
     });
 
     it("should safely ignore unknown properties", () => {
@@ -95,7 +95,7 @@ describe("ImageOperationComponent", () => {
         imageHeight: 100,
         imageWidth: 100,
         opacity: 1.0,
-        url: "/images/default_image.jpg",
+        url: "./images/default_image.jpg",
         subType: null,
       });
     });
@@ -107,7 +107,7 @@ describe("ImageOperationComponent", () => {
         20,
         200,
         300,
-        "/images/custom.png",
+        "./images/custom.png",
         50,
         75,
         "logo",
@@ -121,7 +121,7 @@ describe("ImageOperationComponent", () => {
         y: 20,
         width: 200,
         height: 300,
-        url: "/images/custom.png",
+        url: "./images/custom.png",
         imageHeight: 50,
         imageWidth: 75,
         opacity: 1.0,

@@ -6,7 +6,7 @@ class ImageOperationComponent extends BasicOperationComponent {
     if (!operation) {
       throw new TypeError("ImageOperationComponent: image operation must exist");
     }
-    const url = "/images/default_image.jpg";
+    const url = "./images/default_image.jpg";
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
     this.shadow.setAttribute("src", url);
@@ -38,7 +38,7 @@ class ImageOperationComponent extends BasicOperationComponent {
     y,
     width = 100,
     height = 100,
-    url = "/images/default_image.jpg",
+    url = "./images/default_image.jpg",
     imageHeight = 100,
     imageWidth = 100,
     subType = null,
