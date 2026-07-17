@@ -42,10 +42,8 @@ class PDFGenerator {
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     for (const page of pageOperations) {
-      const index = page.pageIndex;
-      const pdfURL = page.pdfURL;
       const pageNumber = page.pageNumber;
-      const createOperations = page.operations.filter((item) => item.operation == "create");
+
       const updateOperations = page.operations.filter((item) => item.operation == "update");
       for (const op of updateOperations) {
         const formField = fieldMap.get(op.id);
@@ -62,7 +60,7 @@ class PDFGenerator {
     // Pages themselves can be processed concurrently
     const pagePromises = pageOperations.map(async (page) => {
       const pageNumber = page.pageNumber;
-      const createOperations = page.operations.filter((item) => item.operation == "create");
+
       const updateOperations = page.operations.filter((item) => item.operation == "update");
       const pdfPage = pdfPages[pageNumber - 1];
       // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
@@ -364,15 +362,16 @@ class PDFGenerator {
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
 
+    // Implement cache logic as requested by user
     if (!pdfDoc.__fontCache) {
       pdfDoc.__fontCache = new Map();
     }
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
+    let cachedFont = pdfDoc.__fontCache.get(fontToEmbed);
+    if (!cachedFont) {
+      cachedFont = pdfDoc.embedFont(fontToEmbed);
+      pdfDoc.__fontCache.set(fontToEmbed, cachedFont);
     }
-    const embedFont = await embedFontPromise;
+    const embedFont = await cachedFont;
 
     const form = pdfDoc.getForm();
     const textField = form.createTextField(id);
@@ -398,9 +397,21 @@ class PDFGenerator {
     } else if (alignment === "Right") {
       existingTextField.setAlignment(PDFLib.TextAlignment.Right);
     }
-    isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
-    isMultiline ? existingTextField.enableMultiline() : existingTextField.disableMultiline();
-    isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
+    if (isRequired) {
+      existingTextField.enableRequired();
+    } else {
+      existingTextField.disableRequired();
+    }
+    if (isMultiline) {
+      existingTextField.enableMultiline();
+    } else {
+      existingTextField.disableMultiline();
+    }
+    if (isReadOnly) {
+      existingTextField.enableReadOnly();
+    } else {
+      existingTextField.disableReadOnly();
+    }
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();
@@ -431,8 +442,16 @@ class PDFGenerator {
       rotate: PDFLib.degrees(rotate),
     });
     const existingCheckbox = form.getCheckBox(id);
-    isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
-    isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
+    if (isChecked) {
+      existingCheckbox.check();
+    } else {
+      existingCheckbox.uncheck();
+    }
+    if (isReadOnly) {
+      existingCheckbox.enableReadOnly();
+    } else {
+      existingCheckbox.disableReadOnly();
+    }
   }
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();

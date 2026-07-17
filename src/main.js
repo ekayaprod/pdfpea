@@ -16,7 +16,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 try {
   const app = createApp(App);
-  const mountedApp = app.mount("#app");
+  app.mount("#app");
 } catch (error) {
   console.error("Error creating or mounting Vue app:", error);
 }

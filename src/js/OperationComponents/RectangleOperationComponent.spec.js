@@ -39,6 +39,7 @@ describe("RectangleOperationComponent", () => {
   });
 
   it("should aggressively reject undefined borderWidth for rectangles", () => {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const { borderWidth, ...missingBorderOp } = operation;
     expect(() => new RectangleOperationComponent(missingBorderOp, canvasContainer)).toThrow(
       TypeError,
