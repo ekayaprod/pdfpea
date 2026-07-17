@@ -1,0 +1,5 @@
+# 🧬 Helix - Axioms & Heuristics
+- **Functional Arrays:** Sprawling `for` loops building arrays using `if/else` `push()` logic can be securely condensed into single-pass `.filter()` assignments, provided the loop carries no mixed concerns.
+- **Ternary Geometry:** Verbose multiline variable declarations configured by shared `if/else` logic can be efficiently condensed into dense conditional ternary assignments or merged block definitions, ensuring horizontal line length limits (120 chars) are respected.
+- **Object Spread Condensation:** Long sequences mapping nested properties (e.g., link dictionary generation) can be reduced by declaring common properties in a base object and injecting them dynamically using the JavaScript spread operator (`...`).
+- **Target Matrix Expansion:** Redundant boolean conditional flags assigned by ternary paths (e.g., `condition ? existingCheckbox.check() : existingCheckbox.uncheck();`) map perfectly into more standardized multiline `if/else` blocks to clear linter unused-expression warnings while preserving vertical density logic.
