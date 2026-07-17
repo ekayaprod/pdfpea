@@ -1,0 +1,1 @@
+- Fixed deprecated unescape vulnerability in src/utils/FreehandDrawing.js

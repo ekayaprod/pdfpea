@@ -155,8 +155,10 @@ class FreehandDrawing {
     const svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="${pathData}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
     </svg>`;
-    // Convert to base64 data URL
-    const base64 = btoa(unescape(encodeURIComponent(svg)));
+    // Convert to base64 data URL securely handling Unicode
+    const bytes = new TextEncoder().encode(svg);
+    const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
+    const base64 = btoa(binString);
     return `data:image/svg+xml;base64,${base64}`;
   }
   /**
