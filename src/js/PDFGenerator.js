@@ -391,9 +391,21 @@ class PDFGenerator {
     } else if (alignment === "Right") {
       existingTextField.setAlignment(PDFLib.TextAlignment.Right);
     }
-    if (isRequired) { existingTextField.enableRequired(); } else { existingTextField.disableRequired(); }
-    if (isMultiline) { existingTextField.enableMultiline(); } else { existingTextField.disableMultiline(); }
-    if (isReadOnly) { existingTextField.enableReadOnly(); } else { existingTextField.disableReadOnly(); }
+    if (isRequired) {
+      existingTextField.enableRequired();
+    } else {
+      existingTextField.disableRequired();
+    }
+    if (isMultiline) {
+      existingTextField.enableMultiline();
+    } else {
+      existingTextField.disableMultiline();
+    }
+    if (isReadOnly) {
+      existingTextField.enableReadOnly();
+    } else {
+      existingTextField.disableReadOnly();
+    }
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();
@@ -424,8 +436,16 @@ class PDFGenerator {
       rotate: PDFLib.degrees(rotate),
     });
     const existingCheckbox = form.getCheckBox(id);
-    if (isChecked) { existingCheckbox.check(); } else { existingCheckbox.uncheck(); }
-    if (isReadOnly) { existingCheckbox.enableReadOnly(); } else { existingCheckbox.disableReadOnly(); }
+    if (isChecked) {
+      existingCheckbox.check();
+    } else {
+      existingCheckbox.uncheck();
+    }
+    if (isReadOnly) {
+      existingCheckbox.enableReadOnly();
+    } else {
+      existingCheckbox.disableReadOnly();
+    }
   }
   static _parseFillColor(fill) {
     if (!fill || fill === "transparent") {
