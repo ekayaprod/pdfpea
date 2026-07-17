@@ -1,4 +1,5 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
+import { calculateInnerDimensions } from "../utils/dimensions.js";
 
 class TextFieldOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
@@ -39,8 +40,8 @@ class TextFieldOperationComponent extends BasicOperationComponent {
         break;
       case "borderWidth":
         this.shadow.style.borderWidth = value + "px";
-        this.shadow.style.width = `calc(100% - ${parseInt(this.shadow.style.borderWidth) * 2}px)`;
-        this.shadow.style.height = `calc(100% - ${parseInt(this.shadow.style.borderWidth) * 2}px)`;
+        this.shadow.style.width = calculateInnerDimensions(this.shadow.style.borderWidth);
+        this.shadow.style.height = calculateInnerDimensions(this.shadow.style.borderWidth);
         this.shadow.style.borderStyle = "solid";
         break;
       case "text":
