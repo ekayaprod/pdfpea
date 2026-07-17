@@ -61,8 +61,8 @@ class PDFGenerator {
           fieldMap.delete(op.id); // Prevent Double Remove
         }
       }
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [pageNumber - 1]);
-      pdfDoc.addPage(cpage);
+      const [copiedPage] = await pdfDoc.copyPages(srcDoc, [pageNumber - 1]);
+      pdfDoc.addPage(copiedPage);
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
@@ -71,11 +71,11 @@ class PDFGenerator {
       const pageNumber = page.pageNumber;
       const createOperations = [];
       const updateOperations = [];
-      for (const item of page.operations) {
-        if (item.operation === "create") {
-          createOperations.push(item);
-        } else if (item.operation === "update") {
-          updateOperations.push(item);
+      for (const operation of page.operations) {
+        if (operation.operation === "create") {
+          createOperations.push(operation);
+        } else if (operation.operation === "update") {
+          updateOperations.push(operation);
         }
       }
       const pdfPage = pdfPages[pageNumber - 1];
