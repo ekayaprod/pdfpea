@@ -3,5 +3,5 @@
  * Centralized ID generation to replace scattered Math.random() implementations.
  */
 export const generateId = () => {
-  return Math.random().toString(36).substring(2, 11);
+  return Math.random().toString(36).substring(2, 11).padEnd(9, "0");
 };
