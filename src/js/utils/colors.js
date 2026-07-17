@@ -35,7 +35,12 @@ export const rgbToHex = (red, green, blue) => {
 
 // 🥄 SPLICE: Semantic duplicate logic identified and integrated into a single utility block.
 export const parseColor = (colorString) => {
-  if (!colorString || colorString === "transparent" || colorString === "rgba(0,0,0,0)" || colorString === "") {
+  if (
+    !colorString ||
+    colorString === "transparent" ||
+    colorString === "rgba(0,0,0,0)" ||
+    colorString === ""
+  ) {
     return null;
   }
   if (colorString.startsWith("rgba(")) {
