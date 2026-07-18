@@ -377,6 +377,12 @@ class PDFGenerator {
     }
   }
 
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+  /**
+   * Renders clickable link annotations onto the PDF page by translating layout dimensions and URL targets into PDFLib dictionaries.
+   * Note the `"rgba(0, 122, 204, 0.1)"` default fill color: this is a magic number mapping to the signature blue link highlighting shade established in the initial release.
+   * * Historical Intent: The raw drawing logic was simplified by extracting parsing and annotation logic in PR #60 (commit fbf65a4, Jul 2026). The signature blue fill dates back to the initial commit (76bc964, Jul 2025).
+   */
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
     const operationPageHeight = pdfPage.getHeight();
     const x = operation.x;

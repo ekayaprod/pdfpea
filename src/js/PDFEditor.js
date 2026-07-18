@@ -197,6 +197,13 @@ class PDFPage {
       this.container,
     );
   }
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+  /**
+   * Instantiates the appropriate OperationComponent (e.g., Circle, Rectangle, Text) based on the toolType.
+   * Utilizes the AST to evaluate tool types and maps layout dimensions and stylistic settings from the user's active configuration.
+   * Note the 0.5 opacity fallback for the "highlight" subType: this is a magic number mapping back to the initial release of the highlighter feature.
+   * * Historical Intent: The imperative block was collapsed into declarative ternaries via PR #88 (commit 66d515e, Jul 2026), while the highlight opacity dates back to the initial commit (76bc964, Jul 2025).
+   */
   createComponentWithDimensions(toolType, settings, id, x, y, width, height) {
     switch (toolType) {
       case COMPONENT_TYPES.CIRCLE:
