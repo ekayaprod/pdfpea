@@ -11,9 +11,7 @@ class TextOperationComponent extends BasicOperationComponent {
     this.shadow = document.createElement("div");
     this.shadow.classList.add("component-content");
     this.shadow.style.width = "auto";
-    //this.shadow.style.height = 'auto';
     this.shadow.style.whiteSpace = "nowrap";
-    //this.shadow.style.overflow = 'visible';
     this.shadow.style.display = "inline-block";
     this.shadow.style.paddingTop = "1px";
     this.shadow.contentEditable = false;
