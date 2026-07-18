@@ -1,3 +1,4 @@
 - Standardized `uploadPropertyPanel` to `updatePropertyPanel` (Noun drift)
 - Standardized `pendingImageData` to `pendingImageParams` (Ambiguous variable)
 - Standardized `pendingLinkData` to `pendingLinkParams` (Ambiguous variable)
+- Standardized `showImageDialog`, `showLinkDialog`, `showConfigDropdown` (and prop `show`) to `isImageDialogOpen`, `isLinkDialogOpen`, `isConfigDropdownOpen` (and prop `isOpen`) to enforce boolean prefixes.
