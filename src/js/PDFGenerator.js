@@ -261,7 +261,6 @@ class PDFGenerator {
         await PDFGenerator.drawSvgImageOnPage(pdfPage, arrayBuffer, operation);
         break;
       default:
-
     }
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {

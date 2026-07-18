@@ -2554,8 +2554,6 @@ export default {
       return Math.sqrt(dx * dx + dy * dy);
     };
     const convertPixelsToUnits = (pixels) => {
-
-
       const px = pixels * zoomLevel.value;
       const inches = px / (zoomLevel.value * 72); // 96 DPI standard
       const mm = inches * 25.4; // 1 pixel = 0.2646 mm
