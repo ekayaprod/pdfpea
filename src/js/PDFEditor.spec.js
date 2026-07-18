@@ -25,6 +25,8 @@ describe("PDFEditor", () => {
       promise: Promise.reject(new Error("Mocked PDF error")),
     });
 
-    await expect(editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]))).rejects.toThrow("Mocked PDF error");
+    await expect(editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]))).rejects.toThrow(
+      "Mocked PDF error",
+    );
   });
 });
