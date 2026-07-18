@@ -24,20 +24,24 @@ The Vite development server will boot up and handle hot module replacement seaml
 
 Before submitting any Pull Requests, you must validate your changes against the established linters and parsers. We do not tolerate regressions.
 
-1.  **Type Checking:**
+1.  **Testing:**
+    ```bash
+    npm run test
+    ```
+2.  **Type Checking:**
     ```bash
     npm run type-check
     ```
-2.  **Linting:**
+3.  **Linting:**
     ```bash
     npm run lint
     ```
-3.  **Formatting:**
+4.  **Formatting:**
     ```bash
     npm run format:check
     ```
     *(If formatting fails, auto-fix the codebase with `npm run format`)*
-4.  **Production Build:**
+5.  **Production Build:**
     ```bash
     npm run build
     ```
