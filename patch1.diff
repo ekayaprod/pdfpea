@@ -1,0 +1,59 @@
+<<<<<<< SEARCH
+    // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
+    const pdfPages = pdfDoc.getPages();
+    // Pages themselves can be processed concurrently
+    const pagePromises = pageOperations.map(async (page) => {
+      const pageNumber = page.pageNumber;
+      const createOperations = page.operations.filter((op) => op.operation === "create");
+      const updateOperations = page.operations.filter((op) => op.operation === "update");
+      const pdfPage = pdfPages[pageNumber - 1];
+      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
+      for (const op of createOperations) {
+        if (op.type === "text") {
+          await this.drawTextOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "rectangle") {
+          await this.drawRectangleOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "circle") {
+          await this.drawCircleOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "image") {
+          await this.drawImageOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "textfield") {
+          await this.drawTextFieldOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "checkbox") {
+          await this.drawCheckboxOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "link") {
+          await this.drawLinkOnPage(pdfDoc, pdfPage, op);
+        }
+      }
+      for (const op of updateOperations) {
+        if (op.type === "textfield") {
+          await this.drawTextFieldOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "checkbox") {
+          await this.drawCheckboxOnPage(pdfDoc, pdfPage, op);
+        } else if (op.type === "link") {
+          await this.drawLinkOnPage(pdfDoc, pdfPage, op);
+        }
+      }
+    });
+    // Await all pages concurrently
+    await Promise.all(pagePromises);
+=======
+    // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
+    const pdfPages = pdfDoc.getPages();
+    const typeMap = { text: "drawTextOnPage", rectangle: "drawRectangleOnPage", circle: "drawCircleOnPage", image: "drawImageOnPage", textfield: "drawTextFieldOnPage", checkbox: "drawCheckboxOnPage", link: "drawLinkOnPage" };
+    // Pages themselves can be processed concurrently
+    await Promise.all(
+      pageOperations.map(async (page) => {
+        const pdfPage = pdfPages[page.pageNumber - 1];
+        // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
+        for (const op of page.operations.filter((op) => op.operation === "create")) {
+          if (typeMap[op.type]) await this[typeMap[op.type]](pdfDoc, pdfPage, op);
+        }
+        for (const op of page.operations.filter((op) => op.operation === "update")) {
+          if (["textfield", "checkbox", "link"].includes(op.type) && typeMap[op.type]) {
+            await this[typeMap[op.type]](pdfDoc, pdfPage, op);
+          }
+        }
+      })
+    );
+>>>>>>> REPLACE

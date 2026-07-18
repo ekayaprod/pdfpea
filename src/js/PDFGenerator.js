@@ -46,42 +46,22 @@ class PDFGenerator {
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
+    const typeMap = { text: "drawTextOnPage", rectangle: "drawRectangleOnPage", circle: "drawCircleOnPage", image: "drawImageOnPage", textfield: "drawTextFieldOnPage", checkbox: "drawCheckboxOnPage", link: "drawLinkOnPage" };
     // Pages themselves can be processed concurrently
-    const pagePromises = pageOperations.map(async (page) => {
-      const pageNumber = page.pageNumber;
-      const createOperations = page.operations.filter((op) => op.operation === "create");
-      const updateOperations = page.operations.filter((op) => op.operation === "update");
-      const pdfPage = pdfPages[pageNumber - 1];
-      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
-      for (const op of createOperations) {
-        if (op.type === "text") {
-          await this.drawTextOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "rectangle") {
-          await this.drawRectangleOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "circle") {
-          await this.drawCircleOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "image") {
-          await this.drawImageOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "textfield") {
-          await this.drawTextFieldOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "checkbox") {
-          await this.drawCheckboxOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "link") {
-          await this.drawLinkOnPage(pdfDoc, pdfPage, op);
+    await Promise.all(
+      pageOperations.map(async (page) => {
+        const pdfPage = pdfPages[page.pageNumber - 1];
+        // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
+        for (const op of page.operations.filter((op) => op.operation === "create")) {
+          if (typeMap[op.type]) await this[typeMap[op.type]](pdfDoc, pdfPage, op);
         }
-      }
-      for (const op of updateOperations) {
-        if (op.type === "textfield") {
-          await this.drawTextFieldOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "checkbox") {
-          await this.drawCheckboxOnPage(pdfDoc, pdfPage, op);
-        } else if (op.type === "link") {
-          await this.drawLinkOnPage(pdfDoc, pdfPage, op);
+        for (const op of page.operations.filter((op) => op.operation === "update")) {
+          if (["textfield", "checkbox", "link"].includes(op.type) && typeMap[op.type]) {
+            await this[typeMap[op.type]](pdfDoc, pdfPage, op);
+          }
         }
-      }
-    });
-    // Await all pages concurrently
-    await Promise.all(pagePromises);
+      })
+    );
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
   }
@@ -322,15 +302,7 @@ class PDFGenerator {
     existingTextField.setFontSize(parseFloat(operation.fontSize, 10));
     if (!isNaN(maxLength)) existingTextField.setMaxLength(maxLength);
 
-    existingTextField.setAlignment(
-      operation.alignment === "Left"
-        ? PDFLib.TextAlignment.Left
-        : operation.alignment === "Center"
-          ? PDFLib.TextAlignment.Center
-          : operation.alignment === "Right"
-            ? PDFLib.TextAlignment.Right
-            : PDFLib.TextAlignment.Left,
-    );
+    existingTextField.setAlignment(PDFLib.TextAlignment[operation.alignment] ?? PDFLib.TextAlignment.Left);
 
     operation.isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
     operation.isMultiline
@@ -378,56 +350,41 @@ class PDFGenerator {
   }
 
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const x = operation.x;
-    const y = operation.y;
-    const height = operation.height;
-    const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth) || 0;
     const borderColor = hexToRgb(operation.borderColor ?? "#007acc");
-    const fill = operation.fill ?? "rgba(0, 122, 204, 0.1)";
     const opacity = parseFloat(operation.opacity, 10) || 1.0;
-    const linkType = operation.linkType;
-    const linkValue = operation.linkValue;
-    // Parse fill color (handle rgba format)
-    const fillColor = parseColor(fill);
-    // Draw the visual rectangle for the link area
-    const rectangleOptions = {
-      x: x + borderWidth / 2,
-      y: operationPageHeight + borderWidth / 2 - y - height,
-      width: width - borderWidth,
-      height: height - borderWidth,
-      borderWidth: borderWidth,
-      borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      opacity: opacity,
-    };
-    // Only add color and opacity if fill is not transparent
-    if (fillColor) {
-      rectangleOptions.color = PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue);
-    }
-    await pdfPage.drawRectangle(rectangleOptions);
-    // Create the link annotation
-    const linkAnnotation = {
-      x: x,
-      y: operationPageHeight - y - height,
-      width: width,
-      height: height,
-    };
-    const rect = [
-      linkAnnotation.x,
-      linkAnnotation.y,
-      linkAnnotation.x + linkAnnotation.width,
-      linkAnnotation.y + linkAnnotation.height,
-    ];
+    const fillColor = parseColor(operation.fill ?? "rgba(0, 122, 204, 0.1)");
 
-    const linkDictData = { Type: "Annot", Subtype: "Link", Rect: rect, Border: [0, 0, 0] };
-    if (linkType === "url" && linkValue?.match(/^https?:\/\//)) {
+    await pdfPage.drawRectangle({
+      x: operation.x + borderWidth / 2,
+      y: pdfPage.getHeight() + borderWidth / 2 - operation.y - operation.height,
+      width: operation.width - borderWidth,
+      height: operation.height - borderWidth,
+      borderWidth,
+      borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
+      opacity,
+      ...(fillColor && { color: PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue) }),
+    });
+
+    const linkDictData = {
+      Type: "Annot",
+      Subtype: "Link",
+      Rect: [
+        operation.x,
+        pdfPage.getHeight() - operation.y - operation.height,
+        operation.x + operation.width,
+        pdfPage.getHeight() - operation.y - operation.height + operation.height,
+      ],
+      Border: [0, 0, 0],
+    };
+
+    if (operation.linkType === "url" && operation.linkValue?.match(/^https?:\/\//)) {
       PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
         ...linkDictData,
-        A: { Type: "Action", S: "URI", URI: PDFLib.PDFString.of(linkValue) },
+        A: { Type: "Action", S: "URI", URI: PDFLib.PDFString.of(operation.linkValue) },
       });
-    } else if (linkType === "page" && parseInt(linkValue) > 0) {
-      const targetPage = pdfDoc.getPages()[parseInt(linkValue) - 1];
+    } else if (operation.linkType === "page" && parseInt(operation.linkValue) > 0) {
+      const targetPage = pdfDoc.getPages()[parseInt(operation.linkValue) - 1];
       if (targetPage) {
         PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
           ...linkDictData,
