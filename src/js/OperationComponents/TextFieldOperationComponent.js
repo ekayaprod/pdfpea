@@ -1,5 +1,5 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
-import { calculateInnerDimensions } from "../utils/dimensions.js";
+import { calculateInnerDimensions } from "../../utils/layout/dimensions.js";
 
 class TextFieldOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {

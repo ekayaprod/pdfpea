@@ -1,5 +1,5 @@
 import svgpath from "svgpath";
-import { hexToRgb, parseColor } from "./utils/colors.js";
+import { hexToRgb, parseColor } from "../utils/color/colors.js";
 class PDFGenerator {
   constructor() {}
   static str2ab(binaryString) {

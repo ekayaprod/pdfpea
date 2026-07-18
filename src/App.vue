@@ -796,10 +796,10 @@
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
 import ImageDialog from "./components/ImageDialog.vue";
-import { generateId } from "./utils/generateId.js";
+import { generateId } from "./utils/identity/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
-import { freehandDrawing } from "./utils/FreehandDrawing.js";
-import { parsePdfData } from "./utils/pdfData.js";
+import { freehandDrawing } from "./utils/canvas/FreehandDrawing.js";
+import { parsePdfData } from "./utils/pdf/pdfData.js";
 export default {
   name: "App",
   components: {

@@ -9,7 +9,7 @@ import {
   LinkOperationComponent,
 } from "./OperationComponents/index.js";
 import { PDFGenerator } from "./PDFGenerator.js";
-import { rgbToHex } from "./utils/colors.js";
+import { rgbToHex } from "../utils/color/colors.js";
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
