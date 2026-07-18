@@ -4,3 +4,6 @@
 - Injected AST-driven JSDoc for `rgba` regex in `src/js/PDFGenerator.js` explaining color channel parsing.
 - Aggregated recent git commit a36a5ae (elevate UI copy) into CHANGELOG.md
 - Aggregated recent git commit 7c1af7e (format code) into CHANGELOG.md
+- Injected AST-driven JSDoc for `parseColor` in `src/utils/color/colors.js` referencing DRY principle extraction (commit 2bd2bfd).
+- Injected AST-driven JSDoc for `convertPixelsToUnits` in `src/App.vue` explaining PDF DPI division (commit 47c7173).
+- Aggregated recent git commits for Inspector (31b2fd6, be54c6f, e097456, 3ad0af8), Dispatch (4a064e5, e2eafd0, 4349980), Vibe Check (d112452) and Author (85e6748) into CHANGELOG.md.

@@ -2549,6 +2549,11 @@ export default {
     };
     const convertPixelsToUnits = (pixels) => {
       const px = pixels * zoomLevel.value;
+      // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+      /**
+       * Translates CSS pixel dimensions into standard PDF inches by dividing by 72 (the standard PDF points-per-inch).
+       * * Historical Intent: Added in commit 47c7173 (Dec 2025) as part of the Vite and Vue 3 project modernization to support accurate PDF generation.
+       */
       const inches = px / (zoomLevel.value * 72); // 96 DPI standard
       const mm = inches * 25.4; // 1 pixel = 0.2646 mm
       return {

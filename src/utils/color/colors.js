@@ -44,6 +44,11 @@ export const parseColor = (colorString) => {
     return null;
   }
   if (colorString.startsWith("rgba(")) {
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Parses RGBA color strings (e.g., 'rgba(255, 255, 255, 0.5)') to capture the individual R, G, B, and Alpha channels for transparent link highlights.
+     * * Historical Intent: Extracted and consolidated into this utility block via PR #106 (commit 2bd2bfd, Jul 2026) to enforce DRY principles across PDF generation and editing.
+     */
     const rgba = colorString.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
     if (rgba) {
       return {
