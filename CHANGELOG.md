@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+- 🕵️ Inspector: Fortify PDFGenerator boundaries with stress tests for unhandled parameter exceptions (commits 31b2fd6, be54c6f, e097456, 3ad0af8).
+- 📯 Dispatch: Optimize Playwright Pipeline and inject Docker Ecosystem into Dependabot Scanning (commits 4a064e5, e2eafd0, 4349980).
+- 🪨 Vibe Check: Strip out hallucinated promise wrappers and cosmetic try/catch blocks (commit d112452).
+- 📘 Author: Add testing instructions to documentation (commit 85e6748).
 - 🕵️ Inspector: Author unverified logic test suites to ensure proper test coverage across operation components.
 - 🔤 Lexicon: Standardize fetching and binary string terminology, and enforce boolean prefix for dialog states.
 - 🪲 Scavenger: Cleaned diagnostic droppings and semantic dust.
