@@ -36,7 +36,8 @@
     "format": "prettier --write --experimental-cli src/",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.1.17",
@@ -48,6 +49,7 @@
     "vue": "3.5.25"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tsconfig/node24": "24.0.3",
     "@types/node": "24.10.1",
     "@vitejs/plugin-vue": "6.0.2",
