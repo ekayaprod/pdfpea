@@ -2,3 +2,4 @@
 - Standardized `pendingImageData` to `pendingImageParams` (Ambiguous variable)
 - Standardized `pendingLinkData` to `pendingLinkParams` (Ambiguous variable)
 - Standardized `showImageDialog`, `showLinkDialog`, `showConfigDropdown` (and prop `show`) to `isImageDialogOpen`, `isLinkDialogOpen`, `isConfigDropdownOpen` (and prop `isOpen`) to enforce boolean prefixes.
+- Standardized loadIconCache to fetchIconCache (Fetch Consolidation)\n- Standardized preventComponentCreation to isComponentCreationPrevented (Boolean Prefix Enforcer)\n- Standardized rfile to selectedFile (Ambiguity Excision)
