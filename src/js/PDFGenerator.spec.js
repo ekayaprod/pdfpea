@@ -38,14 +38,26 @@ describe("PDFGenerator", () => {
       const view = new Uint8Array(tinyBuffer);
       view[0] = 0xff; // Random byte, not a full jpg signature
 
-      const type = PDFGenerator.getImageType(tinyBuffer);
+      let type;
+      try {
+        type = PDFGenerator.getImageType(tinyBuffer);
+      } catch(e) {
+        type = "error"
+      }
+
       expect(type).toBe("unknown");
     });
 
     it("handles 0-byte buffers gracefully without throwing RangeError", () => {
       const tinyBuffer = new ArrayBuffer(0);
 
-      const type = PDFGenerator.getImageType(tinyBuffer);
+      let type;
+      try {
+        type = PDFGenerator.getImageType(tinyBuffer);
+      } catch(e) {
+        type = "error"
+      }
+
       expect(type).toBe("unknown");
     });
 
