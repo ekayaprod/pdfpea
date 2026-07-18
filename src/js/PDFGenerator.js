@@ -96,26 +96,16 @@ class PDFGenerator {
     return pdfBytes;
   }
   static async drawTextOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const xPadding = operation.xPadding;
-    const text = operation.text.replaceAll("\n\n", "\n \n");
-    const x = operation.x;
-    const y = operation.y;
-    const fontFamily = operation.fontFamily;
-    const fontSize = parseInt(operation.fontSize);
     const fontColor = hexToRgb(operation.color);
-    const fontLineHeight = operation.fontSize * operation.lineHeight;
-    const fontWordBreak = operation.wordBreak;
-    const width = operation.width;
-    const opacity = parseFloat(operation.opacity, 10);
-    const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
+    const resolvedFont =
+      operation.fontFamily === "TimesRoman"
+        ? PDFLib.StandardFonts.TimesRoman
+        : operation.fontFamily;
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
 
-    if (!pdfDoc.__fontCache) {
-      pdfDoc.__fontCache = new Map();
-    }
+    pdfDoc.__fontCache ??= new Map();
     let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
     if (!embedFontPromise) {
       embedFontPromise = pdfDoc.embedFont(fontToEmbed);
@@ -123,18 +113,21 @@ class PDFGenerator {
     }
     const embedFont = await embedFontPromise;
 
-    const wordBreaks =
-      fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
-    await pdfPage.drawText(text, {
-      x: x + xPadding,
-      y: operationPageHeight - y - fontSize,
+    await pdfPage.drawText(operation.text.replaceAll("\n\n", "\n \n"), {
+      x: operation.x + operation.xPadding,
+      y: pdfPage.getHeight() - operation.y - parseInt(operation.fontSize),
       color: PDFLib.rgb(fontColor.red, fontColor.green, fontColor.blue),
       font: embedFont,
-      size: fontSize,
-      lineHeight: fontLineHeight,
-      opacity: opacity,
-      wordBreaks: wordBreaks,
-      maxWidth: width,
+      size: parseInt(operation.fontSize),
+      lineHeight: operation.fontSize * operation.lineHeight,
+      opacity: parseFloat(operation.opacity, 10),
+      wordBreaks:
+        operation.wordBreak === "break-all"
+          ? [""]
+          : operation.wordBreak === "break-word"
+            ? [" "]
+            : [],
+      maxWidth: operation.width,
     });
   }
   static async drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation) {
@@ -273,89 +266,60 @@ class PDFGenerator {
     }
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const x = operation.x;
-    const y = operation.y;
-    const height = operation.height;
-    const width = operation.width;
     const borderWidth = parseInt(operation.borderWidth);
     const borderColor = hexToRgb(operation.borderColor);
-    const fill = operation.fill ?? operation.color;
+    const fillColor = parseColor(operation.fill ?? operation.color);
     const opacity = parseFloat(operation.opacity, 10);
-    const fillColor = parseColor(fill);
-    const rectangleOptions = {
-      x: x + borderWidth / 2,
-      y: operationPageHeight + borderWidth / 2 - y - height,
-      width: width - borderWidth,
-      height: height - borderWidth,
-      borderWidth: borderWidth,
+
+    await pdfPage.drawRectangle({
+      x: operation.x + borderWidth / 2,
+      y: pdfPage.getHeight() + borderWidth / 2 - operation.y - operation.height,
+      width: operation.width - borderWidth,
+      height: operation.height - borderWidth,
+      borderWidth,
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
       borderOpacity: borderWidth ? opacity : 0,
-    };
-    // Only add color and opacity if fill is not transparent
-    if (fillColor) {
-      rectangleOptions.color = PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue);
-      rectangleOptions.opacity = opacity;
-    }
-    await pdfPage.drawRectangle(rectangleOptions);
+      ...(fillColor && {
+        color: PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue),
+        opacity,
+      }),
+    });
   }
   static async drawCircleOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const x = operation.x;
-    const y = operation.y;
-    const height = operation.height;
-    const width = operation.width;
-    const borderWidth = operation.borderWidth;
     const borderColor = hexToRgb(operation.borderColor);
-    const xScale = (width - borderWidth) / 2;
-    const yScale = (height - borderWidth) / 2;
-    const fill = operation.fill ?? operation.color;
+    const fillColor = parseColor(operation.fill ?? operation.color);
     const opacity = parseFloat(operation.opacity, 10);
-    const fillColor = parseColor(fill);
-    const ellipseOptions = {
-      x: x + width / 2,
-      y: operationPageHeight - y - height / 2,
-      xScale: xScale,
-      yScale: yScale,
-      borderWidth: borderWidth,
+
+    await pdfPage.drawEllipse({
+      x: operation.x + operation.width / 2,
+      y: pdfPage.getHeight() - operation.y - operation.height / 2,
+      xScale: (operation.width - operation.borderWidth) / 2,
+      yScale: (operation.height - operation.borderWidth) / 2,
+      borderWidth: operation.borderWidth,
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      borderOpacity: borderWidth ? opacity : 0,
-    };
-    // Only add color and opacity if fill is not transparent
-    if (fillColor) {
-      ellipseOptions.color = PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue);
-      ellipseOptions.opacity = opacity;
-    }
-    await pdfPage.drawEllipse(ellipseOptions);
+      borderOpacity: operation.borderWidth ? opacity : 0,
+      ...(fillColor && {
+        color: PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue),
+        opacity,
+      }),
+    });
   }
   static async drawTextFieldOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const type = operation.type;
-    const id = type === "create" ? `text-field-${operation.id}` : operation.id;
-    const x = operation.x;
-    const y = operation.y;
-    const height = operation.height;
-    const width = operation.width;
-    const text = operation.text;
+    const id = operation.type === "create" ? `text-field-${operation.id}` : operation.id;
     const borderWidth = parseFloat(operation.borderWidth, 10);
     const borderColor = hexToRgb(operation.borderColor);
     const fontColor = hexToRgb(operation.color);
-    const fontFamily = operation.fontFamily;
-    const fontSize = parseFloat(operation.fontSize, 10);
     const backgroundColor = hexToRgb(operation.backgroundColor);
     const maxLength = parseFloat(operation.maxLength, 10);
-    const alignment = operation.alignment;
-    const isRequired = operation.isRequired;
-    const isMultiline = operation.isMultiline;
-    const isReadOnly = operation.isReadOnly;
-    const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
+    const resolvedFont =
+      operation.fontFamily === "TimesRoman"
+        ? PDFLib.StandardFonts.TimesRoman
+        : operation.fontFamily;
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
 
-    if (!pdfDoc.__fontCache) {
-      pdfDoc.__fontCache = new Map();
-    }
+    pdfDoc.__fontCache ??= new Map();
     let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
     if (!embedFontPromise) {
       embedFontPromise = pdfDoc.embedFont(fontToEmbed);
@@ -364,84 +328,62 @@ class PDFGenerator {
     const embedFont = await embedFontPromise;
 
     const form = pdfDoc.getForm();
-    const textField = form.createTextField(id);
-    await textField.addToPage(pdfPage, {
-      x: x,
-      y: operationPageHeight - y - height,
-      width: width - borderWidth / 2,
-      height: height - borderWidth / 2,
+    await form.createTextField(id).addToPage(pdfPage, {
+      x: operation.x,
+      y: pdfPage.getHeight() - operation.y - operation.height,
+      width: operation.width - borderWidth / 2,
+      height: operation.height - borderWidth / 2,
       textColor: PDFLib.rgb(fontColor.red, fontColor.green, fontColor.blue),
       backgroundColor: PDFLib.rgb(backgroundColor.red, backgroundColor.green, backgroundColor.blue),
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      borderWidth: borderWidth,
+      borderWidth,
       font: embedFont,
     });
+
     const existingTextField = form.getTextField(id);
-    existingTextField.setText(text);
-    existingTextField.setFontSize(fontSize);
+    existingTextField.setText(operation.text);
+    existingTextField.setFontSize(parseFloat(operation.fontSize, 10));
     if (!isNaN(maxLength)) existingTextField.setMaxLength(maxLength);
-    if (alignment === "Left") {
-      existingTextField.setAlignment(PDFLib.TextAlignment.Left);
-    } else if (alignment === "Center") {
-      existingTextField.setAlignment(PDFLib.TextAlignment.Center);
-    } else if (alignment === "Right") {
-      existingTextField.setAlignment(PDFLib.TextAlignment.Right);
-    }
-    if (isRequired) {
-      existingTextField.enableRequired();
-    } else {
-      existingTextField.disableRequired();
-    }
-    if (isMultiline) {
-      existingTextField.enableMultiline();
-    } else {
-      existingTextField.disableMultiline();
-    }
-    if (isReadOnly) {
-      existingTextField.enableReadOnly();
-    } else {
-      existingTextField.disableReadOnly();
-    }
+
+    existingTextField.setAlignment(
+      operation.alignment === "Left"
+        ? PDFLib.TextAlignment.Left
+        : operation.alignment === "Center"
+          ? PDFLib.TextAlignment.Center
+          : operation.alignment === "Right"
+            ? PDFLib.TextAlignment.Right
+            : PDFLib.TextAlignment.Left,
+    );
+
+    operation.isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
+    operation.isMultiline
+      ? existingTextField.enableMultiline()
+      : existingTextField.disableMultiline();
+    operation.isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
-    const operationPageHeight = pdfPage.getHeight();
-    const type = operation.type;
-    const id = type === "create" ? `checkbox-${operation.id}` : operation.id;
-    const x = operation.x;
-    const y = operation.y;
-    const height = operation.height;
-    const width = operation.width;
-    const rotate = 0;
+    const id = operation.type === "create" ? `checkbox-${operation.id}` : operation.id;
     const borderWidth = parseFloat(operation.borderWidth, 10);
     const borderColor = hexToRgb(operation.borderColor);
     const fontColor = hexToRgb(operation.color);
     const backgroundColor = hexToRgb(operation.backgroundColor);
-    const isChecked = operation.isChecked;
-    const isReadOnly = operation.isReadOnly;
+
     const form = pdfDoc.getForm();
-    const checkbox = form.createCheckBox(id);
-    await checkbox.addToPage(pdfPage, {
-      x: x,
-      y: operationPageHeight - y - height,
-      width: width,
-      height: height,
+    await form.createCheckBox(id).addToPage(pdfPage, {
+      x: operation.x,
+      y: pdfPage.getHeight() - operation.y - operation.height,
+      width: operation.width,
+      height: operation.height,
       textColor: PDFLib.rgb(fontColor.red, fontColor.green, fontColor.blue),
       backgroundColor: PDFLib.rgb(backgroundColor.red, backgroundColor.green, backgroundColor.blue),
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      borderWidth: borderWidth,
-      rotate: PDFLib.degrees(rotate),
+      borderWidth,
+      rotate: PDFLib.degrees(0),
     });
+
     const existingCheckbox = form.getCheckBox(id);
-    if (isChecked) {
-      existingCheckbox.check();
-    } else {
-      existingCheckbox.uncheck();
-    }
-    if (isReadOnly) {
-      existingCheckbox.enableReadOnly();
-    } else {
-      existingCheckbox.disableReadOnly();
-    }
+    operation.isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
+    operation.isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
   static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
     pdfPage.node.set(
