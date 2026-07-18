@@ -157,8 +157,8 @@ class FreehandDrawing {
     </svg>`;
     // Convert to base64 data URL securely handling Unicode
     const bytes = new TextEncoder().encode(svg);
-    const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
-    const base64 = btoa(binString);
+    const binaryStringData = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
+    const base64 = btoa(binaryStringData);
     return `data:image/svg+xml;base64,${base64}`;
   }
   /**
