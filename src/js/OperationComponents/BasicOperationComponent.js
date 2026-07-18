@@ -1,4 +1,5 @@
 import Moveable from "moveable";
+import { parseStyleInt } from "../../utils/layout/parseStyle.js";
 
 class BasicOperationComponent {
   operation = null;
@@ -189,19 +190,19 @@ class BasicOperationComponent {
       // Handle resizing based on direction
       // direction[0]: -1 (left), 0 (center), 1 (right)
       // direction[1]: -1 (top), 0 (center), 1 (bottom)
-      let newLeft = parseInt(target.style.left);
-      let newTop = parseInt(target.style.top);
+      let newLeft = parseStyleInt(target, "left");
+      let newTop = parseStyleInt(target, "top");
       let newWidth = width;
       let newHeight = height;
       // Handle horizontal resizing (left edge movement)
       if (direction[0] === -1) {
-        newLeft = parseInt(target.style.left) - delta[0];
-        newWidth = parseInt(target.style.width) + delta[0];
+        newLeft = parseStyleInt(target, "left") - delta[0];
+        newWidth = parseStyleInt(target, "width") + delta[0];
       }
       // Handle vertical resizing (top edge movement)
       if (direction[1] === -1) {
-        newTop = parseInt(target.style.top) - delta[1];
-        newHeight = parseInt(target.style.height) + delta[1];
+        newTop = parseStyleInt(target, "top") - delta[1];
+        newHeight = parseStyleInt(target, "height") + delta[1];
       }
       // Apply the changes
       target.style.left = `${newLeft}px`;
