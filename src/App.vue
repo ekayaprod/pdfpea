@@ -44,7 +44,7 @@
                 Config
                 <i class="fa-solid fa-chevron-down ml-2"></i>
               </button>
-              <div class="dropdown-menu" :class="{ show: showConfigDropdown }">
+              <div class="dropdown-menu" :class="{ show: isConfigDropdownOpen }">
                 <button
                   @click="
                     downloadConfig();
@@ -542,9 +542,13 @@
       </div>
     </div>
     <!-- Image Dialog Component -->
-    <ImageDialog :show="showImageDialog" @close="closeImageDialog" @confirm="handleImageConfirm" />
+    <ImageDialog
+      :isOpen="isImageDialogOpen"
+      @close="closeImageDialog"
+      @confirm="handleImageConfirm"
+    />
     <!-- Link Dialog Component -->
-    <LinkDialog :show="showLinkDialog" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
+    <LinkDialog :isOpen="isLinkDialogOpen" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
     <div class="pdf-body">
       <!-- Floating Toolbar -->
       <div class="floating-toolbar">
@@ -919,13 +923,13 @@ export default {
       liveMeasurement: null, // Current live measurement being drawn
     });
     // Image dialog state - simplified
-    const showImageDialog = ref(false);
+    const isImageDialogOpen = ref(false);
     const pendingImageParams = ref(null);
     // Link dialog state
-    const showLinkDialog = ref(false);
+    const isLinkDialogOpen = ref(false);
     const pendingLinkParams = ref(null);
     // Config dropdown state
-    const showConfigDropdown = ref(false);
+    const isConfigDropdownOpen = ref(false);
     // Toast notification state
     const toast = ref({
       show: false,
@@ -938,7 +942,7 @@ export default {
     // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
       pendingImageParams.value = { page, id, x, y, width, height };
-      showImageDialog.value = true;
+      isImageDialogOpen.value = true;
     };
     const handleImageConfirm = (imageDataUrl) => {
       if (!pendingImageParams.value) return;
@@ -957,13 +961,13 @@ export default {
       pendingImageParams.value = null;
     };
     const closeImageDialog = () => {
-      showImageDialog.value = false;
+      isImageDialogOpen.value = false;
       pendingImageParams.value = null;
     };
     // Link dialog functions
     const openLinkDialog = (page, id, x, y, width, height) => {
       pendingLinkParams.value = { page, id, x, y, width, height };
-      showLinkDialog.value = true;
+      isLinkDialogOpen.value = true;
     };
     const handleLinkConfirm = ({ type, value }) => {
       if (!pendingLinkParams.value) return;
@@ -988,15 +992,15 @@ export default {
       pendingLinkParams.value = null;
     };
     const closeLinkDialog = () => {
-      showLinkDialog.value = false;
+      isLinkDialogOpen.value = false;
       pendingLinkParams.value = null;
     };
     // Config dropdown functions
     const toggleConfigDropdown = () => {
-      showConfigDropdown.value = !showConfigDropdown.value;
+      isConfigDropdownOpen.value = !isConfigDropdownOpen.value;
     };
     const closeConfigDropdown = () => {
-      showConfigDropdown.value = false;
+      isConfigDropdownOpen.value = false;
     };
     // Toast functions
     const showToast = (message, type = "success", duration = 2000) => {
@@ -2403,8 +2407,8 @@ export default {
       // Setup click outside listener for dropdown
       document.addEventListener("click", (event) => {
         const dropdown = event.target.closest(".dropdown");
-        if (!dropdown && showConfigDropdown.value) {
-          showConfigDropdown.value = false;
+        if (!dropdown && isConfigDropdownOpen.value) {
+          isConfigDropdownOpen.value = false;
         }
       });
       // Setup drag and drop for PDF files
@@ -2679,7 +2683,7 @@ export default {
       textOptions,
       iconOptions,
       linkOptions,
-      showImageDialog,
+      isImageDialogOpen,
       pendingImageParams,
       openImageDialog,
       closeImageDialog,
@@ -2698,12 +2702,12 @@ export default {
       iconCache,
       loadIconCache,
       getColoredIcon,
-      showLinkDialog,
+      isLinkDialogOpen,
       pendingLinkParams,
       openLinkDialog,
       handleLinkConfirm,
       closeLinkDialog,
-      showConfigDropdown,
+      isConfigDropdownOpen,
       toggleConfigDropdown,
       closeConfigDropdown,
       toast,

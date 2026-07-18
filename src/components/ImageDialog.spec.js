@@ -16,7 +16,7 @@ describe("ImageDialog", () => {
     // Mount using render function (h) to avoid string template compiler dependency
     const app = createApp({
       render() {
-        return h(ImageDialog, { show: true });
+        return h(ImageDialog, { isOpen: true });
       },
     });
 

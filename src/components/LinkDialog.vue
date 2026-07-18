@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="link-dialog-overlay" @click="handleOverlayClick">
+  <div v-if="isOpen" class="link-dialog-overlay" @click="handleOverlayClick">
     <div class="link-dialog" @click.stop>
       <div class="link-dialog-header">
         <h3>Add Link</h3>
@@ -63,7 +63,7 @@ import { ref, watch, computed } from "vue";
 export default {
   name: "LinkDialog",
   props: {
-    show: {
+    isOpen: {
       type: Boolean,
       default: false,
     },
@@ -76,7 +76,7 @@ export default {
     const error = ref("");
     // Reset state when dialog is opened
     watch(
-      () => props.show,
+      () => props.isOpen,
       (newValue) => {
         if (newValue) {
           resetState();

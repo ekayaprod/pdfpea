@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="image-dialog-overlay" @click="handleOverlayClick">
+  <div v-if="isOpen" class="image-dialog-overlay" @click="handleOverlayClick">
     <div class="image-dialog" @click.stop>
       <div class="image-dialog-header">
         <h3>Add Image</h3>
@@ -87,7 +87,7 @@ import { ref, watch } from "vue";
 export default {
   name: "ImageDialog",
   props: {
-    show: {
+    isOpen: {
       type: Boolean,
       default: false,
     },
@@ -102,7 +102,7 @@ export default {
 
     // Reset state when dialog is opened
     watch(
-      () => props.show,
+      () => props.isOpen,
       (newValue) => {
         if (newValue) {
           resetState();
