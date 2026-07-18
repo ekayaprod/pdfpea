@@ -31,6 +31,11 @@ Working website: [pdfpea.com](https://pdfpea.com)
 ### Development
 1. `npm run dev` (Boot the Vite development server)
 
+### Testing
+1. `npm run test` (Run the Vitest test suite)
+2. `npm run test:watch` (Run tests in watch mode)
+3. `npm run test:coverage` (Run tests and generate coverage report)
+
 ### Production & Verification
 1. `npm run type-check` (Type check TS and Vue components using `vue-tsc`)
 2. `npm run build` (Compile with Vite --debug)
