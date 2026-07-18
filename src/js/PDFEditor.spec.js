@@ -14,15 +14,7 @@ describe("PDFEditor", () => {
     // Create an instance with dummy container
     const editor = new PDFEditor({});
 
-    let error = null;
-    try {
-      await editor.renderPDF(null, null);
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error).toBeDefined();
-    expect(error.message).toMatch(/cannot be null/i);
+    await expect(editor.renderPDF(null, null)).rejects.toThrow(/cannot be null/i);
   });
 
   it("handles getDocument error in renderPDF", async () => {
@@ -33,13 +25,6 @@ describe("PDFEditor", () => {
       promise: Promise.reject(new Error("Mocked PDF error")),
     });
 
-    let error = null;
-    try {
-      await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
-    } catch (e) {
-      error = e;
-    }
-    expect(error).toBeDefined();
-    expect(error.message).toBe("Mocked PDF error");
+    await expect(editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]))).rejects.toThrow("Mocked PDF error");
   });
 });

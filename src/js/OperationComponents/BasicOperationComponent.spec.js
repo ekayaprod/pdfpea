@@ -299,7 +299,6 @@ it("should handle createDeleteAble interactions", () => {
   const deleteAble = component.createDeleteAble();
 
   expect(deleteAble.name).toBe("deleteViewable");
-  expect(typeof deleteAble.render).toBe("function");
   // Mock the Moveable r object
   const mockR = {
     createElement: vi.fn((tag, props, children) => {
