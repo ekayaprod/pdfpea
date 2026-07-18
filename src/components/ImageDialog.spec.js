@@ -65,7 +65,7 @@ describe("ImageDialog", () => {
     // Verify the error message is displayed
     const errorMsg = root.querySelector(".image-error");
     expect(errorMsg).not.toBeNull();
-    expect(errorMsg.textContent).toContain("Unable to load the image from the provided URL");
+    expect(errorMsg.textContent).toContain("Unable to load the image from the provided URL. Verify the link and try again");
 
     // Restore window.Image and clean up
     window.Image = OriginalImage;

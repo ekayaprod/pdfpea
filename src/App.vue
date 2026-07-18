@@ -743,16 +743,16 @@
                 <button
                   v-if="canEditLayer(layer)"
                   class="layer-action-btn"
-                  title="Rename element"
-                  aria-label="Rename element"
+                  title="Rename layer"
+                  aria-label="Rename layer"
                   @click.stop="startEditLayer(layer)"
                 >
                   <i class="fa-solid fa-pen"></i>
                 </button>
                 <button
                   class="layer-action-btn layer-action-delete"
-                  title="Delete element"
-                  aria-label="Delete element"
+                  title="Delete layer"
+                  aria-label="Delete layer"
                   @click.stop="deleteLayer(layer)"
                 >
                   <i class="fa-solid fa-trash"></i>
@@ -1707,7 +1707,7 @@ export default {
             updateToolbarPosition();
           }, 100);
           isLoaded.value = true;
-          showToast("File loaded", "success");
+          showToast("PDF file loaded successfully", "success");
         } else {
           console.error("PDFEditor not initialized yet");
         }
@@ -1747,7 +1747,7 @@ export default {
       } else if (jsonFile) {
         processConfigFile(jsonFile);
       } else if (files.length > 0) {
-        showToast("Drop a valid PDF or JSON config file.", "warning");
+        showToast("Drop a valid PDF or JSON configuration file.", "warning");
       }
     };
     const downloadPDF = async () => {
@@ -1810,7 +1810,7 @@ export default {
         configFileToProcess.type !== "application/json" &&
         !configFileToProcess.name.toLowerCase().endsWith(".json")
       ) {
-        showToast("Select a valid JSON config file.", "warning");
+        showToast("Select a valid JSON configuration file.", "warning");
         return;
       }
       try {
@@ -2393,7 +2393,7 @@ export default {
             updateToolbarPosition();
           }, 100);
           isLoaded.value = true;
-          showToast(`${fileName} loaded successfully`, "success");
+          showToast(`Successfully loaded the document: ${fileName}`, "success");
         }
       });
       // Setup dynamic tooltip positioning
