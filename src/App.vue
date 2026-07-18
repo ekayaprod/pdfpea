@@ -2411,7 +2411,7 @@ export default {
       document.addEventListener("dragleave", handleDragLeave);
       document.addEventListener("drop", handleDrop);
       // Load and cache icon SVGs at startup
-      await fetchIconCache();
+      await loadIconCache();
       // Setup window resize listener to update toolbar position
       window.addEventListener("resize", () => {
         setTimeout(() => {
@@ -2491,7 +2491,7 @@ export default {
       }
     };
     // Load and cache icon SVGs at startup
-    const fetchIconCache = async () => {
+    const loadIconCache = async () => {
       // Build icon URLs from the dynamic iconTools array
       const iconUrls = {};
       iconTools.value.forEach((iconTool) => {
@@ -2692,7 +2692,7 @@ export default {
       getSvgFillColor,
       updateSvgFillColor,
       iconCache,
-      fetchIconCache,
+      loadIconCache,
       getColoredIcon,
       isLinkDialogOpen,
       pendingLinkParams,
