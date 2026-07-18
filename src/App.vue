@@ -5,13 +5,7 @@
         <!-- Single element container for all tool options -->
         <div class="element-container ml-2">
           <div class="option-element">
-            <input
-              type="file"
-              id="file"
-              ref="file"
-              style="display: none"
-              @change="handleFileUpload"
-            />
+            <input type="file" id="file" ref="file" class="hidden" @change="handleFileUpload" />
             <button
               @click="clickFileInput"
               class="btn ml-4"
@@ -72,7 +66,7 @@
               type="file"
               id="config-file"
               ref="configFile"
-              style="display: none"
+              class="hidden"
               accept=".json"
               @change="handleConfigRestore"
             />
