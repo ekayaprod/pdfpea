@@ -2753,77 +2753,39 @@ export default {
 }
 /* Freehand options styling */
 .element-container {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 10px;
-  padding: 2px 10px;
-  background: #ffffff;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
-  flex-wrap: wrap;
-  width: 100%;
-  max-width: 100%;
+  @apply flex items-center gap-1.5 ml-2.5 px-2.5 py-0.5 bg-white rounded-md border border-gray-200 flex-wrap w-full max-w-full;
+
   .option-element {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #2d2d2d;
+    @apply flex items-center gap-2 text-sm text-gray-800;
+
     label {
-      font-weight: 500;
-      white-space: nowrap;
-      padding-left: 10px;
-      margin-left: 15px;
+      @apply font-medium whitespace-nowrap pl-2.5 ml-3.5;
     }
+
     input[type="range"] {
-      width: 80px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
-      outline: none;
+      @apply w-20 h-1 bg-white/30 rounded-sm outline-none;
+
       &::-webkit-slider-thumb {
-        width: 14px;
-        height: 14px;
-        background: #007bff;
-        border-radius: 50%;
-        cursor: pointer;
+        @apply w-3.5 h-3.5 bg-blue-600 rounded-full cursor-pointer;
       }
       &::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
-        background: #007bff;
-        border-radius: 50%;
-        cursor: pointer;
-        border: none;
+        @apply w-3.5 h-3.5 bg-blue-600 rounded-full cursor-pointer border-none;
       }
     }
+
     input[type="color"] {
-      width: 30px;
-      height: 24px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      background: none;
+      @apply w-7 h-6 border-none rounded cursor-pointer bg-transparent;
     }
+
     .value-display {
-      font-size: 14px;
-      color: rgba(45, 45, 45, 0.8);
-      min-width: 20px;
-      text-align: center;
+      @apply text-sm text-gray-800/80 min-w-[20px] text-center;
     }
+
     .font-select {
-      padding: 2px 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: white;
-      font-size: 14px;
-      color: #333;
-      cursor: pointer;
-      min-width: 120px;
+      @apply px-1.5 py-0.5 border border-gray-300 rounded bg-white text-sm text-gray-800 cursor-pointer min-w-[120px];
+
       &:focus {
-        outline: none;
-        border-color: #007bff;
+        @apply outline-none border-blue-600;
       }
     }
   }
