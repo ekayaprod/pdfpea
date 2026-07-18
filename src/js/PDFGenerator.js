@@ -98,7 +98,9 @@ class PDFGenerator {
   static async drawTextOnPage(pdfDoc, pdfPage, operation) {
     const fontColor = hexToRgb(operation.color);
     const resolvedFont =
-      operation.fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : operation.fontFamily;
+      operation.fontFamily === "TimesRoman"
+        ? PDFLib.StandardFonts.TimesRoman
+        : operation.fontFamily;
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
@@ -119,7 +121,12 @@ class PDFGenerator {
       size: parseInt(operation.fontSize),
       lineHeight: operation.fontSize * operation.lineHeight,
       opacity: parseFloat(operation.opacity, 10),
-      wordBreaks: operation.wordBreak === "break-all" ? [""] : operation.wordBreak === "break-word" ? [" "] : [],
+      wordBreaks:
+        operation.wordBreak === "break-all"
+          ? [""]
+          : operation.wordBreak === "break-word"
+            ? [" "]
+            : [],
       maxWidth: operation.width,
     });
   }
@@ -305,7 +312,9 @@ class PDFGenerator {
     const backgroundColor = hexToRgb(operation.backgroundColor);
     const maxLength = parseFloat(operation.maxLength, 10);
     const resolvedFont =
-      operation.fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : operation.fontFamily;
+      operation.fontFamily === "TimesRoman"
+        ? PDFLib.StandardFonts.TimesRoman
+        : operation.fontFamily;
     const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
       ? resolvedFont
       : PDFLib.StandardFonts.Helvetica;
@@ -337,13 +346,19 @@ class PDFGenerator {
     if (!isNaN(maxLength)) existingTextField.setMaxLength(maxLength);
 
     existingTextField.setAlignment(
-      operation.alignment === "Left" ? PDFLib.TextAlignment.Left :
-      operation.alignment === "Center" ? PDFLib.TextAlignment.Center :
-      operation.alignment === "Right" ? PDFLib.TextAlignment.Right : PDFLib.TextAlignment.Left
+      operation.alignment === "Left"
+        ? PDFLib.TextAlignment.Left
+        : operation.alignment === "Center"
+          ? PDFLib.TextAlignment.Center
+          : operation.alignment === "Right"
+            ? PDFLib.TextAlignment.Right
+            : PDFLib.TextAlignment.Left,
     );
 
     operation.isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
-    operation.isMultiline ? existingTextField.enableMultiline() : existingTextField.disableMultiline();
+    operation.isMultiline
+      ? existingTextField.enableMultiline()
+      : existingTextField.disableMultiline();
     operation.isReadOnly ? existingTextField.enableReadOnly() : existingTextField.disableReadOnly();
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
