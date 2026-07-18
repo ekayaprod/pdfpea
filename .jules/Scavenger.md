@@ -25,3 +25,5 @@ dist/assets/pdflib-BBgOaPys.js             437.41 kB │ gzip: 181.32 kB
 ✓ built in 6.01s).
 ### Safety Check:
 - `npm run build` succeeds cleanly. Test immunity doctrine adhered to.
+
+- Note: Evaluated [PRUNER] targets from agent_tasks.md but they were previously removed or false positive targets (ghost entries); task board cleaned up.
