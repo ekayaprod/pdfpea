@@ -254,11 +254,11 @@ describe("BasicOperationComponent", () => {
 
     expect(component.removeMoveable).toHaveBeenCalled();
     expect(component.wrapperContainer.remove).toHaveBeenCalled();
-    expect(window.preventComponentCreation).toBe(true);
+    expect(window.isComponentCreationPrevented).toBe(true);
     expect(eventDispatched).toBe(true);
 
     vi.advanceTimersByTime(200);
-    expect(window.preventComponentCreation).toBe(false);
+    expect(window.isComponentCreationPrevented).toBe(false);
 
     vi.useRealTimers();
   });

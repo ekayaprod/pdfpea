@@ -149,9 +149,9 @@ class BasicOperationComponent {
     this.removeMoveable();
     this.wrapperContainer.remove();
     // Set a temporary flag to prevent immediate component creation
-    window.preventComponentCreation = true;
+    window.isComponentCreationPrevented = true;
     setTimeout(() => {
-      window.preventComponentCreation = false;
+      window.isComponentCreationPrevented = false;
     }, 200); // 200ms delay
     // Clear selection in property panel
     const clearEvent = new CustomEvent("pdfeditor.shouldClearAllSelection", {
