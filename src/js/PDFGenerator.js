@@ -46,7 +46,15 @@ class PDFGenerator {
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
-    const typeMap = { text: "drawTextOnPage", rectangle: "drawRectangleOnPage", circle: "drawCircleOnPage", image: "drawImageOnPage", textfield: "drawTextFieldOnPage", checkbox: "drawCheckboxOnPage", link: "drawLinkOnPage" };
+    const typeMap = {
+      text: "drawTextOnPage",
+      rectangle: "drawRectangleOnPage",
+      circle: "drawCircleOnPage",
+      image: "drawImageOnPage",
+      textfield: "drawTextFieldOnPage",
+      checkbox: "drawCheckboxOnPage",
+      link: "drawLinkOnPage",
+    };
     // Pages themselves can be processed concurrently
     await Promise.all(
       pageOperations.map(async (page) => {
@@ -60,7 +68,7 @@ class PDFGenerator {
             await this[typeMap[op.type]](pdfDoc, pdfPage, op);
           }
         }
-      })
+      }),
     );
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
@@ -302,7 +310,9 @@ class PDFGenerator {
     existingTextField.setFontSize(parseFloat(operation.fontSize, 10));
     if (!isNaN(maxLength)) existingTextField.setMaxLength(maxLength);
 
-    existingTextField.setAlignment(PDFLib.TextAlignment[operation.alignment] ?? PDFLib.TextAlignment.Left);
+    existingTextField.setAlignment(
+      PDFLib.TextAlignment[operation.alignment] ?? PDFLib.TextAlignment.Left,
+    );
 
     operation.isRequired ? existingTextField.enableRequired() : existingTextField.disableRequired();
     operation.isMultiline
