@@ -11,6 +11,9 @@ class PDFGenerator {
    * * Historical Intent: Introduced in commit 7c1af7e (Jun 2026) to handle file identification locally without relying on external dependencies.
    */
   static getImageType(arrayBuffer) {
+    if (!arrayBuffer || arrayBuffer.byteLength < 2) {
+      return "unknown";
+    }
     const view = new DataView(arrayBuffer);
     const signature = [view.getUint8(0), view.getUint8(1)];
     const decoder = new TextDecoder("utf-8"); // or whatever encoding you expect
@@ -19,7 +22,7 @@ class PDFGenerator {
       return "svg";
     } else if (signature[0] === 0xff && signature[1] === 0xd8) {
       return "jpg";
-    } else if (view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
+    } else if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
       return "png";
     } else {
       return "unknown";
