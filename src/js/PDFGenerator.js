@@ -11,22 +11,13 @@ class PDFGenerator {
    * * Historical Intent: Introduced in commit 7c1af7e (Jun 2026) to handle file identification locally without relying on external dependencies.
    */
   static getImageType(arrayBuffer) {
-    if (!arrayBuffer || arrayBuffer.byteLength < 2) {
-      return "unknown";
-    }
+    if (!arrayBuffer || arrayBuffer.byteLength < 2) return "unknown";
     const view = new DataView(arrayBuffer);
-    const signature = [view.getUint8(0), view.getUint8(1)];
-    const decoder = new TextDecoder("utf-8"); // or whatever encoding you expect
-    const str = decoder.decode(arrayBuffer);
-    if (str.startsWith("<svg") || str.startsWith("<?xml")) {
-      return "svg";
-    } else if (signature[0] === 0xff && signature[1] === 0xd8) {
-      return "jpg";
-    } else if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
-      return "png";
-    } else {
-      return "unknown";
-    }
+    const str = new TextDecoder("utf-8").decode(arrayBuffer);
+    if (str.startsWith("<svg") || str.startsWith("<?xml")) return "svg";
+    if (view.getUint8(0) === 0xff && view.getUint8(1) === 0xd8) return "jpg";
+    if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) return "png";
+    return "unknown";
   }
   static async generatePDF(fileContents, pageOperations) {
     const pdfDoc = await PDFLib.PDFDocument.create();
@@ -35,16 +26,14 @@ class PDFGenerator {
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     for (const page of pageOperations) {
-      const pageNumber = page.pageNumber;
-      const updateOperations = page.operations.filter((op) => op.operation === "update");
-      for (const op of updateOperations) {
+      for (const op of page.operations.filter((op) => op.operation === "update")) {
         const formField = fieldMap.get(op.id);
-        if (formField !== null && formField !== undefined) {
+        if (formField != null) {
           srcForm.removeField(formField);
           fieldMap.delete(op.id); // Prevent Double Remove
         }
       }
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [pageNumber - 1]);
+      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
       pdfDoc.addPage(cpage);
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
@@ -87,12 +76,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     await pdfPage.drawText(operation.text.replaceAll("\n\n", "\n \n"), {
       x: operation.x + operation.xPadding,
@@ -156,14 +141,11 @@ class PDFGenerator {
     const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
     const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
 
-    const preserveAspectRatioMatch = svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/);
-    const preserveAspectRatio = preserveAspectRatioMatch ? preserveAspectRatioMatch[1] : null;
-    const shouldMaintainAspectRatio = preserveAspectRatio !== "none";
+    const shouldMaintainAspectRatio = (svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/)?.[1]) !== "none";
 
     const vbMatch = svgText.match(/viewBox="([^"]+)"/);
     if (!vbMatch) throw new Error("SVG viewBox not found");
-    const [, vb] = vbMatch;
-    const [, , vbW, vbH] = vb.split(/\s+/).map(parseFloat);
+    const [, , vbW, vbH] = vbMatch[1].split(/\s+/).map(parseFloat);
 
     const scale = shouldMaintainAspectRatio ? Math.min(width / vbW, height / vbH) : 1;
     const scaleX = shouldMaintainAspectRatio ? scale : width / vbW;
@@ -288,12 +270,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     const form = pdfDoc.getForm();
     await form.createTextField(id).addToPage(pdfPage, {
