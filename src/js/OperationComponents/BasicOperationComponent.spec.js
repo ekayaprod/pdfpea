@@ -300,7 +300,6 @@ it("should handle createDeleteAble interactions", () => {
 
   expect(deleteAble.name).toBe("deleteViewable");
   expect(typeof deleteAble.render).toBe("function");
-
   // Mock the Moveable r object
   const mockR = {
     createElement: vi.fn((tag, props, children) => {
@@ -309,7 +308,9 @@ it("should handle createDeleteAble interactions", () => {
   };
 
   const rendered = deleteAble.render(null, mockR);
+  // Verify strict DOM structure returned by the render function
   expect(rendered.tag).toBe("div");
+  expect(rendered.props.className).toContain("moveable-delete-container");
 
   // Test Move button interactions
   const moveButtonProps = rendered.children[0].props;

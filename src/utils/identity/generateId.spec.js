@@ -9,6 +9,8 @@ describe("generateId", () => {
   it("should return a string", () => {
     const id = generateId();
     expect(typeof id).toBe("string");
+    // Verify value isn't a tautological constant when the underlying system produces unpredictable random bytes
+    expect(id).toMatch(/^[a-z0-9]{9}$/);
   });
 
   it("should generate an ID of exactly 9 characters", () => {
@@ -25,7 +27,7 @@ describe("generateId", () => {
   it("should contain only alphanumeric characters", () => {
     const id = generateId();
     // Base 36 string contains lowercase letters and numbers
-    expect(/^[a-z0-9]+$/.test(id)).toBe(true);
+    expect(id).toMatch(/^[a-z0-9]+$/);
   });
 
   it("should pad with zeros if Math.random() returns a short value (e.g. 0.5)", () => {

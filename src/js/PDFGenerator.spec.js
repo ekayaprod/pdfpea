@@ -10,6 +10,7 @@ describe("PDFGenerator", () => {
       error = e;
     }
     expect(error).toBeDefined();
-    expect(error.message).toMatch(/cannot be null/i);
+    // Fortified blind error boundary
+    expect(error.message).toBe("Cannot be null");
   });
 });
