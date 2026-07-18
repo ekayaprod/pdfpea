@@ -23,6 +23,7 @@ Working website: [pdfpea.com](https://pdfpea.com)
 | `/src/utils` | Shared utility functions and helpers. |
 | `/public` | Static assets like images served directly. |
 | `/test-files` | Local PDF and media assets for testing the editor visually. |
+| `/tests` | Playwright end-to-end (E2E) UI and visual regression test suites. |
 
 ## 🛠️ Boot Sequence (CLI Commands)
 
@@ -35,6 +36,7 @@ Working website: [pdfpea.com](https://pdfpea.com)
 1. `npm run test` (Run the Vitest test suite)
 2. `npm run test:watch` (Run tests in watch mode)
 3. `npm run test:coverage` (Run tests and generate coverage report)
+4. `npm run test:e2e` (Run Playwright end-to-end tests)
 
 ### Production & Verification
 1. `npm run type-check` (Type check TS and Vue components using `vue-tsc`)

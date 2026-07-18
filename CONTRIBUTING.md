@@ -28,6 +28,9 @@ Before submitting any Pull Requests, you must validate your changes against the 
     ```bash
     npm run test
     ```
+    ```bash
+    npm run test:e2e
+    ```
 2.  **Type Checking:**
     ```bash
     npm run type-check
