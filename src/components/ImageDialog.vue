@@ -54,9 +54,9 @@
             v-model="imageUrl"
             placeholder="https://example.com/image.jpg"
             class="url-input"
-            @keyup.enter="loadFromUrl"
+            @keyup.enter="fetchFromUrl"
           />
-          <button @click="loadFromUrl" class="load-url-btn" :disabled="!imageUrl">
+          <button @click="fetchFromUrl" class="load-url-btn" :disabled="!imageUrl">
             Load Image
           </button>
         </div>
@@ -167,7 +167,7 @@ export default {
       reader.readAsDataURL(file);
     };
 
-    const loadFromUrl = async () => {
+    const fetchFromUrl = async () => {
       if (!imageUrl.value) return;
 
       error.value = "";
@@ -215,7 +215,7 @@ export default {
       triggerFileInput,
       handleFileUpload,
       handleDrop,
-      loadFromUrl,
+      fetchFromUrl,
       confirmSelection,
     };
   },
