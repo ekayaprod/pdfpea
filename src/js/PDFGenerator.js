@@ -22,7 +22,11 @@ class PDFGenerator {
       return "svg";
     } else if (signature[0] === 0xff && signature[1] === 0xd8) {
       return "jpg";
-    } else if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
+    } else if (
+      arrayBuffer.byteLength >= 8 &&
+      view.getUint32(0) === 0x89504e47 &&
+      view.getUint32(4) === 0x0d0a1a0a
+    ) {
       return "png";
     } else {
       return "unknown";

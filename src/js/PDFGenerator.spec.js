@@ -42,8 +42,8 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch(e) {
-        type = "error"
+      } catch (e) {
+        type = "error";
       }
 
       expect(type).toBe("unknown");
@@ -55,8 +55,8 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch(e) {
-        type = "error"
+      } catch (e) {
+        type = "error";
       }
 
       expect(type).toBe("unknown");
