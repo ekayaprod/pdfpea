@@ -795,9 +795,9 @@
 <script lang="ts">
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
-import ImageDialog from "./components/ImageDialog.vue";
+import ImageDialog from "./components/dialogs/ImageDialog.vue";
 import { generateId } from "./utils/identity/generateId.js";
-import LinkDialog from "./components/LinkDialog.vue";
+import LinkDialog from "./components/dialogs/LinkDialog.vue";
 import { freehandDrawing } from "./utils/canvas/FreehandDrawing.js";
 import { parsePdfData } from "./utils/pdf/pdfData.js";
 export default {

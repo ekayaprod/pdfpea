@@ -17,7 +17,7 @@ import {
   COMPONENT_TYPES,
   EVENTS,
   IMAGE_PATHS,
-} from "./constants.js";
+} from "../constants/index.js";
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {
   cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
   iccUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/iccs/`,
