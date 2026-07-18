@@ -210,9 +210,11 @@ class PDFGenerator {
 
       if (lineJoinMatch) {
         opts.borderLineCap =
-          { butt: PDFLib.LineCapStyle.Butt, projecting: PDFLib.LineCapStyle.Projecting, round: PDFLib.LineCapStyle.Round }[
-            lineJoinMatch[1]
-          ] ?? opts.borderLineCap;
+          {
+            butt: PDFLib.LineCapStyle.Butt,
+            projecting: PDFLib.LineCapStyle.Projecting,
+            round: PDFLib.LineCapStyle.Round,
+          }[lineJoinMatch[1]] ?? opts.borderLineCap;
       }
 
       const scaledPathData = svgpath(path.data).scale(scaleX, scaleY).toString();
