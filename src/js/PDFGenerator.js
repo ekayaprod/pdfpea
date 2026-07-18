@@ -20,16 +20,7 @@ class PDFGenerator {
       return "svg";
     } else if (signature[0] === 0xff && signature[1] === 0xd8) {
       return "jpg";
-    } else if (
-      signature[0] === 0x89 &&
-      signature[1] === 0x50 &&
-      view.getUint8(2) === 0x4e &&
-      view.getUint8(3) === 0x47 &&
-      view.getUint8(4) === 0x0d &&
-      view.getUint8(5) === 0x0a &&
-      view.getUint8(6) === 0x1a &&
-      view.getUint8(7) === 0x0a
-    ) {
+    } else if (view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
       return "png";
     } else {
       return "unknown";
@@ -168,14 +159,7 @@ class PDFGenerator {
      * * Historical Intent: Added in PR #11 (commit a36a5ae, Jul 2026) to elevate UI copy and inject accessibility labels, standardizing icon rendering via PDF generation.
      */
     const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
-    const paths = [];
-    let pathMatch;
-    while ((pathMatch = pathRegex.exec(svgText)) !== null) {
-      paths.push({
-        data: pathMatch[1],
-        element: pathMatch[0],
-      });
-    }
+    const paths = Array.from(svgText.matchAll(pathRegex), (m) => ({ data: m[1], element: m[0] }));
     if (paths.length === 0) throw new Error("No SVG paths found");
 
     const globalFillMatch = svgText.match(/<svg[^>]*fill="([^"]+)"/);
@@ -225,17 +209,10 @@ class PDFGenerator {
       }
 
       if (lineJoinMatch) {
-        switch (lineJoinMatch[1]) {
-          case "butt":
-            opts.borderLineCap = PDFLib.LineCapStyle.Butt;
-            break;
-          case "projecting":
-            opts.borderLineCap = PDFLib.LineCapStyle.Projecting;
-            break;
-          case "round":
-            opts.borderLineCap = PDFLib.LineCapStyle.Round;
-            break;
-        }
+        opts.borderLineCap =
+          { butt: PDFLib.LineCapStyle.Butt, projecting: PDFLib.LineCapStyle.Projecting, round: PDFLib.LineCapStyle.Round }[
+            lineJoinMatch[1]
+          ] ?? opts.borderLineCap;
       }
 
       const scaledPathData = svgpath(path.data).scale(scaleX, scaleY).toString();
