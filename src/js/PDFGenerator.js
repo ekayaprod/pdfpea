@@ -39,16 +39,13 @@ class PDFGenerator {
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     for (const page of pageOperations) {
-      const pageNumber = page.pageNumber;
-      const updateOperations = page.operations.filter((op) => op.operation === "update");
-      for (const op of updateOperations) {
-        const formField = fieldMap.get(op.id);
-        if (formField !== null && formField !== undefined) {
-          srcForm.removeField(formField);
-          fieldMap.delete(op.id); // Prevent Double Remove
-        }
-      }
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [pageNumber - 1]);
+      page.operations
+        .filter((op) => op.operation === "update" && fieldMap.has(op.id))
+        .forEach((op) => {
+          srcForm.removeField(fieldMap.get(op.id));
+          fieldMap.delete(op.id);
+        });
+      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
       pdfDoc.addPage(cpage);
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
@@ -67,11 +64,11 @@ class PDFGenerator {
       pageOperations.map(async (page) => {
         const pdfPage = pdfPages[page.pageNumber - 1];
         // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
-        for (const op of page.operations.filter((op) => op.operation === "create")) {
-          if (typeMap[op.type]) await this[typeMap[op.type]](pdfDoc, pdfPage, op);
-        }
-        for (const op of page.operations.filter((op) => op.operation === "update")) {
-          if (["textfield", "checkbox", "link"].includes(op.type) && typeMap[op.type]) {
+        for (const op of page.operations) {
+          if (
+            (op.operation === "create" && typeMap[op.type]) ||
+            (op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type) && typeMap[op.type])
+          ) {
             await this[typeMap[op.type]](pdfDoc, pdfPage, op);
           }
         }
@@ -178,42 +175,33 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    for (const path of paths) {
-      const pathFillMatch = path.element.match(/fill="([^"]+)"/);
-      const pathStrokeMatch = path.element.match(/stroke="([^"]+)"/);
-      const pathStrokeWidthMatch = path.element.match(/stroke-width="([^"]+)"/);
-      const lineJoinMatch = path.element.match(/stroke-linejoin="([^"]+)"/);
+    await Promise.all(paths.map(async (path) => {
       const opts = { x: drawX, y: drawY, opacity };
 
-      const fillColor = pathFillMatch?.[1] ?? globalFillMatch?.[1];
+      const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
       if (fillColor && fillColor !== "none") {
         const c = hexToRgb(fillColor);
         opts.color = PDFLib.rgb(c.red, c.green, c.blue);
       }
 
-      const strokeColor = pathStrokeMatch?.[1] ?? globalStrokeMatch?.[1];
+      const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
       if (strokeColor && strokeColor !== "none") {
         const c = hexToRgb(strokeColor);
         opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
       }
 
-      const strokeWidth = pathStrokeWidthMatch?.[1] ?? globalStrokeWidthMatch?.[1];
-      if (strokeWidth) {
-        opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+      const strokeWidth = path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+      if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+
+      const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
+      if (lineJoin) {
+        opts.borderLineCap = {
+          butt: PDFLib.LineCapStyle.Butt, projecting: PDFLib.LineCapStyle.Projecting, round: PDFLib.LineCapStyle.Round
+        }[lineJoin] ?? opts.borderLineCap;
       }
 
-      if (lineJoinMatch) {
-        opts.borderLineCap =
-          {
-            butt: PDFLib.LineCapStyle.Butt,
-            projecting: PDFLib.LineCapStyle.Projecting,
-            round: PDFLib.LineCapStyle.Round,
-          }[lineJoinMatch[1]] ?? opts.borderLineCap;
-      }
-
-      const scaledPathData = svgpath(path.data).scale(scaleX, scaleY).toString();
-      await pdfPage.drawSvgPath(scaledPathData, opts);
-    }
+      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
+    }));
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {

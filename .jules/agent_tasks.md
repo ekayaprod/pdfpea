@@ -9,7 +9,4 @@
 
 ## The [REFACTORER] Queue
 * 🏗️ `src/App.vue`: 3268 lines. Split into smaller domain modules and composables to reduce monolithic complexity.
-* 🏗️ `src/js/PDFGenerator.js`: 698 lines. Break down into smaller helper functions.
 
-
-## The [TRANSFORMER] Queue
