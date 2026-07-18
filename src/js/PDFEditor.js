@@ -142,90 +142,57 @@ class PDFPage {
     }
   }
   createTextFieldFromPDF(field, viewport) {
-    const rect = field.rect;
-    const id = field.fieldName;
     const borderWidth = field.borderStyle.width;
-    const x = Math.ceil(rect[0]);
-    const tempY = Math.ceil(rect[1]);
-    const width = Math.floor(rect[2]) - x - 2 * borderWidth;
-    const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
-    const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
-    const backgroundColor = rgbToHex(
-      field.backgroundColor[0],
-      field.backgroundColor[1],
-      field.backgroundColor[2],
-    );
-    const fontFamily = field.defaultAppearanceData.fontName;
-    const fontSize = field.defaultAppearanceData.fontSize;
-    const text = field.fieldValue;
-    const isRequired = field.required;
-    const isMultiline = field.multiLine;
-    const isReadOnly = field.readOnly;
-    const maxLength = field.maxLen;
-    const alignment =
-      field.textAlignment === 0
-        ? ALIGNMENT.LEFT
-        : field.textAlignment === 1
+    const x = Math.ceil(field.rect[0]);
+    const tempY = Math.ceil(field.rect[1]);
+    const width = Math.floor(field.rect[2]) - x - 2 * borderWidth;
+    const height = Math.floor(field.rect[3]) - tempY - 2 * borderWidth;
+    new TextFieldOperationComponent(
+      TextFieldOperationComponent.updateDefaultOperation(
+        field.fieldName,
+        x,
+        viewport.height - tempY - height - 2 * borderWidth,
+        height,
+        width,
+        field.fieldValue,
+        borderWidth,
+        rgbToHex(field.color[0], field.color[1], field.color[2]),
+        rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]),
+        rgbToHex(field.backgroundColor[0], field.backgroundColor[1], field.backgroundColor[2]),
+        field.defaultAppearanceData.fontName,
+        field.defaultAppearanceData.fontSize,
+        field.required,
+        field.multiLine,
+        field.readOnly,
+        field.maxLen,
+        field.textAlignment === 1
           ? ALIGNMENT.CENTER
           : field.textAlignment === 2
             ? ALIGNMENT.RIGHT
-            : ALIGNMENT.LEFT;
-    new TextFieldOperationComponent(
-      TextFieldOperationComponent.updateDefaultOperation(
-        id,
-        x,
-        y,
-        height,
-        width,
-        text,
-        borderWidth,
-        color,
-        borderColor,
-        backgroundColor,
-        fontFamily,
-        fontSize,
-        isRequired,
-        isMultiline,
-        isReadOnly,
-        maxLength,
-        alignment,
+            : ALIGNMENT.LEFT,
       ),
       this.container,
     );
   }
   createCheckboxFromPDF(field, viewport) {
-    const rect = field.rect;
-    const id = field.fieldName;
     const borderWidth = field.borderStyle.width;
-    const x = Math.ceil(rect[0]);
-    const tempY = Math.ceil(rect[1]);
-    const width = Math.floor(rect[2]) - x - 2 * borderWidth;
-    const height = Math.floor(rect[3]) - tempY - 2 * borderWidth;
-    const y = viewport.height - tempY - height - 2 * borderWidth;
-    const color = rgbToHex(field.color[0], field.color[1], field.color[2]);
-    const borderColor = rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]);
-    const backgroundColor = rgbToHex(
-      field.backgroundColor[0],
-      field.backgroundColor[1],
-      field.backgroundColor[2],
-    );
-    const isChecked = field.fieldFlags === 1;
-    const isReadOnly = field.readOnly;
+    const x = Math.ceil(field.rect[0]);
+    const tempY = Math.ceil(field.rect[1]);
+    const width = Math.floor(field.rect[2]) - x - 2 * borderWidth;
+    const height = Math.floor(field.rect[3]) - tempY - 2 * borderWidth;
     new CheckboxOperationComponent(
       CheckboxOperationComponent.updateDefaultOperation(
-        id,
+        field.fieldName,
         x,
-        y,
+        viewport.height - tempY - height - 2 * borderWidth,
         height,
         width,
         borderWidth,
-        color,
-        borderColor,
-        backgroundColor,
-        isChecked,
-        isReadOnly,
+        rgbToHex(field.color[0], field.color[1], field.color[2]),
+        rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2]),
+        rgbToHex(field.backgroundColor[0], field.backgroundColor[1], field.backgroundColor[2]),
+        field.fieldFlags === 1,
+        field.readOnly,
       ),
       this.container,
     );
@@ -233,172 +200,78 @@ class PDFPage {
   createComponentWithDimensions(toolType, settings, id, x, y, width, height) {
     switch (toolType) {
       case COMPONENT_TYPES.CIRCLE:
-        if (
-          settings?.fill !== undefined ||
-          settings?.borderColor !== undefined ||
-          settings?.borderWidth !== undefined
-        ) {
-          return new CircleOperationComponent(
-            CircleOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.fill ?? "transparent",
-              settings.borderColor ?? "#FF0000",
-              settings.borderWidth ?? 2,
-              settings.opacity ?? 1.0,
-            ),
-            this.container,
-          );
-        } else {
-          return new CircleOperationComponent(
-            CircleOperationComponent.createDefaultOperation(id, x, y, width, height),
-            this.container,
-          );
-        }
+        return new CircleOperationComponent(
+          CircleOperationComponent.createDefaultOperation(
+            id,
+            x,
+            y,
+            width,
+            height,
+            settings?.fill ?? "transparent",
+            settings?.borderColor ?? "#FF0000",
+            settings?.borderWidth ?? 2,
+            settings?.opacity ?? 1.0,
+          ),
+          this.container,
+        );
       case COMPONENT_TYPES.RECTANGLE:
-        if (settings?.subType === "highlight") {
-          return new RectangleOperationComponent(
-            RectangleOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.fill ?? "#FFFF00",
-              "",
-              0,
-              "solid",
-              settings.opacity ?? 0.5,
-            ),
-            this.container,
-          );
-        } else if (settings?.subType === "white-out") {
-          return new RectangleOperationComponent(
-            RectangleOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              "#FFFFFF",
-              "",
-              0,
-            ),
-            this.container,
-          );
-        } else if (
-          settings?.fill !== undefined ||
-          settings?.borderColor !== undefined ||
-          settings?.borderWidth !== undefined
-        ) {
-          return new RectangleOperationComponent(
-            RectangleOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.fill ?? "transparent",
-              settings.borderColor ?? "#FF0000",
-              settings.borderWidth ?? 2,
-              "solid",
-              settings.opacity ?? 1.0,
-            ),
-            this.container,
-          );
-        } else {
-          return new RectangleOperationComponent(
-            RectangleOperationComponent.createDefaultOperation(id, x, y, width, height),
-            this.container,
-          );
-        }
+        return new RectangleOperationComponent(
+          RectangleOperationComponent.createDefaultOperation(
+            id,
+            x,
+            y,
+            width,
+            height,
+            settings?.subType === "highlight"
+              ? (settings.fill ?? "#FFFF00")
+              : settings?.subType === "white-out"
+                ? "#FFFFFF"
+                : (settings?.fill ?? "transparent"),
+            settings?.subType === "white-out" || settings?.subType === "highlight"
+              ? ""
+              : (settings?.borderColor ?? "#FF0000"),
+            settings?.subType === "white-out" || settings?.subType === "highlight"
+              ? 0
+              : (settings?.borderWidth ?? 2),
+            settings?.subType === "white-out" ? undefined : "solid",
+            settings?.subType === "highlight"
+              ? (settings.opacity ?? 0.5)
+              : settings?.subType === "white-out"
+                ? undefined
+                : (settings?.opacity ?? 1.0),
+          ),
+          this.container,
+        );
       case COMPONENT_TYPES.TEXT:
-        if (settings?.fontFamily || settings?.fontSize || settings?.color || settings?.opacity) {
-          return new TextOperationComponent(
-            TextOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.fontFamily ?? "Helvetica",
-              settings.fontSize ?? 16,
-              settings.color ?? "#000000",
-              settings.opacity ?? 1.0,
-            ),
-            this.container,
-          );
-        } else {
-          return new TextOperationComponent(
-            TextOperationComponent.createDefaultOperation(id, x, y, width, height),
-            this.container,
-          );
-        }
+        return new TextOperationComponent(
+          TextOperationComponent.createDefaultOperation(
+            id,
+            x,
+            y,
+            width,
+            height,
+            settings?.fontFamily ?? "Helvetica",
+            settings?.fontSize ?? 16,
+            settings?.color ?? "#000000",
+            settings?.opacity ?? 1.0,
+          ),
+          this.container,
+        );
       case COMPONENT_TYPES.IMAGE:
-        if (settings?.subType === "icon") {
-          return new ImageOperationComponent(
-            ImageOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.url,
-              100,
-              100,
-              settings.subType,
-            ),
-            this.container,
-          );
-        } else if (settings?.subType === "freehand") {
-          return new ImageOperationComponent(
-            ImageOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.url,
-              100,
-              100,
-              settings.subType,
-            ),
-            this.container,
-          );
-        } else if (settings?.subType === "line") {
-          return new ImageOperationComponent(
-            ImageOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.url,
-              100,
-              100,
-              settings.subType,
-            ),
-            this.container,
-          );
-        } else {
-          return new ImageOperationComponent(
-            ImageOperationComponent.createDefaultOperation(
-              id,
-              x,
-              y,
-              width,
-              height,
-              settings.url ?? "./images/default_image.jpg",
-              100,
-              100,
-              settings?.subType,
-            ),
-            this.container,
-          );
-        }
+        return new ImageOperationComponent(
+          ImageOperationComponent.createDefaultOperation(
+            id,
+            x,
+            y,
+            width,
+            height,
+            settings?.url ?? (settings?.subType ? undefined : "./images/default_image.jpg"),
+            100,
+            100,
+            settings?.subType,
+          ),
+          this.container,
+        );
       case COMPONENT_TYPES.TEXT_FIELD:
         return new TextFieldOperationComponent(
           TextFieldOperationComponent.createDefaultOperation(id, x, y, width, height),
@@ -417,12 +290,12 @@ class PDFPage {
             y,
             width,
             height,
-            settings.linkType ?? "url",
-            settings.linkValue ?? "",
-            settings.fill ?? "rgba(0, 122, 204, 0.1)",
-            settings.borderColor ?? "#007acc",
-            settings.borderWidth ?? 1,
-            settings.opacity ?? 1.0,
+            settings?.linkType ?? "url",
+            settings?.linkValue ?? "",
+            settings?.fill ?? "rgba(0, 122, 204, 0.1)",
+            settings?.borderColor ?? "#007acc",
+            settings?.borderWidth ?? 1,
+            settings?.opacity ?? 1.0,
           ),
           this.container,
         );
