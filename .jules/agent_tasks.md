@@ -11,12 +11,6 @@
 * 🏗️ `src/App.vue`: 3268 lines. Split into smaller domain modules and composables to reduce monolithic complexity.
 * 🏗️ `src/js/PDFGenerator.js`: 698 lines. Break down into smaller helper functions.
 
-## The [PRUNER] Queue
-* 🧹 `src/components/LinkDialog.vue` (line 129): Remove `console.log("confirmSelection");`.
-* 🧹 `src/js/OperationComponents.js` (line 263): Remove `console.log("Property ${property} set to ${value}");`.
-* 🧹 `src/js/PDFGenerator.js` (line 563): Remove `console.log("drawLinkOnPage");`.
-* 🧹 `src/js/PDFGenerator.js` (line 564): Remove `console.log(operation);`.
-* 🧹 `src/js/PDFEditor.js` (line 84): Remove `console.log("Applying zoom level:", zoomLevel);`.
 
 ## The [TRANSFORMER] Queue
 * 🎨 `src/components/ImageDialog.vue` (lines 224-304): Replace hardcoded hex colors (`#ccc`, `#fafafa`, `#007acc`, etc.) with CSS variables or design system tokens.

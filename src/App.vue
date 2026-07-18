@@ -957,7 +957,7 @@ export default {
         width,
         height,
       );
-      //  component.setSelected(true);
+
       pendingImageParams.value = null;
     };
     const closeImageDialog = () => {
@@ -1229,7 +1229,7 @@ export default {
                 iconSize,
                 iconSize,
               );
-              //  component.setSelected(true);
+
               isDrawing.value = false;
               return;
             }
@@ -2554,8 +2554,8 @@ export default {
       return Math.sqrt(dx * dx + dy * dy);
     };
     const convertPixelsToUnits = (pixels) => {
-      //const inches = pixels / 96; // 96 DPI standard
-      //const mm = pixels * 0.2646; // 1 pixel = 0.2646 mm
+
+
       const px = pixels * zoomLevel.value;
       const inches = px / (zoomLevel.value * 72); // 96 DPI standard
       const mm = inches * 25.4; // 1 pixel = 0.2646 mm

@@ -1,7 +1,6 @@
 import svgpath from "svgpath";
 import { hexToRgb, parseColor } from "../utils/color/colors.js";
 class PDFGenerator {
-  constructor() {}
   static str2ab(binaryString) {
     return Uint8Array.from(binaryString, (char) => char.charCodeAt(0)).buffer;
   }
@@ -262,7 +261,7 @@ class PDFGenerator {
         await PDFGenerator.drawSvgImageOnPage(pdfPage, arrayBuffer, operation);
         break;
       default:
-        console.warn(`Unsupported image type: ${type}`);
+
     }
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
