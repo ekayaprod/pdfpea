@@ -165,7 +165,11 @@ class PDFPage {
         field.multiLine,
         field.readOnly,
         field.maxLen,
-        field.textAlignment === 1 ? ALIGNMENT.CENTER : field.textAlignment === 2 ? ALIGNMENT.RIGHT : ALIGNMENT.LEFT,
+        field.textAlignment === 1
+          ? ALIGNMENT.CENTER
+          : field.textAlignment === 2
+            ? ALIGNMENT.RIGHT
+            : ALIGNMENT.LEFT,
       ),
       this.container,
     );
@@ -198,7 +202,11 @@ class PDFPage {
       case COMPONENT_TYPES.CIRCLE:
         return new CircleOperationComponent(
           CircleOperationComponent.createDefaultOperation(
-            id, x, y, width, height,
+            id,
+            x,
+            y,
+            width,
+            height,
             settings?.fill ?? "transparent",
             settings?.borderColor ?? "#FF0000",
             settings?.borderWidth ?? 2,
@@ -209,10 +217,16 @@ class PDFPage {
       case COMPONENT_TYPES.RECTANGLE:
         return new RectangleOperationComponent(
           RectangleOperationComponent.createDefaultOperation(
-            id, x, y, width, height,
+            id,
+            x,
+            y,
+            width,
+            height,
             settings?.subType === "highlight"
               ? (settings.fill ?? "#FFFF00")
-              : settings?.subType === "white-out" ? "#FFFFFF" : (settings?.fill ?? "transparent"),
+              : settings?.subType === "white-out"
+                ? "#FFFFFF"
+                : (settings?.fill ?? "transparent"),
             settings?.subType === "white-out" || settings?.subType === "highlight"
               ? ""
               : (settings?.borderColor ?? "#FF0000"),
@@ -222,14 +236,20 @@ class PDFPage {
             settings?.subType === "white-out" ? undefined : "solid",
             settings?.subType === "highlight"
               ? (settings.opacity ?? 0.5)
-              : settings?.subType === "white-out" ? undefined : (settings?.opacity ?? 1.0),
+              : settings?.subType === "white-out"
+                ? undefined
+                : (settings?.opacity ?? 1.0),
           ),
           this.container,
         );
       case COMPONENT_TYPES.TEXT:
         return new TextOperationComponent(
           TextOperationComponent.createDefaultOperation(
-            id, x, y, width, height,
+            id,
+            x,
+            y,
+            width,
+            height,
             settings?.fontFamily ?? "Helvetica",
             settings?.fontSize ?? 16,
             settings?.color ?? "#000000",
@@ -240,9 +260,15 @@ class PDFPage {
       case COMPONENT_TYPES.IMAGE:
         return new ImageOperationComponent(
           ImageOperationComponent.createDefaultOperation(
-            id, x, y, width, height,
+            id,
+            x,
+            y,
+            width,
+            height,
             settings?.url ?? (settings?.subType ? undefined : "./images/default_image.jpg"),
-            100, 100, settings?.subType,
+            100,
+            100,
+            settings?.subType,
           ),
           this.container,
         );
@@ -259,7 +285,11 @@ class PDFPage {
       case COMPONENT_TYPES.LINK:
         return new LinkOperationComponent(
           LinkOperationComponent.createDefaultOperation(
-            id, x, y, width, height,
+            id,
+            x,
+            y,
+            width,
+            height,
             settings?.linkType ?? "url",
             settings?.linkValue ?? "",
             settings?.fill ?? "rgba(0, 122, 204, 0.1)",
