@@ -4,7 +4,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 vi.mock("pdfjs-dist", () => ({
   getDocument: vi.fn(),
   version: "mock-version",
-  AnnotationMode: { DISABLE: 1 }
+  AnnotationMode: { DISABLE: 1 },
 }));
 
 import * as pdfjsLib from "pdfjs-dist";
@@ -12,12 +12,19 @@ import { PDFEditor } from "./PDFEditor.js";
 
 // Mock rgbToHex from colors to avoid errors
 vi.mock("../utils/color/colors.js", () => ({
-    rgbToHex: vi.fn((r, g, b) => {
-        if (r === undefined || g === undefined || b === undefined || r === null || g === null || b === null) {
-           throw new TypeError("Cannot read properties of undefined/null");
-        }
-        return "#000000";
-    })
+  rgbToHex: vi.fn((r, g, b) => {
+    if (
+      r === undefined ||
+      g === undefined ||
+      b === undefined ||
+      r === null ||
+      g === null ||
+      b === null
+    ) {
+      throw new TypeError("Cannot read properties of undefined/null");
+    }
+    return "#000000";
+  }),
 }));
 
 describe("PDFEditor", () => {
@@ -67,13 +74,13 @@ describe("PDFEditor", () => {
     const container = document.createElement("div");
     // Mock the canvas element correctly so we can construct a PDFPage instance
     const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, 'createElement').mockImplementation((tag) => {
-        if (tag === 'canvas') {
-            const canvas = originalCreateElement('canvas');
-            vi.spyOn(canvas, 'getContext').mockImplementation(() => ({}));
-            return canvas;
-        }
-        return originalCreateElement(tag);
+    vi.spyOn(document, "createElement").mockImplementation((tag) => {
+      if (tag === "canvas") {
+        const canvas = originalCreateElement("canvas");
+        vi.spyOn(canvas, "getContext").mockImplementation(() => ({}));
+        return canvas;
+      }
+      return originalCreateElement(tag);
     });
 
     const editor = new PDFEditor(container);
@@ -96,7 +103,7 @@ describe("PDFEditor", () => {
           readOnly: false,
           maxLen: 100,
           textAlignment: 0,
-        }
+        },
       ]),
       render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
     };
@@ -110,9 +117,9 @@ describe("PDFEditor", () => {
 
     let error;
     try {
-        await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
+      await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
     } catch (e) {
-        error = e;
+      error = e;
     }
 
     // 🕵️ The Truth Mandate: Expose, Don't Enshrine
@@ -127,13 +134,13 @@ describe("PDFEditor", () => {
 
     // Mock the canvas element correctly so we can construct a PDFPage instance
     const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, 'createElement').mockImplementation((tag) => {
-        if (tag === 'canvas') {
-            const canvas = originalCreateElement('canvas');
-            vi.spyOn(canvas, 'getContext').mockImplementation(() => ({}));
-            return canvas;
-        }
-        return originalCreateElement(tag);
+    vi.spyOn(document, "createElement").mockImplementation((tag) => {
+      if (tag === "canvas") {
+        const canvas = originalCreateElement("canvas");
+        vi.spyOn(canvas, "getContext").mockImplementation(() => ({}));
+        return canvas;
+      }
+      return originalCreateElement(tag);
     });
 
     const editor = new PDFEditor(container);
@@ -141,18 +148,18 @@ describe("PDFEditor", () => {
     const mockPage = {
       getViewport: vi.fn().mockReturnValue({ width: 800, height: 600 }),
       getAnnotations: vi.fn().mockResolvedValue([
-         {
+        {
           fieldType: "Btn",
           checkBox: true,
           rect: [10, 10, 100, 50],
           borderStyle: { width: 1 },
-          color: [0,0,0],
+          color: [0, 0, 0],
           borderColor: [0, 0, 0],
           backgroundColor: undefined, // Hazard: the PDF field lacks a backgroundColor array
           fieldName: "TestField",
           fieldFlags: 1,
           readOnly: false,
-        }
+        },
       ]),
       render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
     };
@@ -166,9 +173,9 @@ describe("PDFEditor", () => {
 
     let error;
     try {
-        await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
+      await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
     } catch (e) {
-        error = e;
+      error = e;
     }
 
     expect(error).toBeUndefined();
