@@ -224,22 +224,22 @@ export default {
 
 <style>
 .upload-area {
-  border: 2px dashed #ccc;
+  border: 2px dashed var(--color-gray-300);
   border-radius: 8px;
   padding: 40px 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  background: #fafafa;
+  background: var(--color-gray-50);
 
   &:hover {
-    border-color: #007acc;
-    background: #f0f8ff;
+    border-color: var(--color-blue-600);
+    background: var(--color-blue-50);
   }
 
   p {
     margin: 8px 0;
-    color: #666;
+    color: var(--color-gray-500);
   }
 }
 
@@ -258,7 +258,7 @@ export default {
 }
 
 .image-dialog {
-  background: white;
+  background: var(--color-white);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 90%;
@@ -274,12 +274,12 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
 
   h3 {
     margin: 0;
-    color: #333;
+    color: var(--color-gray-800);
     font-size: 18px;
     font-weight: 600;
   }
@@ -295,7 +295,7 @@ export default {
   display: flex;
   gap: 4px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .image-dialog-footer {
@@ -303,7 +303,7 @@ export default {
   justify-content: flex-end;
   gap: 12px;
   padding: 20px;
-  border-top: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-top: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
 }
 </style>

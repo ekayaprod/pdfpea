@@ -19,5 +19,3 @@
 * 🧹 `src/js/PDFEditor.js` (line 84): Remove `console.log("Applying zoom level:", zoomLevel);`.
 
 ## The [TRANSFORMER] Queue
-* 🎨 `src/components/ImageDialog.vue` (lines 224-304): Replace hardcoded hex colors (`#ccc`, `#fafafa`, `#007acc`, etc.) with CSS variables or design system tokens.
-* 🎨 `src/css/styles.css` (lines 14-56): Replace hardcoded hex colors (`#e3f2fd`, `#2196f3`, `#1976d2`, etc.) with CSS variables or design system tokens.
