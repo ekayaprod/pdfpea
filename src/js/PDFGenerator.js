@@ -22,7 +22,11 @@ class PDFGenerator {
       return "svg";
     } else if (signature[0] === 0xff && signature[1] === 0xd8) {
       return "jpg";
-    } else if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) {
+    } else if (
+      arrayBuffer.byteLength >= 8 &&
+      view.getUint32(0) === 0x89504e47 &&
+      view.getUint32(4) === 0x0d0a1a0a
+    ) {
       return "png";
     } else {
       return "unknown";
@@ -77,7 +81,7 @@ class PDFGenerator {
     return pdfBytes;
   }
   static async drawTextOnPage(pdfDoc, pdfPage, operation) {
-    const fontColor = hexToRgb(operation.color);
+    const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const resolvedFont =
       operation.fontFamily === "TimesRoman"
         ? PDFLib.StandardFonts.TimesRoman
@@ -275,8 +279,8 @@ class PDFGenerator {
   static async drawTextFieldOnPage(pdfDoc, pdfPage, operation) {
     const id = operation.type === "create" ? `text-field-${operation.id}` : operation.id;
     const borderWidth = parseFloat(operation.borderWidth, 10);
-    const borderColor = hexToRgb(operation.borderColor);
-    const fontColor = hexToRgb(operation.color);
+    const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
+    const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const backgroundColor = hexToRgb(operation.backgroundColor);
     const maxLength = parseFloat(operation.maxLength, 10);
     const resolvedFont =
@@ -302,7 +306,13 @@ class PDFGenerator {
       width: operation.width - borderWidth / 2,
       height: operation.height - borderWidth / 2,
       textColor: PDFLib.rgb(fontColor.red, fontColor.green, fontColor.blue),
-      backgroundColor: PDFLib.rgb(backgroundColor.red, backgroundColor.green, backgroundColor.blue),
+      ...(backgroundColor && {
+        backgroundColor: PDFLib.rgb(
+          backgroundColor.red,
+          backgroundColor.green,
+          backgroundColor.blue,
+        ),
+      }),
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
       borderWidth,
       font: embedFont,
@@ -326,8 +336,8 @@ class PDFGenerator {
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const id = operation.type === "create" ? `checkbox-${operation.id}` : operation.id;
     const borderWidth = parseFloat(operation.borderWidth, 10);
-    const borderColor = hexToRgb(operation.borderColor);
-    const fontColor = hexToRgb(operation.color);
+    const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
+    const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const backgroundColor = hexToRgb(operation.backgroundColor);
 
     const form = pdfDoc.getForm();
@@ -337,7 +347,13 @@ class PDFGenerator {
       width: operation.width,
       height: operation.height,
       textColor: PDFLib.rgb(fontColor.red, fontColor.green, fontColor.blue),
-      backgroundColor: PDFLib.rgb(backgroundColor.red, backgroundColor.green, backgroundColor.blue),
+      ...(backgroundColor && {
+        backgroundColor: PDFLib.rgb(
+          backgroundColor.red,
+          backgroundColor.green,
+          backgroundColor.blue,
+        ),
+      }),
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
       borderWidth,
       rotate: PDFLib.degrees(0),

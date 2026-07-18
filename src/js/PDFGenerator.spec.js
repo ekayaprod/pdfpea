@@ -3,12 +3,12 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 vi.mock("pdf-lib", () => ({
   PDFDocument: {
     create: vi.fn(),
-    load: vi.fn()
+    load: vi.fn(),
   },
   rgb: vi.fn((r, g, b) => ({ r, g, b })),
   StandardFonts: { Helvetica: "Helvetica", TimesRoman: "TimesRoman" },
   TextAlignment: { Left: "Left" },
-  degrees: vi.fn()
+  degrees: vi.fn(),
 }));
 
 import { PDFGenerator } from "./PDFGenerator.js";
@@ -60,8 +60,8 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch(e) {
-        type = "error"
+      } catch (e) {
+        type = "error";
       }
 
       expect(type).toBe("unknown");
@@ -73,8 +73,8 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch(e) {
-        type = "error"
+      } catch (e) {
+        type = "error";
       }
 
       expect(type).toBe("unknown");
@@ -135,7 +135,7 @@ describe("PDFGenerator", () => {
       const pdfDocMock = {};
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
-        drawRectangle: vi.fn()
+        drawRectangle: vi.fn(),
       };
       const operationMock = {
         x: 10,
@@ -145,7 +145,7 @@ describe("PDFGenerator", () => {
         borderWidth: "2",
         borderColor: "#000000",
         opacity: "1",
-        fill: "transparent"
+        fill: "transparent",
       };
 
       await PDFGenerator.drawRectangleOnPage(pdfDocMock, pdfPageMock, operationMock);
@@ -166,7 +166,7 @@ describe("PDFGenerator", () => {
       const pdfDocMock = {};
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
-        drawEllipse: vi.fn()
+        drawEllipse: vi.fn(),
       };
       const operationMock = {
         x: 10,
@@ -176,7 +176,7 @@ describe("PDFGenerator", () => {
         borderWidth: 2,
         borderColor: "#000000",
         opacity: "1",
-        fill: "transparent"
+        fill: "transparent",
       };
 
       await PDFGenerator.drawCircleOnPage(pdfDocMock, pdfPageMock, operationMock);
@@ -203,7 +203,7 @@ describe("PDFGenerator", () => {
 
       const embedFontMock = vi.fn().mockResolvedValue({});
       const createTextFieldMock = vi.fn().mockReturnValue({
-        addToPage: vi.fn().mockResolvedValue()
+        addToPage: vi.fn().mockResolvedValue(),
       });
       const getTextFieldMock = vi.fn().mockReturnValue({
         setText: vi.fn(),
@@ -215,17 +215,17 @@ describe("PDFGenerator", () => {
         enableMultiline: vi.fn(),
         disableMultiline: vi.fn(),
         enableReadOnly: vi.fn(),
-        disableReadOnly: vi.fn()
+        disableReadOnly: vi.fn(),
       });
       const pdfDocMock = {
         embedFont: embedFontMock,
         getForm: vi.fn().mockReturnValue({
           createTextField: createTextFieldMock,
-          getTextField: getTextFieldMock
-        })
+          getTextField: getTextFieldMock,
+        }),
       };
       const pdfPageMock = {
-        getHeight: vi.fn().mockReturnValue(800)
+        getHeight: vi.fn().mockReturnValue(800),
       };
 
       // Pass object missing some strings like backgroundColor
@@ -245,7 +245,7 @@ describe("PDFGenerator", () => {
         alignment: "Left",
         isRequired: false,
         isMultiline: false,
-        isReadOnly: false
+        isReadOnly: false,
       };
 
       // Since the app crashes due to parsing backgroundColor, the addToPage method should never be called.
@@ -265,18 +265,18 @@ describe("PDFGenerator", () => {
       const pdfDocMock = {
         getForm: vi.fn().mockReturnValue({
           createCheckBox: vi.fn().mockReturnValue({
-            addToPage: vi.fn().mockResolvedValue()
+            addToPage: vi.fn().mockResolvedValue(),
           }),
           getCheckBox: vi.fn().mockReturnValue({
             check: vi.fn(),
             uncheck: vi.fn(),
             enableReadOnly: vi.fn(),
-            disableReadOnly: vi.fn()
-          })
-        })
+            disableReadOnly: vi.fn(),
+          }),
+        }),
       };
       const pdfPageMock = {
-        getHeight: vi.fn().mockReturnValue(800)
+        getHeight: vi.fn().mockReturnValue(800),
       };
 
       // Pass object missing some strings like backgroundColor
@@ -292,7 +292,7 @@ describe("PDFGenerator", () => {
         color: "#000000",
         // backgroundColor missing
         isChecked: false,
-        isReadOnly: false
+        isReadOnly: false,
       };
 
       await PDFGenerator.drawCheckboxOnPage(pdfDocMock, pdfPageMock, operationMock);
@@ -308,11 +308,11 @@ describe("PDFGenerator", () => {
 
       const embedFontMock = vi.fn().mockResolvedValue({});
       const pdfDocMock = {
-        embedFont: embedFontMock
+        embedFont: embedFontMock,
       };
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
-        drawText: vi.fn()
+        drawText: vi.fn(),
       };
 
       // Pass object missing some strings like color
@@ -326,7 +326,7 @@ describe("PDFGenerator", () => {
         opacity: "1",
         wordBreak: "break-word",
         width: 100,
-        xPadding: 0
+        xPadding: 0,
       };
 
       await PDFGenerator.drawTextOnPage(pdfDocMock, pdfPageMock, operationMock);
