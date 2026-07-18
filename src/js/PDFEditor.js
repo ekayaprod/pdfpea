@@ -35,39 +35,31 @@ class PDFEditor {
     }
     this.fileContents = fileContents;
     this.pdfPages = [];
-    return new Promise(async (resolve, reject) => {
-      try {
-        const pdfDoc = await pdfjsLib.getDocument({
-          ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
-          data: fileContents,
-        }).promise;
-        // Prevent concurrent race conditions by initializing sequentially
-        const pages = [];
-        for (let i = 0; i < pdfDoc.numPages; i++) {
-          const pageNum = i + 1;
-          const pdfURL = fileName;
-          const pdfPageNumber = pageNum;
-          const pdfPageContainer = document.createElement("div");
-          this.container.appendChild(pdfPageContainer);
-          const pdfPage = new PDFPage(pdfPageContainer);
-          // Wait for initialization to complete before moving to the next page
-          await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
-          pages.push(pdfPage);
-        }
-        this.pdfPages.push(...pages);
-        resolve();
-      } catch (error) {
-        console.error("Error processing PDF:", error);
-        reject(error);
-      }
-    });
+    const pdfDoc = await pdfjsLib.getDocument({
+      ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
+      data: fileContents,
+    }).promise;
+    // Prevent concurrent race conditions by initializing sequentially
+    const pages = [];
+    for (let i = 0; i < pdfDoc.numPages; i++) {
+      const pageNum = i + 1;
+      const pdfURL = fileName;
+      const pdfPageNumber = pageNum;
+      const pdfPageContainer = document.createElement("div");
+      this.container.appendChild(pdfPageContainer);
+      const pdfPage = new PDFPage(pdfPageContainer);
+      // Wait for initialization to complete before moving to the next page
+      await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+      pages.push(pdfPage);
+    }
+    this.pdfPages.push(...pages);
   }
   async downloadPDF() {
     const pageOperations = this.pdfPages.map((page) => ({
       pageNumber: page.pageNumber,
       operations: page.getOperations(),
     }));
-    return await PDFGenerator.generatePDF(this.fileContents, pageOperations);
+    return PDFGenerator.generatePDF(this.fileContents, pageOperations);
   }
   applyZoom(zoomLevel) {
     this.pdfPages.forEach((page) => {
@@ -101,36 +93,32 @@ class PDFPage {
     const renderScale = scale * DEFAULT_VALUES.RENDER_RESOLUTION_MULTIPLIER;
     this.pdfURL = pdfURL;
     this.pageNumber = pageNumber;
-    try {
-      const pdfDoc = await pdfjsLib.getDocument({
-        ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
-        data: fileContents,
-      }).promise;
-      const page = await pdfDoc.getPage(pageNumber);
-      const viewport = page.getViewport({ scale });
-      const renderViewport = page.getViewport({ scale: renderScale });
-      // Set canvas backing store to the high-resolution viewport size
-      this.canvas.height = renderViewport.height;
-      this.canvas.width = renderViewport.width;
-      // Set container style to display size (independent of render resolution)
-      const displayHeight = viewport.height / scale;
-      const displayWidth = viewport.width / scale;
-      this.container.style.height = `${displayHeight}px`;
-      this.container.style.width = `${displayWidth}px`;
-      // Scale canvas style to fit container
-      this.canvas.style.height = `${displayHeight}px`;
-      this.canvas.style.width = `${displayWidth}px`;
-      this.container.appendChild(this.canvas);
-      const formFields = await page.getAnnotations();
-      await page.render({
-        annotationMode: pdfjsLib.AnnotationMode.DISABLE,
-        canvasContext: this.context,
-        viewport: renderViewport,
-      }).promise;
-      this.processFormFields(formFields, viewport);
-    } catch (error) {
-      console.error("Error initializing PDF page:", error);
-    }
+    const pdfDoc = await pdfjsLib.getDocument({
+      ...DEFAULT_PDFJS_DOCUMENT_OPTIONS,
+      data: fileContents,
+    }).promise;
+    const page = await pdfDoc.getPage(pageNumber);
+    const viewport = page.getViewport({ scale });
+    const renderViewport = page.getViewport({ scale: renderScale });
+    // Set canvas backing store to the high-resolution viewport size
+    this.canvas.height = renderViewport.height;
+    this.canvas.width = renderViewport.width;
+    // Set container style to display size (independent of render resolution)
+    const displayHeight = viewport.height / scale;
+    const displayWidth = viewport.width / scale;
+    this.container.style.height = `${displayHeight}px`;
+    this.container.style.width = `${displayWidth}px`;
+    // Scale canvas style to fit container
+    this.canvas.style.height = `${displayHeight}px`;
+    this.canvas.style.width = `${displayWidth}px`;
+    this.container.appendChild(this.canvas);
+    const formFields = await page.getAnnotations();
+    await page.render({
+      annotationMode: pdfjsLib.AnnotationMode.DISABLE,
+      canvasContext: this.context,
+      viewport: renderViewport,
+    }).promise;
+    this.processFormFields(formFields, viewport);
   }
   processFormFields(formFields, viewport) {
     for (let field of formFields) {
