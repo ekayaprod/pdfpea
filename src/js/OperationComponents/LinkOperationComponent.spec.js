@@ -31,8 +31,12 @@ describe("LinkOperationComponent", () => {
   });
 
   it("should securely reject missing linkValue in operation", () => {
-    expect(() => new LinkOperationComponent({ ...operation, linkValue: undefined }, canvasContainer)).toThrow(TypeError);
-    expect(() => new LinkOperationComponent({ ...operation, linkValue: null }, canvasContainer)).toThrow(TypeError);
+    expect(
+      () => new LinkOperationComponent({ ...operation, linkValue: undefined }, canvasContainer),
+    ).toThrow(TypeError);
+    expect(
+      () => new LinkOperationComponent({ ...operation, linkValue: null }, canvasContainer),
+    ).toThrow(TypeError);
   });
 
   describe("operationChanged", () => {
@@ -103,7 +107,7 @@ describe("LinkOperationComponent", () => {
         "#cccccc",
         "#0000ff",
         5,
-        0.8
+        0.8,
       );
       expect(allArgsOp).toEqual({
         type: "link",

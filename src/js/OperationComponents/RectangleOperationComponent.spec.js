@@ -30,7 +30,10 @@ describe("RectangleOperationComponent", () => {
   });
 
   it("should securely reject missing borderWidth in operation", () => {
-    expect(() => new RectangleOperationComponent({ ...operation, borderWidth: undefined }, canvasContainer)).toThrow(TypeError);
+    expect(
+      () =>
+        new RectangleOperationComponent({ ...operation, borderWidth: undefined }, canvasContainer),
+    ).toThrow(TypeError);
   });
 
   describe("operationChanged", () => {
@@ -101,7 +104,7 @@ describe("RectangleOperationComponent", () => {
         "#0000ff",
         5,
         "dashed",
-        0.8
+        0.8,
       );
       expect(allArgsOp).toEqual({
         type: "rectangle",
