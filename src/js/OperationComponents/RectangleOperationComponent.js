@@ -1,4 +1,5 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
+import { initializeShadowElement } from "./utils/shadowDom.js";
 
 class RectangleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
@@ -6,10 +7,7 @@ class RectangleOperationComponent extends BasicOperationComponent {
     if (!operation || typeof operation.borderWidth === "undefined") {
       throw new TypeError("RectangleOperationComponent: operation must define a borderWidth");
     }
-    this.shadow = document.createElement("div");
-    this.shadow.classList.add("component-content");
-    this.wrapperContainer.appendChild(this.shadow);
-    this.initializeOperation();
+    initializeShadowElement(this);
   }
   operationChanged = (property, value) => {
     switch (property) {

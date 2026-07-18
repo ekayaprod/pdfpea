@@ -1,12 +1,10 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
+import { initializeShadowElement } from "./utils/shadowDom.js";
 
 class CircleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
     super(operation, canvasContainer);
-    this.shadow = document.createElement("div");
-    this.shadow.classList.add("component-content");
-    this.wrapperContainer.appendChild(this.shadow);
-    this.initializeOperation();
+    initializeShadowElement(this);
   }
   operationChanged = (property, value) => {
     switch (property) {
