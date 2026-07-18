@@ -38,7 +38,7 @@
               ref="fileInput"
               accept="image/*"
               @change="handleFileUpload"
-              style="display: none"
+              class="hidden"
             />
             <i class="fa-solid fa-cloud-upload-alt upload-icon"></i>
             <p>Select or drag and drop an image</p>

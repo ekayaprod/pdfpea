@@ -9,7 +9,7 @@
               type="file"
               id="file"
               ref="file"
-              style="display: none"
+              class="hidden"
               @change="handleFileUpload"
             />
             <button
@@ -72,7 +72,7 @@
               type="file"
               id="config-file"
               ref="configFile"
-              style="display: none"
+              class="hidden"
               accept=".json"
               @change="handleConfigRestore"
             />
