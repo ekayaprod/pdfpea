@@ -542,7 +542,11 @@
       </div>
     </div>
     <!-- Image Dialog Component -->
-    <ImageDialog :isOpen="isImageDialogOpen" @close="closeImageDialog" @confirm="handleImageConfirm" />
+    <ImageDialog
+      :isOpen="isImageDialogOpen"
+      @close="closeImageDialog"
+      @confirm="handleImageConfirm"
+    />
     <!-- Link Dialog Component -->
     <LinkDialog :isOpen="isLinkDialogOpen" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
     <div class="pdf-body">
