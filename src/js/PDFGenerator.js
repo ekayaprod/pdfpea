@@ -67,7 +67,9 @@ class PDFGenerator {
         for (const op of page.operations) {
           if (
             (op.operation === "create" && typeMap[op.type]) ||
-            (op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type) && typeMap[op.type])
+            (op.operation === "update" &&
+              ["textfield", "checkbox", "link"].includes(op.type) &&
+              typeMap[op.type])
           ) {
             await this[typeMap[op.type]](pdfDoc, pdfPage, op);
           }
@@ -175,33 +177,39 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    await Promise.all(paths.map(async (path) => {
-      const opts = { x: drawX, y: drawY, opacity };
+    await Promise.all(
+      paths.map(async (path) => {
+        const opts = { x: drawX, y: drawY, opacity };
 
-      const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
-      if (fillColor && fillColor !== "none") {
-        const c = hexToRgb(fillColor);
-        opts.color = PDFLib.rgb(c.red, c.green, c.blue);
-      }
+        const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
+        if (fillColor && fillColor !== "none") {
+          const c = hexToRgb(fillColor);
+          opts.color = PDFLib.rgb(c.red, c.green, c.blue);
+        }
 
-      const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
-      if (strokeColor && strokeColor !== "none") {
-        const c = hexToRgb(strokeColor);
-        opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
-      }
+        const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
+        if (strokeColor && strokeColor !== "none") {
+          const c = hexToRgb(strokeColor);
+          opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
+        }
 
-      const strokeWidth = path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
-      if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+        const strokeWidth =
+          path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+        if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
 
-      const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
-      if (lineJoin) {
-        opts.borderLineCap = {
-          butt: PDFLib.LineCapStyle.Butt, projecting: PDFLib.LineCapStyle.Projecting, round: PDFLib.LineCapStyle.Round
-        }[lineJoin] ?? opts.borderLineCap;
-      }
+        const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
+        if (lineJoin) {
+          opts.borderLineCap =
+            {
+              butt: PDFLib.LineCapStyle.Butt,
+              projecting: PDFLib.LineCapStyle.Projecting,
+              round: PDFLib.LineCapStyle.Round,
+            }[lineJoin] ?? opts.borderLineCap;
+        }
 
-      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
-    }));
+        await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
+      }),
+    );
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
