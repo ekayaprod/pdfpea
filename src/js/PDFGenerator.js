@@ -1,5 +1,6 @@
 import svgpath from "svgpath";
 import { hexToRgb, parseColor } from "./utils/colors.js";
+import { getEmbeddedFont } from "./utils/pdfFonts.js";
 class PDFGenerator {
   constructor() {}
   static str2ab(binaryString) {
@@ -108,20 +109,7 @@ class PDFGenerator {
     const fontWordBreak = operation.wordBreak;
     const width = operation.width;
     const opacity = parseFloat(operation.opacity, 10);
-    const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
-      ? resolvedFont
-      : PDFLib.StandardFonts.Helvetica;
-
-    if (!pdfDoc.__fontCache) {
-      pdfDoc.__fontCache = new Map();
-    }
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    const embedFont = await getEmbeddedFont(pdfDoc, fontFamily, PDFLib);
 
     const wordBreaks =
       fontWordBreak === "break-all" ? [""] : fontWordBreak === "break-word" ? [" "] : [];
@@ -348,20 +336,7 @@ class PDFGenerator {
     const isRequired = operation.isRequired;
     const isMultiline = operation.isMultiline;
     const isReadOnly = operation.isReadOnly;
-    const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
-      ? resolvedFont
-      : PDFLib.StandardFonts.Helvetica;
-
-    if (!pdfDoc.__fontCache) {
-      pdfDoc.__fontCache = new Map();
-    }
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    const embedFont = await getEmbeddedFont(pdfDoc, fontFamily, PDFLib);
 
     const form = pdfDoc.getForm();
     const textField = form.createTextField(id);
