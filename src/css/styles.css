@@ -728,11 +728,17 @@ h3 {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .dialog-close-btn:hover {
   background-color: var(--color-gray-200);
+  transform: scale(0.95);
+}
+
+.dialog-close-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-blue-400);
 }
 
 .tab-btn {
@@ -785,6 +791,7 @@ h3 {
   border-radius: 4px;
   font-size: 14px;
   margin-bottom: 12px;
+  transition: all 0.3s ease-in-out;
 }
 
 .url-input:focus {
@@ -801,11 +808,23 @@ h3 {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .load-url-btn:hover:not(:disabled) {
   background: var(--color-blue-700);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.load-url-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.load-url-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-blue-400);
 }
 
 .load-url-btn:disabled {
@@ -854,11 +873,23 @@ h3 {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .btn-secondary:hover {
   background: var(--color-gray-200);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:active {
+  transform: scale(0.95);
+}
+
+.btn-secondary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-gray-400);
 }
 
 .btn-primary {
@@ -869,11 +900,23 @@ h3 {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-blue-700);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-blue-400);
 }
 
 .btn-primary:disabled {
@@ -942,6 +985,26 @@ h3 {
 }
 
 /* Link Dialog Styles */
+@keyframes link-overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes link-dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .link-dialog-overlay {
   position: fixed;
   top: 0;
@@ -949,22 +1012,25 @@ h3 {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
+  animation: link-overlay-enter 0.3s ease-out;
 }
 
 .link-dialog {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   width: 90%;
   max-width: 450px;
   max-height: 70vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  animation: link-dialog-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .link-dialog-header {
@@ -1016,6 +1082,7 @@ h3 {
   border-radius: 4px;
   font-size: 14px;
   margin-bottom: 12px;
+  transition: all 0.3s ease-in-out;
 }
 
 .page-input:focus {

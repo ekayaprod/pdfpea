@@ -32,6 +32,11 @@
             @click="triggerFileInput"
             @dragover.prevent
             @drop.prevent="handleDrop"
+            tabindex="0"
+            role="button"
+            aria-label="Upload file area"
+            @keydown.enter="triggerFileInput"
+            @keydown.space.prevent="triggerFileInput"
           >
             <input
               type="file"
@@ -244,6 +249,26 @@ export default {
 }
 
 /* Image Dialog Styles */
+@keyframes overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .image-dialog-overlay {
   position: fixed;
   top: 0;
@@ -251,22 +276,25 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
+  animation: overlay-enter 0.3s ease-out;
 }
 
 .image-dialog {
   background: var(--color-white);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   width: 90%;
   max-width: 500px;
   max-height: 80vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  animation: dialog-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .image-dialog-header {
