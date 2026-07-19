@@ -822,7 +822,9 @@ h3 {
 
 .load-url-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-blue-400);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-blue-400);
 }
 
 .load-url-btn:disabled {
@@ -885,7 +887,9 @@ h3 {
 
 .btn-secondary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-gray-400);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-gray-400);
 }
 
 .btn-primary {
@@ -910,7 +914,9 @@ h3 {
 
 .btn-primary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-blue-400);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--color-blue-400);
 }
 
 .btn-primary:disabled {
