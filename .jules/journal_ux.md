@@ -4,3 +4,4 @@
 - **Pattern Validated**: Ensure UI strings are scannable and respect the user's cognitive load by omitting device-dependent interaction commands (e.g., "Click").
 - **Structural Rule Applied**: Standardized terminology by converting "element" references to "layer" in the Layers panel, eliminating lexicon drift.
 - **Structural Rule Applied**: Elevated robotic toast and error states into active, user-friendly language (e.g., "Successfully loaded the document"), while stripping out overly verbose "Please" prefixes in error states to maintain brand clarity.
+- **Structural Rule Applied**: Eliminated robotic or passive language by rewriting "Please try again." to "Try again." in the export configuration error state in `src/App.vue`.

@@ -1795,7 +1795,7 @@ export default {
         showToast("Configuration exported successfully!", "success");
       } catch (error) {
         console.error("Error creating config file:", error);
-        showToast("Unable to export configuration. Please try again.", "error");
+        showToast("Unable to export configuration. Try again.", "error");
       }
     };
     const clickRestoreConfigInput = () => {
