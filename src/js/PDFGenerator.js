@@ -16,7 +16,12 @@ class PDFGenerator {
     const str = new TextDecoder("utf-8").decode(arrayBuffer);
     if (str.startsWith("<svg") || str.startsWith("<?xml")) return "svg";
     if (view.getUint16(0) === 0xffd8) return "jpg";
-    if (arrayBuffer.byteLength >= 8 && view.getUint32(0) === 0x89504e47 && view.getUint32(4) === 0x0d0a1a0a) return "png";
+    if (
+      arrayBuffer.byteLength >= 8 &&
+      view.getUint32(0) === 0x89504e47 &&
+      view.getUint32(4) === 0x0d0a1a0a
+    )
+      return "png";
     return "unknown";
   }
   static async generatePDF(fileContents, pageOperations) {
@@ -104,7 +109,9 @@ class PDFGenerator {
   static async drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation) {
     const { x, y, width, height } = operation;
     const opacity = parseFloat(operation.opacity, 10);
-    const embeddedImg = await (type === "jpg" ? pdfDoc.embedJpg(arrayBuffer) : pdfDoc.embedPng(arrayBuffer));
+    const embeddedImg = await (type === "jpg"
+      ? pdfDoc.embedJpg(arrayBuffer)
+      : pdfDoc.embedPng(arrayBuffer));
     const scaled = embeddedImg.scaleToFit(width, height);
 
     await pdfPage.drawImage(embeddedImg, {
