@@ -11,26 +11,18 @@ class PDFGenerator {
    * * Historical Intent: Introduced in commit 7c1af7e (Jun 2026) to handle file identification locally without relying on external dependencies.
    */
   static getImageType(arrayBuffer) {
-    if (!arrayBuffer || arrayBuffer.byteLength < 2) {
-      return "unknown";
-    }
+    if (!arrayBuffer || arrayBuffer.byteLength < 2) return "unknown";
     const view = new DataView(arrayBuffer);
-    const signature = [view.getUint8(0), view.getUint8(1)];
-    const decoder = new TextDecoder("utf-8"); // or whatever encoding you expect
-    const str = decoder.decode(arrayBuffer);
-    if (str.startsWith("<svg") || str.startsWith("<?xml")) {
-      return "svg";
-    } else if (signature[0] === 0xff && signature[1] === 0xd8) {
-      return "jpg";
-    } else if (
+    const str = new TextDecoder("utf-8").decode(arrayBuffer);
+    if (str.startsWith("<svg") || str.startsWith("<?xml")) return "svg";
+    if (view.getUint16(0) === 0xffd8) return "jpg";
+    if (
       arrayBuffer.byteLength >= 8 &&
       view.getUint32(0) === 0x89504e47 &&
       view.getUint32(4) === 0x0d0a1a0a
-    ) {
+    )
       return "png";
-    } else {
-      return "unknown";
-    }
+    return "unknown";
   }
   static async generatePDF(fileContents, pageOperations) {
     const pdfDoc = await PDFLib.PDFDocument.create();
@@ -115,28 +107,20 @@ class PDFGenerator {
     });
   }
   static async drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation) {
-    const pageHeight = pdfPage.getHeight();
-    const { x, y, width, height, opacity: opacityStr } = operation;
-    const opacity = parseFloat(opacityStr, 10);
+    const { x, y, width, height } = operation;
+    const opacity = parseFloat(operation.opacity, 10);
+    const embeddedImg = await (type === "jpg"
+      ? pdfDoc.embedJpg(arrayBuffer)
+      : pdfDoc.embedPng(arrayBuffer));
+    const scaled = embeddedImg.scaleToFit(width, height);
 
-    const drawRaster = async (embeddedImg) => {
-      const scaled = embeddedImg.scaleToFit(width, height);
-      const offsetX = (width - scaled.width) / 2;
-      const offsetY = (height - scaled.height) / 2;
-      await pdfPage.drawImage(embeddedImg, {
-        x: x + offsetX,
-        y: pageHeight - y - height + offsetY,
-        width: scaled.width,
-        height: scaled.height,
-        opacity,
-      });
-    };
-
-    if (type === "jpg") {
-      await drawRaster(await pdfDoc.embedJpg(arrayBuffer));
-    } else if (type === "png") {
-      await drawRaster(await pdfDoc.embedPng(arrayBuffer));
-    }
+    await pdfPage.drawImage(embeddedImg, {
+      x: x + (width - scaled.width) / 2,
+      y: pdfPage.getHeight() - y - height + (height - scaled.height) / 2,
+      width: scaled.width,
+      height: scaled.height,
+      opacity,
+    });
   }
 
   static async drawSvgImageOnPage(pdfPage, arrayBuffer, operation) {
@@ -213,24 +197,13 @@ class PDFGenerator {
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
-    if (!pdfDoc || !pdfPage || !operation || !operation.url) {
-      throw new Error("Cannot be null");
-    }
-    const { url } = operation;
-    // Fetch image data
-    const res = await fetch(url);
-    const arrayBuffer = await res.arrayBuffer();
+    if (!pdfDoc || !pdfPage || !operation || !operation.url) throw new Error("Cannot be null");
+    const arrayBuffer = await (await fetch(operation.url)).arrayBuffer();
     const type = PDFGenerator.getImageType(arrayBuffer);
-
-    switch (type) {
-      case "jpg":
-      case "png":
-        await PDFGenerator.drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation);
-        break;
-      case "svg":
-        await PDFGenerator.drawSvgImageOnPage(pdfPage, arrayBuffer, operation);
-        break;
-      default:
+    if (type === "jpg" || type === "png") {
+      await PDFGenerator.drawRasterImageOnPage(pdfDoc, pdfPage, arrayBuffer, type, operation);
+    } else if (type === "svg") {
+      await PDFGenerator.drawSvgImageOnPage(pdfPage, arrayBuffer, operation);
     }
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
@@ -360,18 +333,10 @@ class PDFGenerator {
     operation.isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
   static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
-    pdfPage.node.set(
-      PDFLib.PDFName.of("Annots"),
-      pdfPage.node.get(PDFLib.PDFName.of("Annots")) || [],
-    );
-    const linkDict = pdfDoc.context.obj(linkDictData);
-    const linkRef = pdfDoc.context.register(linkDict);
-    const annots = pdfPage.node.get(PDFLib.PDFName.of("Annots"));
-    if (annots) {
-      annots.push(linkRef);
-    } else {
-      pdfPage.node.set(PDFLib.PDFName.of("Annots"), [linkRef]);
-    }
+    const annotsKey = PDFLib.PDFName.of("Annots");
+    const annots = pdfPage.node.get(annotsKey) || [];
+    annots.push(pdfDoc.context.register(pdfDoc.context.obj(linkDictData)));
+    pdfPage.node.set(annotsKey, annots);
   }
 
   // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
