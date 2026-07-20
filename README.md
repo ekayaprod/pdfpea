@@ -8,7 +8,12 @@ Working website: [pdfpea.com](https://pdfpea.com)
 
 ## 🔀 Fork Differences
 
-This fork diverges from the upstream `AlphaCloudTechnologies/pdfpea` repository by focusing on agentic automation and infrastructure enhancements. It introduces robust task queuing via `.jules/agent_tasks.md`, rigorous journaling protocols, strict compliance headers for CI, and refactors components for structural polish and domain-driven design, orchestrated through specialized autonomous archetypes (e.g., Town Crier, Helix, Inspector).
+Why choose this version over the original `AlphaCloudTechnologies/pdfpea`? This fork has been systematically polished and hardened for a superior user experience and rock-solid reliability. Key improvements include:
+
+- **Enhanced UX & Accessibility:** Upgraded UI copy and deep accessibility (a11y) label injections ensure a seamless experience for all users.
+- **Hardened Security & Stability:** Fortified PDF generation boundaries with rigorous stress testing for unhandled parameters, catching edge cases the original misses.
+- **Optimized Performance:** Minified SVG assets, eradicated inline styles in favor of CSS variables, and collapsed imperative logic blocks for a leaner, faster application.
+- **Modern Infrastructure:** Multi-stage Docker environments and optimized CI/CD pipelines ensure robust testing and deployment.
 
 ## 🚀 The Stack
 
