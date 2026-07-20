@@ -135,8 +135,8 @@ describe("PDFGenerator", () => {
       const pdfDocMock = {
         context: {
           register: vi.fn(),
-          obj: vi.fn()
-        }
+          obj: vi.fn(),
+        },
       };
       // Explicitly define PDFLib properties used in the mocked branch
       global.PDFLib.PDFString = { of: vi.fn() };
@@ -147,8 +147,8 @@ describe("PDFGenerator", () => {
         drawRectangle: vi.fn(),
         node: {
           get: vi.fn(() => []),
-          set: vi.fn()
-        }
+          set: vi.fn(),
+        },
       };
       const operationMock = {
         x: 10,
@@ -356,8 +356,8 @@ describe("PDFGenerator", () => {
       const pdfDocMock = {
         context: {
           register: vi.fn(),
-          obj: vi.fn()
-        }
+          obj: vi.fn(),
+        },
       };
       global.PDFLib.PDFString = { of: vi.fn() };
       global.PDFLib.PDFName = { of: vi.fn() };
@@ -367,8 +367,8 @@ describe("PDFGenerator", () => {
         drawRectangle: vi.fn(),
         node: {
           get: vi.fn(() => []),
-          set: vi.fn()
-        }
+          set: vi.fn(),
+        },
       };
       const operationMock = {
         x: 10,
