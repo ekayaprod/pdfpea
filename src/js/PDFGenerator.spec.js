@@ -132,10 +132,23 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-      const pdfDocMock = {};
+      const pdfDocMock = {
+        context: {
+          register: vi.fn(),
+          obj: vi.fn()
+        }
+      };
+      // Explicitly define PDFLib properties used in the mocked branch
+      global.PDFLib.PDFString = { of: vi.fn() };
+      global.PDFLib.PDFName = { of: vi.fn() };
+
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
         drawRectangle: vi.fn(),
+        node: {
+          get: vi.fn(() => []),
+          set: vi.fn()
+        }
       };
       const operationMock = {
         x: 10,
@@ -340,10 +353,22 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-      const pdfDocMock = {};
+      const pdfDocMock = {
+        context: {
+          register: vi.fn(),
+          obj: vi.fn()
+        }
+      };
+      global.PDFLib.PDFString = { of: vi.fn() };
+      global.PDFLib.PDFName = { of: vi.fn() };
+
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
         drawRectangle: vi.fn(),
+        node: {
+          get: vi.fn(() => []),
+          set: vi.fn()
+        }
       };
       const operationMock = {
         x: 10,
@@ -355,7 +380,7 @@ describe("PDFGenerator", () => {
         opacity: "1",
         fill: "transparent",
         linkType: "url",
-        linkValue: "http://example.com"
+        linkValue: "http://example.com",
       };
 
       let error;
