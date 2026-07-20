@@ -57,14 +57,9 @@ class PDFGenerator {
         const pdfPage = pdfPages[page.pageNumber - 1];
         // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
         for (const op of page.operations) {
-          if (
-            (op.operation === "create" && typeMap[op.type]) ||
-            (op.operation === "update" &&
-              ["textfield", "checkbox", "link"].includes(op.type) &&
-              typeMap[op.type])
-          ) {
-            await this[typeMap[op.type]](pdfDoc, pdfPage, op);
-          }
+          const fn = typeMap[op.type];
+          const validUpdate = op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
+          if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
         }
       }),
     );
@@ -82,12 +77,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     await pdfPage.drawText(operation.text.replaceAll("\n\n", "\n \n"), {
       x: operation.x + operation.xPadding,
@@ -143,14 +134,11 @@ class PDFGenerator {
     const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
     const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
 
-    const preserveAspectRatioMatch = svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/);
-    const preserveAspectRatio = preserveAspectRatioMatch ? preserveAspectRatioMatch[1] : null;
-    const shouldMaintainAspectRatio = preserveAspectRatio !== "none";
+    const shouldMaintainAspectRatio = (svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/)?.[1] ?? "") !== "none";
 
     const vbMatch = svgText.match(/viewBox="([^"]+)"/);
     if (!vbMatch) throw new Error("SVG viewBox not found");
-    const [, vb] = vbMatch;
-    const [, , vbW, vbH] = vb.split(/\s+/).map(parseFloat);
+    const [, , vbW, vbH] = vbMatch[1].split(/\s+/).map(parseFloat);
 
     const scale = shouldMaintainAspectRatio ? Math.min(width / vbW, height / vbH) : 1;
     const scaleX = shouldMaintainAspectRatio ? scale : width / vbW;
@@ -261,12 +249,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    let embedFontPromise = pdfDoc.__fontCache.get(fontToEmbed);
-    if (!embedFontPromise) {
-      embedFontPromise = pdfDoc.embedFont(fontToEmbed);
-      pdfDoc.__fontCache.set(fontToEmbed, embedFontPromise);
-    }
-    const embedFont = await embedFontPromise;
+    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     const form = pdfDoc.getForm();
     await form.createTextField(id).addToPage(pdfPage, {
