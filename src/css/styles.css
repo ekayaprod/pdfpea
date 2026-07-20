@@ -103,9 +103,9 @@ body {
   position: relative;
   left: 10px; /* Initial position, will be updated dynamically by JavaScript */
   top: 25px; /* Start below the header area */
-  width: 60px;
-  flex: 0 0 60px;
-  min-width: 60px;
+  width: 64px;
+  flex: 0 0 64px;
+  min-width: 64px;
   background-color: var(--color-gray-50);
   border: 1px solid var(--color-gray-200);
   border-radius: 0.5rem;
@@ -167,8 +167,8 @@ body {
 }
 
 .body-tool {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   display: flex;
@@ -722,8 +722,8 @@ h3 {
   color: var(--color-gray-500);
   cursor: pointer;
   padding: 0;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -743,6 +743,7 @@ h3 {
 
 .tab-btn {
   padding: 10px 20px;
+  min-height: 44px;
   background: none;
   border: none;
   color: var(--color-gray-500);
