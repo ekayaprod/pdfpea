@@ -2,6 +2,8 @@
 
 [![build: passing](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
+> **Note:** This repository is a fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea), maintained by [ekayaprod](https://github.com/ekayaprod).
+
 PDFPea is a high-velocity, browser-based PDF editor engineered for total local privacy. Built on Vue 3 and Vite, it delivers zero-latency text, image, and shape annotations directly in your browser. No server uploads. No compromises.
 
 Working website: [pdfpea.com](https://pdfpea.com)
