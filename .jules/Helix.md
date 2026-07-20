@@ -15,3 +15,7 @@
 - [x] Snapped nested switch block and verbose fetch chains in `drawImageOnPage`.
 - [x] Eradicated redundant boolean scaffolding inside `getImageType`.
 - [x] Restructured array allocation using logical assignment in `_registerAndAddAnnotation`.
+
+- [x] Collapsed nested filtering loop in `generatePDF` to a declarative structure.
+- [x] Snapped defensive `__fontCache` assignments in `drawTextOnPage` and `drawTextFieldOnPage`.
+- [x] Evaporated intermediate variables in `drawSvgImageOnPage` for regex extraction.
