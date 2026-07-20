@@ -116,7 +116,8 @@ class PDFPage {
   processFormFields(formFields, viewport) {
     formFields.forEach((field) => {
       if (field.fieldType === FIELD_TYPES.TEXT_FIELD) this.createTextFieldFromPDF(field, viewport);
-      else if (field.fieldType === FIELD_TYPES.BUTTON && field.checkBox) this.createCheckboxFromPDF(field, viewport);
+      else if (field.fieldType === FIELD_TYPES.BUTTON && field.checkBox)
+        this.createCheckboxFromPDF(field, viewport);
     });
   }
   createTextFieldFromPDF(field, viewport) {
