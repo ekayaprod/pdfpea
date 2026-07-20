@@ -6,6 +6,10 @@ PDFPea is a high-velocity, browser-based PDF editor engineered for total local p
 
 Working website: [pdfpea.com](https://pdfpea.com)
 
+## 🔀 Fork Differences
+
+This fork diverges from the upstream `AlphaCloudTechnologies/pdfpea` repository by focusing on agentic automation and infrastructure enhancements. It introduces robust task queuing via `.jules/agent_tasks.md`, rigorous journaling protocols, strict compliance headers for CI, and refactors components for structural polish and domain-driven design, orchestrated through specialized autonomous archetypes (e.g., Town Crier, Helix, Inspector).
+
 ## 🚀 The Stack
 
 - **Engine:** Vue 3 + Vanilla JavaScript
