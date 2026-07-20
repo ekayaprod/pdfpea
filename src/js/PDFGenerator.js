@@ -159,13 +159,17 @@ class PDFGenerator {
         const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
         if (fillColor && fillColor !== "none") {
           const c = hexToRgb(fillColor);
-          opts.color = PDFLib.rgb(c.red, c.green, c.blue);
+          if (c) {
+            opts.color = PDFLib.rgb(c.red, c.green, c.blue);
+          }
         }
 
         const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
         if (strokeColor && strokeColor !== "none") {
           const c = hexToRgb(strokeColor);
-          opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
+          if (c) {
+            opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
+          }
         }
 
         const strokeWidth =
@@ -335,7 +339,11 @@ class PDFGenerator {
    */
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
     const borderWidth = parseInt(operation.borderWidth) || 0;
-    const borderColor = hexToRgb(operation.borderColor ?? "#007acc");
+    const borderColor = hexToRgb(operation.borderColor ?? "#007acc") || {
+      red: 0,
+      green: 122 / 255,
+      blue: 204 / 255,
+    };
     const opacity = parseFloat(operation.opacity, 10) || 1.0;
     const fillColor = parseColor(operation.fill ?? "rgba(0, 122, 204, 0.1)");
 

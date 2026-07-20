@@ -132,10 +132,23 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-      const pdfDocMock = {};
+      const pdfDocMock = {
+        context: {
+          register: vi.fn(),
+          obj: vi.fn(),
+        },
+      };
+      // Explicitly define PDFLib properties used in the mocked branch
+      global.PDFLib.PDFString = { of: vi.fn() };
+      global.PDFLib.PDFName = { of: vi.fn() };
+
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
         drawRectangle: vi.fn(),
+        node: {
+          get: vi.fn(() => []),
+          set: vi.fn(),
+        },
       };
       const operationMock = {
         x: 10,
@@ -331,6 +344,89 @@ describe("PDFGenerator", () => {
 
       await PDFGenerator.drawTextOnPage(pdfDocMock, pdfPageMock, operationMock);
       expect(pdfPageMock.drawText).toHaveBeenCalled();
+    });
+  });
+  describe("drawLinkOnPage", () => {
+    it("handles invalid color strings gracefully without crashing", async () => {
+      // 🕵️ The Fair-Weather Alibi Check: The application blindly passes the result of `hexToRgb`
+      // into PDFLib.rgb() without checking if hexToRgb returned null.
+      const PDFLib = await import("pdf-lib");
+      global.PDFLib = PDFLib;
+
+      const pdfDocMock = {
+        context: {
+          register: vi.fn(),
+          obj: vi.fn(),
+        },
+      };
+      global.PDFLib.PDFString = { of: vi.fn() };
+      global.PDFLib.PDFName = { of: vi.fn() };
+
+      const pdfPageMock = {
+        getHeight: vi.fn().mockReturnValue(800),
+        drawRectangle: vi.fn(),
+        node: {
+          get: vi.fn(() => []),
+          set: vi.fn(),
+        },
+      };
+      const operationMock = {
+        x: 10,
+        y: 20,
+        width: 100,
+        height: 50,
+        borderWidth: 2,
+        borderColor: "invalid_color",
+        opacity: "1",
+        fill: "transparent",
+        linkType: "url",
+        linkValue: "http://example.com",
+      };
+
+      let error;
+      try {
+        await PDFGenerator.drawLinkOnPage(pdfDocMock, pdfPageMock, operationMock);
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toBeUndefined();
+      expect(pdfPageMock.drawRectangle).toHaveBeenCalled();
+    });
+  });
+
+  describe("drawSvgImageOnPage", () => {
+    it("handles invalid fill/stroke color strings gracefully without crashing", async () => {
+      // 🕵️ The Fair-Weather Alibi Check: The application blindly accesses .red, .green, .blue
+      // on the result of hexToRgb for SVG paths without verifying it isn't null.
+      const PDFLib = await import("pdf-lib");
+      global.PDFLib = PDFLib;
+
+      const pdfDocMock = {};
+      const pdfPageMock = {
+        getHeight: vi.fn().mockReturnValue(800),
+        drawSvgPath: vi.fn(),
+      };
+      const operationMock = {
+        x: 10,
+        y: 20,
+        width: 100,
+        height: 100,
+        opacity: "1",
+      };
+
+      const svg = `<svg viewBox="0 0 100 100"><path d="M0,0" fill="invalid_color" stroke="also_invalid" /></svg>`;
+      const buffer = new TextEncoder().encode(svg).buffer;
+
+      let error;
+      try {
+        await PDFGenerator.drawSvgImageOnPage(pdfPageMock, buffer, operationMock);
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toBeUndefined();
+      expect(pdfPageMock.drawSvgPath).toHaveBeenCalled();
     });
   });
 });
