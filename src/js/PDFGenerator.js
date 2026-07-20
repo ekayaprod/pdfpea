@@ -58,7 +58,8 @@ class PDFGenerator {
         // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
         for (const op of page.operations) {
           const fn = typeMap[op.type];
-          const validUpdate = op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
+          const validUpdate =
+            op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
           if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
         }
       }),
@@ -77,7 +78,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    if (!pdfDoc.__fontCache.has(fontToEmbed))
+      pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
     const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     await pdfPage.drawText(operation.text.replaceAll("\n\n", "\n \n"), {
@@ -134,7 +136,8 @@ class PDFGenerator {
     const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
     const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
 
-    const shouldMaintainAspectRatio = (svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/)?.[1] ?? "") !== "none";
+    const shouldMaintainAspectRatio =
+      (svgText.match(/<svg[^>]*preserveAspectRatio="([^"]+)"/)?.[1] ?? "") !== "none";
 
     const vbMatch = svgText.match(/viewBox="([^"]+)"/);
     if (!vbMatch) throw new Error("SVG viewBox not found");
@@ -249,7 +252,8 @@ class PDFGenerator {
       : PDFLib.StandardFonts.Helvetica;
 
     pdfDoc.__fontCache ??= new Map();
-    if (!pdfDoc.__fontCache.has(fontToEmbed)) pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    if (!pdfDoc.__fontCache.has(fontToEmbed))
+      pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
     const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
 
     const form = pdfDoc.getForm();
