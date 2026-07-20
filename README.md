@@ -2,7 +2,20 @@
 
 [![build: passing](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
-> **Note:** This repository is a fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea), maintained by [ekayaprod](https://github.com/ekayaprod).
+> **Note:** This repository is a fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea).
+>
+> This fork includes several enhancements and architectural shifts:
+>
+> - **🧬 Helix:** Refactored `PDFEditor.js` and `PDFGenerator.js` to collapse imperative logic.
+> - **🪴 Propagator:** Extracted duplicated border width dimension calculations.
+> - **🗂️ Organizer:** Refactored utilities into semantic subdirectories.
+> - **🥄 Sylar:** Spliced `parseColor` utility to consolidate redundant logic and fixed formatting.
+> - **🔤 Lexicon:** Standardized terminology and enforced boolean prefixes for dialog states.
+> - **🦢 Finesse:** Eradicated inline styles and adopted Tailwind CSS variables for hex colors.
+> - **🗜️ Vice:** Minified SVG assets by stripping bloated XML metadata.
+> - **🕵️ Inspector:** Fortified boundaries with stress tests and authored unverified logic test suites.
+> - **🪨 Vibe Check:** Stripped out hallucinated promise wrappers and cosmetic try/catch blocks.
+> - **🚀 Infrastructure:** Optimized Playwright Pipeline, provisioned multi-stage Dockerfile, and integrated Docker Ecosystem into Dependabot Scanning.
 
 PDFPea is a high-velocity, browser-based PDF editor engineered for total local privacy. Built on Vue 3 and Vite, it delivers zero-latency text, image, and shape annotations directly in your browser. No server uploads. No compromises.
 
