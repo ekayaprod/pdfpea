@@ -1,5 +1,9 @@
 # 🛠️ Contributing to PDFPea
 
+> **Note:** This repository is a fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea).
+>
+> All contributions made here apply exclusively to this fork and its unique architectural enhancements.
+
 Welcome aboard! PDFPea is a high-velocity, privacy-first PDF editor. We value zero-latency operations and zero server uploads. No compromises. If you're ready to contribute, here is the mechanical ground truth to spin up the local environment and get hacking.
 
 ## ⚙️ Prerequisites
