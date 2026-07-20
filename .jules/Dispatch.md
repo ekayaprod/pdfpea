@@ -5,3 +5,4 @@ Injected CodeQL SAST scanning pipeline to address Tier 3 vulnerabilities.
 - Defined permissions: contents: read to explicit scope
 - [2025-07-18] Injected test/doc boundary exclusions into `.dockerignore` to address Tier 2 Transit Bloat.
 - [UNHANDLED TARGET] `.github/workflows/playwright.yml`: Contains deprecated `node-version: lts/*` definition (Tier 5: Chronological Decay).
+- Updated Node.js version in Playwright Workflow (`.github/workflows/playwright.yml`) from `lts/*` to `24`.
