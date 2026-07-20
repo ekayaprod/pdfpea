@@ -6,6 +6,15 @@ PDFPea is a high-velocity, browser-based PDF editor engineered for total local p
 
 Working website: [pdfpea.com](https://pdfpea.com)
 
+## 🔀 Fork Differences (vs. Original)
+
+This repository is a heavily modernized and architecturally refined fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea). Key improvements in this fork include:
+
+- **Modular Architecture:** The monolithic `OperationComponents.js` has been fractured into smaller, domain-driven classes (e.g., `TextOperationComponent`, `ImageOperationComponent`) inside `/src/js/OperationComponents/`. Utility functions have been similarly categorized into semantic subdirectories (`/src/utils/canvas/`, `/src/utils/color/`, etc.).
+- **Comprehensive Testing:** Introduced a robust testing strategy utilizing **Vitest** for unit testing (`*.spec.js`) and **Playwright** for end-to-end (E2E) UI and visual regression testing (`/tests/`).
+- **Infrastructure & CI:** Added a multi-stage `Dockerfile` and a `.dockerignore` for containerized deployments, along with an `.mcp.json` configuration.
+- **Enhanced Documentation:** Introduced `ARCHITECTURE.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and `ROADMAP.md` to establish clear institutional memory and contribution guidelines.
+
 ## 🚀 The Stack
 
 - **Engine:** Vue 3 + Vanilla JavaScript
