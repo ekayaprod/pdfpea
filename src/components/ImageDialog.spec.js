@@ -24,7 +24,7 @@ describe("ImageDialog", () => {
     await nextTick();
 
     // Switch to URL tab
-    const tabs = Array.from(root.querySelectorAll(".tab-btn"));
+    const tabs = Array.from(root.querySelectorAll("button"));
     const urlTab = tabs.find((t) => t.textContent.includes("From URL"));
     urlTab.click();
 
@@ -52,7 +52,8 @@ describe("ImageDialog", () => {
     };
 
     // Trigger load
-    const loadBtn = root.querySelector(".load-url-btn");
+    const buttons = Array.from(root.querySelectorAll("button"));
+    const loadBtn = buttons.find((b) => b.textContent.includes("Load Image"));
     loadBtn.click();
 
     // Wait for the async operation in loadFromUrl to complete
@@ -63,7 +64,7 @@ describe("ImageDialog", () => {
     await nextTick();
 
     // Verify the error message is displayed
-    const errorMsg = root.querySelector(".image-error");
+    const errorMsg = root.querySelector(".text-red-700");
     expect(errorMsg).not.toBeNull();
     expect(errorMsg.textContent).toContain(
       "Unable to load the image from the provided URL. Verify the link and try again",

@@ -1,34 +1,53 @@
 <template>
-  <div v-if="isOpen" class="image-dialog-overlay" @click="handleOverlayClick">
-    <div class="image-dialog" @click.stop>
-      <div class="image-dialog-header">
-        <h3>Add Image</h3>
-        <button @click="closeDialog" class="dialog-close-btn" aria-label="Close dialog">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-overlay-enter"
+    @click="handleOverlayClick"
+  >
+    <div
+      class="flex w-[90%] max-w-[500px] max-h-[80vh] flex-col overflow-hidden rounded-xl bg-white shadow-2xl animate-dialog-enter"
+      @click.stop
+    >
+      <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 p-5">
+        <h3 class="m-0 text-lg font-semibold text-gray-800">Add Image</h3>
+        <button
+          @click="closeDialog"
+          class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-transparent text-2xl text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Close dialog"
+        >
           &times;
         </button>
       </div>
 
-      <div class="image-dialog-content">
-        <div class="image-dialog-tabs">
+      <div class="flex-1 overflow-y-auto p-5">
+        <div class="mb-5 flex gap-1 border-b border-gray-200">
           <button
-            :class="{ active: activeTab === 'upload' }"
+            :class="[
+              'rounded-t-lg border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none',
+              activeTab === 'upload'
+                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                : 'border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+            ]"
             @click="activeTab = 'upload'"
-            class="tab-btn"
           >
             Upload File
           </button>
           <button
-            :class="{ active: activeTab === 'url' }"
+            :class="[
+              'rounded-t-lg border-b-2 px-4 py-2 text-sm font-medium transition-colors focus:outline-none',
+              activeTab === 'url'
+                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                : 'border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+            ]"
             @click="activeTab = 'url'"
-            class="tab-btn"
           >
             From URL
           </button>
         </div>
 
-        <div v-if="activeTab === 'upload'" class="image-upload-section">
+        <div v-if="activeTab === 'upload'" class="mb-5">
           <div
-            class="upload-area"
+            class="cursor-pointer rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center transition-all hover:border-blue-600 hover:bg-blue-50 focus:border-blue-600 focus:bg-blue-50 focus:outline-none"
             @click="triggerFileInput"
             @dragover.prevent
             @drop.prevent="handleDrop"
@@ -45,40 +64,67 @@
               @change="handleFileUpload"
               class="hidden"
             />
-            <i class="fa-solid fa-cloud-upload-alt upload-icon"></i>
-            <p>Select or drag and drop an image</p>
-            <p class="upload-hint">Supports: JPG, PNG, GIF, WebP</p>
+            <i class="fa-solid fa-cloud-upload-alt mb-3 text-4xl text-blue-500"></i>
+            <p class="my-2 text-gray-600">Select or drag and drop an image</p>
+            <p class="my-2 text-sm text-gray-500">Supports: JPG, PNG, GIF, WebP</p>
           </div>
         </div>
 
-        <div v-if="activeTab === 'url'" class="image-url-section">
-          <label for="imageUrl">Image URL:</label>
-          <input
-            id="imageUrl"
-            type="url"
-            v-model="imageUrl"
-            placeholder="https://example.com/image.jpg"
-            class="url-input"
-            @keyup.enter="loadFromUrl"
+        <div v-if="activeTab === 'url'" class="mb-5">
+          <label for="imageUrl" class="mb-2 block font-medium text-gray-800">Image URL:</label>
+          <div class="flex gap-2">
+            <input
+              id="imageUrl"
+              type="url"
+              v-model="imageUrl"
+              placeholder="https://example.com/image.jpg"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              @keyup.enter="loadFromUrl"
+            />
+            <button
+              @click="loadFromUrl"
+              class="btn-primary whitespace-nowrap rounded-lg px-4 py-2 font-medium disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+              :disabled="!imageUrl"
+            >
+              Load Image
+            </button>
+          </div>
+        </div>
+
+        <div
+          v-if="preview"
+          class="mt-5 rounded-lg border border-gray-200 bg-gray-50 p-4 text-center"
+        >
+          <h4 class="mb-3 mt-0 text-left text-sm font-medium text-gray-700">Preview:</h4>
+          <img
+            :src="preview"
+            alt="Preview"
+            class="max-h-[200px] max-w-full rounded border border-gray-300 object-contain shadow-sm"
+            loading="lazy"
+            decoding="async"
           />
-          <button @click="loadFromUrl" class="load-url-btn" :disabled="!imageUrl">
-            Load Image
-          </button>
         </div>
 
-        <div v-if="preview" class="image-preview-section">
-          <h4>Preview:</h4>
-          <img :src="preview" alt="Preview" class="image-preview" loading="lazy" decoding="async" />
-        </div>
-
-        <div v-if="error" class="image-error">
-          <p>{{ error }}</p>
+        <div v-if="error" class="mt-4 rounded-lg bg-red-50 p-3 text-red-700">
+          <p class="m-0 flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ error }}
+          </p>
         </div>
       </div>
 
-      <div class="image-dialog-footer">
-        <button @click="closeDialog" class="btn-secondary">Cancel</button>
-        <button @click="confirmSelection" :disabled="!preview" class="btn-primary">
+      <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 p-5">
+        <button
+          @click="closeDialog"
+          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+        >
+          Cancel
+        </button>
+        <button
+          @click="confirmSelection"
+          :disabled="!preview"
+          class="btn-primary rounded-lg px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:bg-blue-300"
+        >
           Add Image
         </button>
       </div>
@@ -226,112 +272,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.upload-area {
-  border: 2px dashed var(--color-gray-300);
-  border-radius: 8px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--color-gray-50);
-
-  &:hover {
-    border-color: var(--color-blue-600);
-    background: var(--color-blue-50);
-  }
-
-  p {
-    margin: 8px 0;
-    color: var(--color-gray-500);
-  }
-}
-
-/* Image Dialog Styles */
-@keyframes overlay-enter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes dialog-enter {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.image-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  animation: overlay-enter 0.3s ease-out;
-}
-
-.image-dialog {
-  background: var(--color-white);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: dialog-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.image-dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--color-gray-200);
-  background: var(--color-gray-50);
-
-  h3 {
-    margin: 0;
-    color: var(--color-gray-800);
-    font-size: 18px;
-    font-weight: 600;
-  }
-}
-
-.image-dialog-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.image-dialog-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--color-gray-200);
-}
-
-.image-dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 20px;
-  border-top: 1px solid var(--color-gray-200);
-  background: var(--color-gray-50);
-}
-</style>
