@@ -27,6 +27,15 @@ This repository is a heavily modernized and architecturally refined fork of the 
 - **Infrastructure & CI:** Added a multi-stage `Dockerfile` and a `.dockerignore` for containerized deployments, along with an `.mcp.json` configuration.
 - **Enhanced Documentation:** Introduced `ARCHITECTURE.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and `ROADMAP.md` to establish clear institutional memory and contribution guidelines.
 
+## 🔀 Fork Differences
+
+Why choose this version over the original `AlphaCloudTechnologies/pdfpea`? This fork has been systematically polished and hardened for a superior user experience and rock-solid reliability. Key improvements include:
+
+- **Enhanced UX & Accessibility:** Upgraded UI copy and deep accessibility (a11y) label injections ensure a seamless experience for all users.
+- **Hardened Security & Stability:** Fortified PDF generation boundaries with rigorous stress testing for unhandled parameters, catching edge cases the original misses.
+- **Optimized Performance:** Minified SVG assets, eradicated inline styles in favor of CSS variables, and collapsed imperative logic blocks for a leaner, faster application.
+- **Modern Infrastructure:** Multi-stage Docker environments and optimized CI/CD pipelines ensure robust testing and deployment.
+
 ## 🚀 The Stack
 
 - **Engine:** Vue 3 + Vanilla JavaScript
