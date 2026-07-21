@@ -1,5 +1,9 @@
 # Architecture Map
 
+## 🔀 Fork Context (vs. Original)
+
+This project is a modernized fork of the original `AlphaCloudTechnologies/pdfpea`. Architecturally, this fork breaks down the original monolithic structures into modular, domain-driven components. The most significant shift is the dismantling of the original `OperationComponents.js` file into a dedicated `OperationComponents/` directory containing individual class files (e.g., `TextOperationComponent`, `ImageOperationComponent`) for each tool type, dramatically improving maintainability and reducing module coupling.
+
 ## System Context
 
 The System Context diagram illustrates the high-level view of PDFPea, a browser-based PDF editor that operates entirely locally without server interactions for data processing.
