@@ -20,7 +20,7 @@
     "url": "git+https://github.com/ekayaprod/pdfpea.git"
   },
   "license": "MIT",
-  "author": "AlphaCloudTechnologies",
+  "author": "ekayaprod (Forked from AlphaCloudTechnologies)",
   "type": "module",
   "engines": {
     "node": ">=24.0.0",

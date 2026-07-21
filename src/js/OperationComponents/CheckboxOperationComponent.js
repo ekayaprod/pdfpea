@@ -1,5 +1,5 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
-import { calculateInnerDimensions } from "../../utils/layout/dimensions.js";
+import { calculateInnerDimensions } from "../utils/layout/dimensions.js";
 
 class CheckboxOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {

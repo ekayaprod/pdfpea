@@ -1,10 +1,31 @@
-# ⚡ PDFPea
+# ⚡ PDFPea (ekayaprod Fork)
 
 [![build: passing](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
+*Note: This is a modified fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea).*
+
 PDFPea is a high-velocity, browser-based PDF editor engineered for total local privacy. Built on Vue 3 and Vite, it delivers zero-latency text, image, and shape annotations directly in your browser. No server uploads. No compromises.
 
-Working website: [pdfpea.com](https://pdfpea.com)
+## 🔀 Differences from the Original Project
+
+This fork incorporates significant architectural, UX, and pipeline improvements over the original project, including:
+
+- **🎨 UX & Design (Palette+):** Enhanced UI elements with fluid motion, accessible focus states, and refined typography for a premium, frictionless user experience.
+- **🏗️ Architectural Reorganization:** Split monolithic structures into domain-specific modules (e.g., semantic `utils/` and operation components).
+- **🛡️ Hardened Security & Testing:** Implemented strict boundaries on `PDFGenerator.js`, expanded E2E Playwright test coverage, and established unverified logic test suites.
+- **🚀 Pipeline Optimizations:** Built out Docker-based CI environments and dependable GitHub Actions configurations.
+- **🧹 Code Quality:** Aggressive linting, lexicon standardization, dead code removal, and eradication of inline styles in favor of modern utility tokens.
+
+Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea)
+
+## 🔀 Fork Differences (vs. Original)
+
+This repository is a heavily modernized and architecturally refined fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea). Key improvements in this fork include:
+
+- **Modular Architecture:** The monolithic `OperationComponents.js` has been fractured into smaller, domain-driven classes (e.g., `TextOperationComponent`, `ImageOperationComponent`) inside `/src/js/OperationComponents/`. Utility functions have been similarly categorized into semantic subdirectories (`/src/utils/canvas/`, `/src/utils/color/`, etc.).
+- **Comprehensive Testing:** Introduced a robust testing strategy utilizing **Vitest** for unit testing (`*.spec.js`) and **Playwright** for end-to-end (E2E) UI and visual regression testing (`/tests/`).
+- **Infrastructure & CI:** Added a multi-stage `Dockerfile` and a `.dockerignore` for containerized deployments, along with an `.mcp.json` configuration.
+- **Enhanced Documentation:** Introduced `ARCHITECTURE.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and `ROADMAP.md` to establish clear institutional memory and contribution guidelines.
 
 ## 🔀 Fork Differences
 
