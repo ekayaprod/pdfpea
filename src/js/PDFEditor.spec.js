@@ -11,7 +11,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import { PDFEditor } from "./PDFEditor.js";
 
 // Mock rgbToHex from colors to avoid errors
-vi.mock("../utils/color/colors.js", () => ({
+vi.mock("./utils/color/colors.js", () => ({
   rgbToHex: vi.fn((r, g, b) => {
     if (
       r === undefined ||
