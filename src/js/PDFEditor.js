@@ -42,14 +42,11 @@ class PDFEditor {
     // Prevent concurrent race conditions by initializing sequentially
     const pages = [];
     for (let i = 0; i < pdfDoc.numPages; i++) {
-      const pageNum = i + 1;
-      const pdfURL = fileName;
-      const pdfPageNumber = pageNum;
       const pdfPageContainer = document.createElement("div");
       this.container.appendChild(pdfPageContainer);
       const pdfPage = new PDFPage(pdfPageContainer);
       // Wait for initialization to complete before moving to the next page
-      await pdfPage.initialize(pdfURL, pdfPageNumber, fileContents);
+      await pdfPage.initialize(fileName, i + 1, fileContents);
       pages.push(pdfPage);
     }
     this.pdfPages.push(...pages);
@@ -104,13 +101,9 @@ class PDFPage {
     this.canvas.height = renderViewport.height;
     this.canvas.width = renderViewport.width;
     // Set container style to display size (independent of render resolution)
-    const displayHeight = viewport.height / scale;
-    const displayWidth = viewport.width / scale;
-    this.container.style.height = `${displayHeight}px`;
-    this.container.style.width = `${displayWidth}px`;
     // Scale canvas style to fit container
-    this.canvas.style.height = `${displayHeight}px`;
-    this.canvas.style.width = `${displayWidth}px`;
+    this.container.style.height = this.canvas.style.height = `${viewport.height / scale}px`;
+    this.container.style.width = this.canvas.style.width = `${viewport.width / scale}px`;
     this.container.appendChild(this.canvas);
     const formFields = await page.getAnnotations();
     await page.render({
@@ -121,20 +114,19 @@ class PDFPage {
     this.processFormFields(formFields, viewport);
   }
   processFormFields(formFields, viewport) {
-    for (let field of formFields) {
-      if (field.fieldType === FIELD_TYPES.TEXT_FIELD) {
-        this.createTextFieldFromPDF(field, viewport);
-      } else if (field.fieldType === FIELD_TYPES.BUTTON && field.checkBox) {
+    formFields.forEach((field) => {
+      if (field.fieldType === FIELD_TYPES.TEXT_FIELD) this.createTextFieldFromPDF(field, viewport);
+      else if (field.fieldType === FIELD_TYPES.BUTTON && field.checkBox)
         this.createCheckboxFromPDF(field, viewport);
-      }
-    }
+    });
   }
   createTextFieldFromPDF(field, viewport) {
     const borderWidth = field.borderStyle.width;
-    const x = Math.ceil(field.rect[0]);
-    const tempY = Math.ceil(field.rect[1]);
-    const width = Math.floor(field.rect[2]) - x - 2 * borderWidth;
-    const height = Math.floor(field.rect[3]) - tempY - 2 * borderWidth;
+    const [rectX, rectY, rectMaxX, rectMaxY] = field.rect;
+    const x = Math.ceil(rectX);
+    const tempY = Math.ceil(rectY);
+    const width = Math.floor(rectMaxX) - x - 2 * borderWidth;
+    const height = Math.floor(rectMaxY) - tempY - 2 * borderWidth;
     new TextFieldOperationComponent(
       TextFieldOperationComponent.updateDefaultOperation(
         field.fieldName,
@@ -144,13 +136,9 @@ class PDFPage {
         width,
         field.fieldValue,
         borderWidth,
-        field.color ? rgbToHex(field.color[0], field.color[1], field.color[2]) : "#000000",
-        field.borderColor
-          ? rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2])
-          : "transparent",
-        field.backgroundColor
-          ? rgbToHex(field.backgroundColor[0], field.backgroundColor[1], field.backgroundColor[2])
-          : "transparent",
+        field.color ? rgbToHex(...field.color) : "#000000",
+        field.borderColor ? rgbToHex(...field.borderColor) : "transparent",
+        field.backgroundColor ? rgbToHex(...field.backgroundColor) : "transparent",
         field.defaultAppearanceData.fontName,
         field.defaultAppearanceData.fontSize,
         field.required,
@@ -168,10 +156,11 @@ class PDFPage {
   }
   createCheckboxFromPDF(field, viewport) {
     const borderWidth = field.borderStyle.width;
-    const x = Math.ceil(field.rect[0]);
-    const tempY = Math.ceil(field.rect[1]);
-    const width = Math.floor(field.rect[2]) - x - 2 * borderWidth;
-    const height = Math.floor(field.rect[3]) - tempY - 2 * borderWidth;
+    const [rectX, rectY, rectMaxX, rectMaxY] = field.rect;
+    const x = Math.ceil(rectX);
+    const tempY = Math.ceil(rectY);
+    const width = Math.floor(rectMaxX) - x - 2 * borderWidth;
+    const height = Math.floor(rectMaxY) - tempY - 2 * borderWidth;
     new CheckboxOperationComponent(
       CheckboxOperationComponent.updateDefaultOperation(
         field.fieldName,
@@ -180,13 +169,9 @@ class PDFPage {
         height,
         width,
         borderWidth,
-        field.color ? rgbToHex(field.color[0], field.color[1], field.color[2]) : "#000000",
-        field.borderColor
-          ? rgbToHex(field.borderColor[0], field.borderColor[1], field.borderColor[2])
-          : "transparent",
-        field.backgroundColor
-          ? rgbToHex(field.backgroundColor[0], field.backgroundColor[1], field.backgroundColor[2])
-          : "transparent",
+        field.color ? rgbToHex(...field.color) : "#000000",
+        field.borderColor ? rgbToHex(...field.borderColor) : "transparent",
+        field.backgroundColor ? rgbToHex(...field.backgroundColor) : "transparent",
         field.fieldFlags === 1,
         field.readOnly,
       ),
@@ -326,15 +311,10 @@ class PDFPage {
   applyZoom(zoomLevel) {
     this.container.style.transform = `scale(${zoomLevel})`;
     this.container.style.transformOrigin = "top left";
-    // Calculate the actual dimensions after scaling
-    const originalHeight = this.container.offsetHeight;
-    const originalWidth = this.container.offsetWidth;
-    const scaledHeight = originalHeight * zoomLevel;
-    const scaledWidth = originalWidth * zoomLevel;
-    // Set margins to account for the increased size after scaling
+    // Calculate the actual dimensions after scaling and set margins to account for the increased size.
     // This ensures the next page is pushed down by the full scaled height
-    this.container.style.marginBottom = `${scaledHeight - originalHeight + 20}px`; // +20px for gap between pages
-    this.container.style.marginRight = `${scaledWidth - originalWidth}px`;
+    this.container.style.marginBottom = `${this.container.offsetHeight * (zoomLevel - 1) + 20}px`; // +20px for gap between pages
+    this.container.style.marginRight = `${this.container.offsetWidth * (zoomLevel - 1)}px`;
   }
 }
 export { PDFEditor };
