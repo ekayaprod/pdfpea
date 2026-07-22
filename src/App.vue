@@ -794,6 +794,7 @@ import { generateId } from "./js/utils/identity/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./js/utils/canvas/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdf/pdfData.js";
+import { updateSvgAttribute } from "./js/utils/svg.js";
 export default {
   name: "App",
   components: {
@@ -2246,60 +2247,24 @@ export default {
       }
     };
     const updateSvgStrokeColor = (operation, newColor) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return;
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        let svgString = atob(base64Data);
-        // Update stroke color in SVG
-        if (svgString.includes("stroke=")) {
-          svgString = svgString.replace(/stroke="[^"]*"/g, `stroke="${newColor}"`);
-        } else {
-          // Add stroke attribute if it doesn't exist
-          svgString = svgString.replace(/<path([^>]*)>/g, `<path$1 stroke="${newColor}">`);
-        }
-        // Re-encode to base64
-        const newBase64 = btoa(svgString);
-        operation.url = `data:image/svg+xml;base64,${newBase64}`;
-        // Trigger visual update
-        const event = new CustomEvent("pdfeditor.operationChanged", {
-          detail: { operation, property: "url" },
-          bubbles: true,
-        });
-        document.dispatchEvent(event);
-      } catch (error) {
-        console.error("Error updating SVG stroke color:", error);
-      }
+      const newUrl = updateSvgAttribute(operation.url, "stroke", newColor);
+      if (newUrl === operation.url) return;
+      operation.url = newUrl;
+      const event = new CustomEvent("pdfeditor.operationChanged", {
+        detail: { operation, property: "url" },
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
     };
     const updateSvgStrokeWidth = (operation, newWidth) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return;
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        let svgString = atob(base64Data);
-        // Update stroke width in SVG
-        if (svgString.includes("stroke-width=")) {
-          svgString = svgString.replace(/stroke-width="[^"]*"/g, `stroke-width="${newWidth}"`);
-        } else {
-          // Add stroke-width attribute if it doesn't exist
-          svgString = svgString.replace(/<path([^>]*)>/g, `<path$1 stroke-width="${newWidth}">`);
-        }
-        // Re-encode to base64
-        const newBase64 = btoa(svgString);
-        operation.url = `data:image/svg+xml;base64,${newBase64}`;
-        // Trigger visual update
-        const event = new CustomEvent("pdfeditor.operationChanged", {
-          detail: { operation, property: "url" },
-          bubbles: true,
-        });
-        document.dispatchEvent(event);
-      } catch (error) {
-        console.error("Error updating SVG stroke width:", error);
-      }
+      const newUrl = updateSvgAttribute(operation.url, "stroke-width", newWidth);
+      if (newUrl === operation.url) return;
+      operation.url = newUrl;
+      const event = new CustomEvent("pdfeditor.operationChanged", {
+        detail: { operation, property: "url" },
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
     };
     const getSvgFillColor = (operation) => {
       if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
@@ -2318,32 +2283,14 @@ export default {
       }
     };
     const updateSvgFillColor = (operation, newColor) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return;
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        let svgString = atob(base64Data);
-        // Update fill color in SVG
-        if (svgString.includes("fill=")) {
-          svgString = svgString.replace(/fill="[^"]*"/g, `fill="${newColor}"`);
-        } else {
-          // Add fill attribute if it doesn't exist
-          svgString = svgString.replace(/<svg([^>]*)>/g, `<svg$1 fill="${newColor}">`);
-        }
-        // Re-encode to base64
-        const newBase64 = btoa(svgString);
-        operation.url = `data:image/svg+xml;base64,${newBase64}`;
-        // Trigger visual update
-        const event = new CustomEvent("pdfeditor.operationChanged", {
-          detail: { operation, property: "url" },
-          bubbles: true,
-        });
-        document.dispatchEvent(event);
-      } catch (error) {
-        console.error("Error updating SVG fill color:", error);
-      }
+      const newUrl = updateSvgAttribute(operation.url, "fill", newColor, "svg");
+      if (newUrl === operation.url) return;
+      operation.url = newUrl;
+      const event = new CustomEvent("pdfeditor.operationChanged", {
+        detail: { operation, property: "url" },
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
     };
     onMounted(async () => {
       // Wait for DOM to be updated
@@ -2519,27 +2466,7 @@ export default {
     // Apply fill color to cached SVG icon
     const getColoredIcon = (iconName, fillColor) => {
       const cachedIcon = iconCache.value[iconName];
-      if (!cachedIcon || !cachedIcon.startsWith("data:image/svg+xml;base64,")) {
-        return cachedIcon || `/images/${iconName}.svg`;
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = cachedIcon.replace("data:image/svg+xml;base64,", "");
-        let svgString = atob(base64Data);
-        // Update fill color in SVG
-        if (svgString.includes("fill=")) {
-          svgString = svgString.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
-        } else {
-          // Add fill attribute if it doesn't exist
-          svgString = svgString.replace(/<svg([^>]*)>/g, `<svg$1 fill="${fillColor}">`);
-        }
-        // Re-encode to base64
-        const newBase64 = btoa(svgString);
-        return `data:image/svg+xml;base64,${newBase64}`;
-      } catch (error) {
-        console.error("Error applying color to icon:", error);
-        return cachedIcon;
-      }
+      return updateSvgAttribute(cachedIcon, "fill", fillColor, "svg") || `/images/${iconName}.svg`;
     };
     // Measurement utility functions
     const calculateDistance = (point1, point2) => {

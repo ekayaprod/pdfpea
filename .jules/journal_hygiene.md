@@ -3,3 +3,4 @@
 - Standardized `pendingLinkData` to `pendingLinkParams` (Ambiguous variable)
 - Standardized `showImageDialog`, `showLinkDialog`, `showConfigDropdown` (and prop `show`) to `isImageDialogOpen`, `isLinkDialogOpen`, `isConfigDropdownOpen` (and prop `isOpen`) to enforce boolean prefixes.
 - Standardized loadIconCache to fetchIconCache (Fetch Consolidation)\n- Standardized preventComponentCreation to isComponentCreationPrevented (Boolean Prefix Enforcer)\n- Standardized rfile to selectedFile (Ambiguity Excision)
+- Learning: Duplicated logic for updating SVG base64 properties (stroke, stroke-width, fill) was nested within `try/catch` ladders and scattered across `updateSvgStrokeColor`, `updateSvgStrokeWidth`, `updateSvgFillColor`, and `getColoredIcon` in `src/App.vue`. | Action: Flattened the logic into a single `updateSvgAttribute` utility inside `src/js/utils/svg.js` utilizing early returns, and replaced the nested clusters with clean invocations.
