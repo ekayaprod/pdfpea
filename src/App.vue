@@ -1338,7 +1338,7 @@ export default {
                 const finalPoint = constrainToOrthogonal(
                   event.shiftKey,
                   drawingStart.value,
-                  measurementState.value.firstPoint
+                  measurementState.value.firstPoint,
                 );
                 // Remove live measurement
                 document.querySelectorAll(".measurement-overlay.live").forEach((overlay) => {
@@ -1411,7 +1411,7 @@ export default {
               const endPoint = constrainToOrthogonal(
                 event.shiftKey,
                 drawingCurrent.value,
-                drawingStart.value
+                drawingStart.value,
               );
 
               const linePath = [
@@ -1435,7 +1435,7 @@ export default {
               measurementState.value.currentPoint = constrainToOrthogonal(
                 event.shiftKey,
                 drawingCurrent.value,
-                measurementState.value.firstPoint
+                measurementState.value.firstPoint,
               );
               // Show live measurement
               addMeasurementOverlay(
@@ -1475,7 +1475,7 @@ export default {
               measurementState.value.currentPoint = constrainToOrthogonal(
                 event.shiftKey,
                 currentPoint,
-                measurementState.value.firstPoint
+                measurementState.value.firstPoint,
               );
 
               // Show live measurement
@@ -1533,7 +1533,7 @@ export default {
               const endPoint = constrainToOrthogonal(
                 event.shiftKey,
                 drawingCurrent.value,
-                drawingStart.value
+                drawingStart.value,
               );
 
               const linePath = [
