@@ -19,7 +19,11 @@ class FreehandDrawing {
     const minDist = Math.max(1, smoothLevel / 20);
     const denoised = path.reduce((acc, curr) => {
       const prev = acc[acc.length - 1];
-      if (!prev || Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)) >= minDist) acc.push(curr);
+      if (
+        !prev ||
+        Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)) >= minDist
+      )
+        acc.push(curr);
       return acc;
     }, []);
     if (denoised.length < 3) return denoised;
@@ -52,8 +56,12 @@ class FreehandDrawing {
         if (idx > 1 && idx < path.length - 2) {
           const extraFactor = factor * 0.3;
           return {
-            x: smoothedX * (1 - extraFactor) + ((path[idx - 2].x + path[idx + 2].x) * extraFactor) / 2,
-            y: smoothedY * (1 - extraFactor) + ((path[idx - 2].y + path[idx + 2].y) * extraFactor) / 2,
+            x:
+              smoothedX * (1 - extraFactor) +
+              ((path[idx - 2].x + path[idx + 2].x) * extraFactor) / 2,
+            y:
+              smoothedY * (1 - extraFactor) +
+              ((path[idx - 2].y + path[idx + 2].y) * extraFactor) / 2,
           };
         }
         return { x: smoothedX, y: smoothedY };
@@ -122,13 +130,19 @@ class FreehandDrawing {
     );
     // Add padding based on stroke width
     const padding = Math.max(width * 2, 10);
-    const paddedMinX = minX - padding, paddedMinY = minY - padding;
-    const svgWidth = maxX - minX + padding * 2, svgHeight = maxY - minY + padding * 2;
+    const paddedMinX = minX - padding,
+      paddedMinY = minY - padding;
+    const svgWidth = maxX - minX + padding * 2,
+      svgHeight = maxY - minY + padding * 2;
     // Build SVG path with original coordinates translated to start from padding
-    const pathData = smoothedPath.length > 0
-      ? `M ${smoothedPath[0].x - paddedMinX} ${smoothedPath[0].y - paddedMinY}` +
-        smoothedPath.slice(1).map(p => ` L ${p.x - paddedMinX} ${p.y - paddedMinY}`).join("")
-      : "";
+    const pathData =
+      smoothedPath.length > 0
+        ? `M ${smoothedPath[0].x - paddedMinX} ${smoothedPath[0].y - paddedMinY}` +
+          smoothedPath
+            .slice(1)
+            .map((p) => ` L ${p.x - paddedMinX} ${p.y - paddedMinY}`)
+            .join("")
+        : "";
     // Create SVG with preserveAspectRatio to maintain stroke width
     const svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="${pathData}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
