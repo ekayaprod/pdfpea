@@ -795,6 +795,7 @@ import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./js/utils/canvas/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdf/pdfData.js";
 import { updateSvgAttribute } from "./js/utils/svg.js";
+import { constrainToOrthogonal } from "./js/utils/canvas/constrainToOrthogonal.js";
 export default {
   name: "App",
   components: {
@@ -1334,20 +1335,11 @@ export default {
                 measurementState.value.currentPoint = { ...drawingStart.value };
               } else {
                 // Second click - finalize measurement
-                const finalPoint = { ...drawingStart.value };
-                // If Shift is held, constrain to horizontal or vertical measurement
-                if (event.shiftKey) {
-                  const deltaX = Math.abs(finalPoint.x - measurementState.value.firstPoint.x);
-                  const deltaY = Math.abs(finalPoint.y - measurementState.value.firstPoint.y);
-                  // Choose direction based on which axis has greater movement
-                  if (deltaX > deltaY) {
-                    // Make horizontal measurement
-                    finalPoint.y = measurementState.value.firstPoint.y;
-                  } else {
-                    // Make vertical measurement
-                    finalPoint.x = measurementState.value.firstPoint.x;
-                  }
-                }
+                const finalPoint = constrainToOrthogonal(
+                  event.shiftKey,
+                  drawingStart.value,
+                  measurementState.value.firstPoint
+                );
                 // Remove live measurement
                 document.querySelectorAll(".measurement-overlay.live").forEach((overlay) => {
                   overlay.remove();
@@ -1416,24 +1408,15 @@ export default {
             // Handle line drawing (straight line from start to current point)
             if (selectedTool.value === "line") {
               // For line tool, only use start and current points (straight line)
-              let endX = drawingCurrent.value.x;
-              let endY = drawingCurrent.value.y;
-              // If Shift is held, constrain to horizontal or vertical line
-              if (event.shiftKey) {
-                const deltaX = Math.abs(endX - drawingStart.value.x);
-                const deltaY = Math.abs(endY - drawingStart.value.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal line
-                  endY = drawingStart.value.y;
-                } else {
-                  // Make vertical line
-                  endX = drawingStart.value.x;
-                }
-              }
+              const endPoint = constrainToOrthogonal(
+                event.shiftKey,
+                drawingCurrent.value,
+                drawingStart.value
+              );
+
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
-                { x: endX, y: endY },
+                { x: endPoint.x, y: endPoint.y },
               ];
               // Throttle drawing for better performance
               const now = Date.now();
@@ -1449,21 +1432,11 @@ export default {
             }
             // Handle measurement tool live preview
             if (selectedTool.value === "measure" && measurementState.value.isActive) {
-              const currentPoint = { ...drawingCurrent.value };
-              // If Shift is held, constrain to horizontal or vertical measurement
-              if (event.shiftKey) {
-                const deltaX = Math.abs(currentPoint.x - measurementState.value.firstPoint.x);
-                const deltaY = Math.abs(currentPoint.y - measurementState.value.firstPoint.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal measurement
-                  currentPoint.y = measurementState.value.firstPoint.y;
-                } else {
-                  // Make vertical measurement
-                  currentPoint.x = measurementState.value.firstPoint.x;
-                }
-              }
-              measurementState.value.currentPoint = currentPoint;
+              measurementState.value.currentPoint = constrainToOrthogonal(
+                event.shiftKey,
+                drawingCurrent.value,
+                measurementState.value.firstPoint
+              );
               // Show live measurement
               addMeasurementOverlay(
                 measurementState.value.firstPoint,
@@ -1498,20 +1471,13 @@ export default {
                 x: rawX / zoomFactor,
                 y: rawY / zoomFactor,
               };
-              // If Shift is held, constrain to horizontal or vertical measurement
-              if (event.shiftKey) {
-                const deltaX = Math.abs(currentPoint.x - measurementState.value.firstPoint.x);
-                const deltaY = Math.abs(currentPoint.y - measurementState.value.firstPoint.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal measurement
-                  currentPoint.y = measurementState.value.firstPoint.y;
-                } else {
-                  // Make vertical measurement
-                  currentPoint.x = measurementState.value.firstPoint.x;
-                }
-              }
-              measurementState.value.currentPoint = currentPoint;
+
+              measurementState.value.currentPoint = constrainToOrthogonal(
+                event.shiftKey,
+                currentPoint,
+                measurementState.value.firstPoint
+              );
+
               // Show live measurement
               addMeasurementOverlay(
                 measurementState.value.firstPoint,
@@ -1564,24 +1530,15 @@ export default {
             // Handle line drawing completion
             if (selectedTool.value === "line") {
               // Create final line path with just start and end points
-              let endX = drawingCurrent.value.x;
-              let endY = drawingCurrent.value.y;
-              // If Shift is held, constrain to horizontal or vertical line
-              if (event.shiftKey) {
-                const deltaX = Math.abs(endX - drawingStart.value.x);
-                const deltaY = Math.abs(endY - drawingStart.value.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal line
-                  endY = drawingStart.value.y;
-                } else {
-                  // Make vertical line
-                  endX = drawingStart.value.x;
-                }
-              }
+              const endPoint = constrainToOrthogonal(
+                event.shiftKey,
+                drawingCurrent.value,
+                drawingStart.value
+              );
+
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
-                { x: endX, y: endY },
+                { x: endPoint.x, y: endPoint.y },
               ];
               if (linePath.length === 2) {
                 // Convert line to SVG data URL using utility
