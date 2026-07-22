@@ -16,17 +16,16 @@ class FreehandDrawing {
   smoothPath(path, smoothLevel) {
     if (path.length < 3 || smoothLevel <= 1) return path;
     // First, reduce noise by removing points that are too close
-    const denoised = [];
-    const minDistance = Math.max(1, smoothLevel / 20);
-    denoised.push(path[0]);
-    for (let i = 1; i < path.length; i++) {
-      const prev = denoised[denoised.length - 1];
-      const curr = path[i];
-      const distance = Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2));
-      if (distance >= minDistance) {
-        denoised.push(curr);
-      }
-    }
+    const minDist = Math.max(1, smoothLevel / 20);
+    const denoised = path.reduce((acc, curr) => {
+      const prev = acc[acc.length - 1];
+      if (
+        !prev ||
+        Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)) >= minDist
+      )
+        acc.push(curr);
+      return acc;
+    }, []);
     if (denoised.length < 3) return denoised;
     // Apply multiple smoothing passes
     let smoothed = [...denoised];
@@ -45,57 +44,48 @@ class FreehandDrawing {
    */
   applySmoothingPass(path, smoothLevel) {
     if (path.length < 3) return path;
-    const result = [];
     const factor = Math.min(0.8, smoothLevel / 12); // Convert to 0.0 - 0.8 range
-    // Keep first point
-    result.push(path[0]);
-    for (let i = 1; i < path.length - 1; i++) {
-      const prev = path[i - 1];
-      const curr = path[i];
-      const next = path[i + 1];
-      // Use quadratic smoothing with neighboring points
-      const smoothedX = curr.x * (1 - factor) + ((prev.x + next.x) * factor) / 2;
-      const smoothedY = curr.y * (1 - factor) + ((prev.y + next.y) * factor) / 2;
-      // Additional smoothing with further neighbors if available
-      if (i > 1 && i < path.length - 2) {
-        const prevPrev = path[i - 2];
-        const nextNext = path[i + 2];
-        const extraFactor = factor * 0.3;
-        const finalX =
-          smoothedX * (1 - extraFactor) + ((prevPrev.x + nextNext.x) * extraFactor) / 2;
-        const finalY =
-          smoothedY * (1 - extraFactor) + ((prevPrev.y + nextNext.y) * extraFactor) / 2;
-        result.push({ x: finalX, y: finalY });
-      } else {
-        result.push({ x: smoothedX, y: smoothedY });
-      }
-    }
-    // Keep last point
-    result.push(path[path.length - 1]);
-    return result;
+    return [
+      path[0],
+      ...path.slice(1, -1).map((curr, i) => {
+        const idx = i + 1; // Real index in original path
+        const prev = path[idx - 1];
+        const next = path[idx + 1];
+        const smoothedX = curr.x * (1 - factor) + ((prev.x + next.x) * factor) / 2;
+        const smoothedY = curr.y * (1 - factor) + ((prev.y + next.y) * factor) / 2;
+        if (idx > 1 && idx < path.length - 2) {
+          const extraFactor = factor * 0.3;
+          return {
+            x:
+              smoothedX * (1 - extraFactor) +
+              ((path[idx - 2].x + path[idx + 2].x) * extraFactor) / 2,
+            y:
+              smoothedY * (1 - extraFactor) +
+              ((path[idx - 2].y + path[idx + 2].y) * extraFactor) / 2,
+          };
+        }
+        return { x: smoothedX, y: smoothedY };
+      }),
+      path[path.length - 1],
+    ];
   }
   /**
    * Generate smooth Bézier curve through control points
    */
   generateBezierCurve(controlPoints, smoothLevel) {
     if (controlPoints.length < 3) return controlPoints;
-    const result = [];
     const segments = Math.max(2, Math.floor(smoothLevel / 2));
-    // Add first point
-    result.push(controlPoints[0]);
-    for (let i = 0; i < controlPoints.length - 1; i++) {
-      const p0 = i > 0 ? controlPoints[i - 1] : controlPoints[i];
-      const p1 = controlPoints[i];
-      const p2 = controlPoints[i + 1];
-      const p3 = i < controlPoints.length - 2 ? controlPoints[i + 2] : controlPoints[i + 1];
-      // Generate Catmull-Rom spline points
-      for (let t = 0; t < segments; t++) {
-        const tNorm = (t + 1) / segments;
-        const point = this.catmullRomInterpolate(p0, p1, p2, p3, tNorm);
-        result.push(point);
-      }
-    }
-    return result;
+    return [
+      controlPoints[0],
+      ...controlPoints.slice(0, -1).flatMap((p1, i) => {
+        const p0 = i > 0 ? controlPoints[i - 1] : p1;
+        const p2 = controlPoints[i + 1];
+        const p3 = i < controlPoints.length - 2 ? controlPoints[i + 2] : p2;
+        return Array.from({ length: segments }, (_, t) =>
+          this.catmullRomInterpolate(p0, p1, p2, p3, (t + 1) / segments),
+        );
+      }),
+    ];
   }
   // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
   /**
@@ -129,28 +119,30 @@ class FreehandDrawing {
     // Apply smoothing
     const smoothedPath = this.smoothPath(path, smoothLevel);
     // Calculate bounding box
-    let minX = Math.min(...smoothedPath.map((p) => p.x));
-    let minY = Math.min(...smoothedPath.map((p) => p.y));
-    let maxX = Math.max(...smoothedPath.map((p) => p.x));
-    let maxY = Math.max(...smoothedPath.map((p) => p.y));
+    const { minX, minY, maxX, maxY } = smoothedPath.reduce(
+      (acc, { x, y }) => ({
+        minX: Math.min(acc.minX, x),
+        minY: Math.min(acc.minY, y),
+        maxX: Math.max(acc.maxX, x),
+        maxY: Math.max(acc.maxY, y),
+      }),
+      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+    );
     // Add padding based on stroke width
     const padding = Math.max(width * 2, 10);
-    minX -= padding;
-    minY -= padding;
-    maxX += padding;
-    maxY += padding;
-    const svgWidth = maxX - minX;
-    const svgHeight = maxY - minY;
+    const paddedMinX = minX - padding,
+      paddedMinY = minY - padding;
+    const svgWidth = maxX - minX + padding * 2,
+      svgHeight = maxY - minY + padding * 2;
     // Build SVG path with original coordinates translated to start from padding
-    let pathData = "";
-    if (smoothedPath.length > 0) {
-      const parts = new Array(smoothedPath.length);
-      parts[0] = `M ${smoothedPath[0].x - minX} ${smoothedPath[0].y - minY}`;
-      for (let i = 1; i < smoothedPath.length; i++) {
-        parts[i] = ` L ${smoothedPath[i].x - minX} ${smoothedPath[i].y - minY}`;
-      }
-      pathData = parts.join("");
-    }
+    const pathData =
+      smoothedPath.length > 0
+        ? `M ${smoothedPath[0].x - paddedMinX} ${smoothedPath[0].y - paddedMinY}` +
+          smoothedPath
+            .slice(1)
+            .map((p) => ` L ${p.x - paddedMinX} ${p.y - paddedMinY}`)
+            .join("")
+        : "";
     // Create SVG with preserveAspectRatio to maintain stroke width
     const svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="${pathData}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
