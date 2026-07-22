@@ -1,4 +1,4 @@
-import { BasicOperationComponent } from "./BasicOperationComponent.js";
+import { BasicOperationComponent } from "../BasicOperationComponent.js";
 
 class RectangleOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
