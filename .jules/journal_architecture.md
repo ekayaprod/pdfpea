@@ -8,3 +8,7 @@
 - **Mixologist - Verification Lock**: The newly centralized `src/js/utils/colors.js` logic was proven against 18 unit tests guaranteeing robust edge-case handling across null states, out-of-bounds parameters, and variable length hex strings.
 
 - **Organizer - Utility Consolidation**: Relocated generic `src/utils/` directory into domain-driven `src/js/utils/`. The root utility folder lacked proper architectural boundary and contained various scripts. Moving it under `src/js/` semantically couples the logic to the JavaScript domain logic. All imports across 6 files and testing suites have been globally reconciled and verified by compiling build (0 test regressions).
+- text
+- form
+- media
+- basic components
