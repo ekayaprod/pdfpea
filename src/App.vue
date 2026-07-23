@@ -27,14 +27,10 @@
             </button>
           </div>
           <div class="option-element">
-            <button
-              @click="togglePopout"
-              class="btn"
-              title="Pop Out PDF Editor"
-            >
+            <button @click="togglePopout" class="btn" title="Pop Out PDF Editor">
               <i class="fa-solid fa-external-link-alt mr-2" v-if="!isPoppedOut"></i>
               <i class="fa-solid fa-compress-arrows-alt mr-2" v-else></i>
-              {{ isPoppedOut ? 'Pop In Editor' : 'Pop Out Editor' }}
+              {{ isPoppedOut ? "Pop In Editor" : "Pop Out Editor" }}
             </button>
           </div>
           <div class="option-element">
@@ -1018,21 +1014,23 @@ export default {
 
     // Popout functions
     const togglePopout = () => {
-      const appContainer = document.querySelector('.pdf-editor');
+      const appContainer = document.querySelector(".pdf-editor");
 
       if (!isPoppedOut.value) {
         // Pop out
-        popupWindow = window.open('', 'PDFEditorPopup', 'width=1000,height=800');
+        popupWindow = window.open("", "PDFEditorPopup", "width=1000,height=800");
         if (!popupWindow) {
           showToast("Popup blocked! Please allow popups for this site.", "error");
           return;
         }
 
-        popupWindow.document.write('<html><head><title>PDFPea Editor</title></head><body style="margin:0; overflow:hidden; background-color: #f3f4f6; display: flex; flex-direction: column; height: 100vh;"></body></html>');
+        popupWindow.document.write(
+          '<html><head><title>PDFPea Editor</title></head><body style="margin:0; overflow:hidden; background-color: #f3f4f6; display: flex; flex-direction: column; height: 100vh;"></body></html>',
+        );
         popupWindow.document.close();
 
         // Copy styles
-        document.querySelectorAll('style, link[rel="stylesheet"]').forEach(style => {
+        document.querySelectorAll('style, link[rel="stylesheet"]').forEach((style) => {
           popupWindow.document.head.appendChild(style.cloneNode(true));
         });
 
@@ -1043,7 +1041,7 @@ export default {
         isPoppedOut.value = true;
 
         // Handle popup closing
-        popupWindow.addEventListener('beforeunload', () => {
+        popupWindow.addEventListener("beforeunload", () => {
           if (pdfBody.value) {
             appContainer.appendChild(pdfBody.value);
           }
