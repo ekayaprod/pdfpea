@@ -103,10 +103,9 @@ body {
   position: relative;
   left: 10px; /* Initial position, will be updated dynamically by JavaScript */
   top: 25px; /* Start below the header area */
-  flex: 1 1 64px;
-  width: 100%;
+  width: 64px;
+  flex: 0 0 64px;
   min-width: 64px;
-  max-width: 80px;
   background-color: var(--color-gray-50);
   border: 1px solid var(--color-gray-200);
   border-radius: 0.5rem;
@@ -337,10 +336,8 @@ body {
 
 /* Layers panel (right sidebar) */
 .layers-panel {
-  flex: 1 1 240px;
-  width: 100%;
-  min-width: 240px;
-  max-width: 320px;
+  flex: 0 0 240px;
+  width: 240px;
   margin-left: 1rem;
   background-color: var(--color-gray-50);
   border: 1px solid var(--color-gray-200);
@@ -480,8 +477,8 @@ body {
   background: transparent;
   color: var(--color-gray-400);
   cursor: pointer;
-  min-width: 44px;
-  min-height: 44px;
+  width: 22px;
+  height: 22px;
   border-radius: 4px;
   display: flex;
   align-items: center;
