@@ -8,5 +8,4 @@
 > - Do not delete this file.
 
 ## The [REFACTORER] Queue
-* 🏗️ `src/App.vue`: 3268 lines. Split into smaller domain modules and composables to reduce monolithic complexity.
 
