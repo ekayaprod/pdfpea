@@ -27,6 +27,13 @@
             </button>
           </div>
           <div class="option-element">
+            <button @click="togglePopout" class="btn" title="Pop Out PDF Editor">
+              <i class="fa-solid fa-external-link-alt mr-2" v-if="!isPoppedOut"></i>
+              <i class="fa-solid fa-compress-arrows-alt mr-2" v-else></i>
+              {{ isPoppedOut ? "Pop In Editor" : "Pop Out Editor" }}
+            </button>
+          </div>
+          <div class="option-element">
             <!-- Config Dropdown -->
             <div class="dropdown">
               <button
@@ -543,7 +550,7 @@
     />
     <!-- Link Dialog Component -->
     <LinkDialog :isOpen="isLinkDialogOpen" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
-    <div class="pdf-body">
+    <div class="pdf-body" ref="pdfBody">
       <!-- Floating Toolbar -->
       <div class="floating-toolbar">
         <!-- General Tools Section -->
@@ -926,6 +933,12 @@ export default {
     const pendingLinkParams = ref(null);
     // Config dropdown state
     const isConfigDropdownOpen = ref(false);
+
+    // Popout state
+    const isPoppedOut = ref(false);
+    let popupWindow = null;
+    const pdfBody = ref(null);
+
     // Toast notification state
     const toast = ref({
       show: false,
@@ -998,6 +1011,55 @@ export default {
     const closeConfigDropdown = () => {
       isConfigDropdownOpen.value = false;
     };
+
+    // Popout functions
+    const togglePopout = () => {
+      const appContainer = document.querySelector(".pdf-editor");
+
+      if (!isPoppedOut.value) {
+        // Pop out
+        popupWindow = window.open("", "PDFEditorPopup", "width=1000,height=800");
+        if (!popupWindow) {
+          showToast("Popup blocked! Please allow popups for this site.", "error");
+          return;
+        }
+
+        popupWindow.document.write(
+          '<html><head><title>PDFPea Editor</title></head><body style="margin:0; overflow:hidden; background-color: #f3f4f6; display: flex; flex-direction: column; height: 100vh;"></body></html>',
+        );
+        popupWindow.document.close();
+
+        // Copy styles
+        document.querySelectorAll('style, link[rel="stylesheet"]').forEach((style) => {
+          popupWindow.document.head.appendChild(style.cloneNode(true));
+        });
+
+        // Move pdf-body to popup
+        if (pdfBody.value) {
+          popupWindow.document.body.appendChild(pdfBody.value);
+        }
+        isPoppedOut.value = true;
+
+        // Handle popup closing
+        popupWindow.addEventListener("beforeunload", () => {
+          if (pdfBody.value) {
+            appContainer.appendChild(pdfBody.value);
+          }
+          isPoppedOut.value = false;
+          popupWindow = null;
+        });
+      } else {
+        // Pop in
+        if (popupWindow && !popupWindow.closed) {
+          popupWindow.close(); // beforeunload will handle moving the element back
+        } else if (pdfBody.value && pdfBody.value.parentNode !== appContainer) {
+          appContainer.appendChild(pdfBody.value);
+          isPoppedOut.value = false;
+          popupWindow = null;
+        }
+      }
+    };
+
     // Toast functions
     const showToast = (message, type = "success", duration = 2000) => {
       // Clear existing timeout
@@ -2507,6 +2569,8 @@ export default {
       isConfigDropdownOpen,
       toggleConfigDropdown,
       closeConfigDropdown,
+      isPoppedOut,
+      togglePopout,
       toast,
       showToast,
       hideToast,
@@ -2515,6 +2579,7 @@ export default {
       iconTools,
       measurementState,
       clearMeasurements,
+      pdfBody,
       calculateDistance,
       convertPixelsToUnits,
       createMeasurementOverlay,
