@@ -6,35 +6,19 @@
 
 PDFPea is a high-velocity, browser-based PDF editor engineered for total local privacy. Built on Vue 3 and Vite, it delivers zero-latency text, image, and shape annotations directly in your browser. No server uploads. No compromises.
 
-## 🔀 Differences from the Original Project
-
-This fork incorporates significant architectural, UX, and pipeline improvements over the original project, including:
-
-- **🎨 UX & Design (Palette+):** Enhanced UI elements with fluid motion, accessible focus states, and refined typography for a premium, frictionless user experience.
-- **🏗️ Architectural Reorganization:** Split monolithic structures into domain-specific modules (e.g., semantic `utils/` and operation components).
-- **🛡️ Hardened Security & Testing:** Implemented strict boundaries on `PDFGenerator.js`, expanded E2E Playwright test coverage, and established unverified logic test suites.
-- **🚀 Pipeline Optimizations:** Built out Docker-based CI environments and dependable GitHub Actions configurations.
-- **🧹 Code Quality:** Aggressive linting, lexicon standardization, dead code removal, and eradication of inline styles in favor of modern utility tokens.
-
-Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea)
-
 ## 🔀 Fork Differences (vs. Original)
 
-This repository is a heavily modernized and architecturally refined fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea). Key improvements in this fork include:
+This repository is a heavily modernized and architecturally refined fork of the original [AlphaCloudTechnologies/pdfpea](https://github.com/AlphaCloudTechnologies/pdfpea). This fork has been systematically polished and hardened for a superior user experience and rock-solid reliability, incorporating significant architectural, UX, and pipeline improvements over the original project, including:
 
-- **Modular Architecture:** The monolithic `OperationComponents.js` has been fractured into smaller, domain-driven classes (e.g., `TextOperationComponent`, `ImageOperationComponent`) inside `/src/js/OperationComponents/`. Utility functions have been similarly categorized into semantic subdirectories (`/src/utils/canvas/`, `/src/utils/color/`, etc.).
+- **Modular Architecture & Reorganization:** Split monolithic structures into domain-specific modules. The monolithic `OperationComponents.js` has been fractured into smaller, domain-driven classes (e.g., `TextOperationComponent`, `ImageOperationComponent`) inside `/src/js/OperationComponents/`. Utility functions have been similarly categorized into semantic subdirectories (`/src/js/utils/canvas/`, `/src/js/utils/color/`, etc.).
+- **🎨 UX & Design (Palette+):** Enhanced UI elements with fluid motion, accessible focus states, upgraded UI copy, deep accessibility (a11y) label injections, and refined typography for a premium, frictionless user experience.
+- **🛡️ Hardened Security & Stability:** Fortified PDF generation boundaries with rigorous stress testing for unhandled parameters, catching edge cases the original misses. Implemented strict boundaries on `PDFGenerator.js` and established unverified logic test suites.
 - **Comprehensive Testing:** Introduced a robust testing strategy utilizing **Vitest** for unit testing (`*.spec.js`) and **Playwright** for end-to-end (E2E) UI and visual regression testing (`/tests/`).
-- **Infrastructure & CI:** Added a multi-stage `Dockerfile` and a `.dockerignore` for containerized deployments, along with an `.mcp.json` configuration.
+- **🚀 Pipeline & Infrastructure:** Built out Docker-based CI environments and dependable GitHub Actions configurations. Added a multi-stage `Dockerfile` and a `.dockerignore` for containerized deployments, along with an `.mcp.json` configuration.
+- **🧹 Code Quality & Optimization:** Aggressive linting, lexicon standardization, dead code removal, minified SVG assets, eradicated inline styles in favor of modern CSS utility tokens, and collapsed imperative logic blocks for a leaner, faster application.
 - **Enhanced Documentation:** Introduced `ARCHITECTURE.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and `ROADMAP.md` to establish clear institutional memory and contribution guidelines.
 
-## 🔀 Fork Differences
-
-Why choose this version over the original `AlphaCloudTechnologies/pdfpea`? This fork has been systematically polished and hardened for a superior user experience and rock-solid reliability. Key improvements include:
-
-- **Enhanced UX & Accessibility:** Upgraded UI copy and deep accessibility (a11y) label injections ensure a seamless experience for all users.
-- **Hardened Security & Stability:** Fortified PDF generation boundaries with rigorous stress testing for unhandled parameters, catching edge cases the original misses.
-- **Optimized Performance:** Minified SVG assets, eradicated inline styles in favor of CSS variables, and collapsed imperative logic blocks for a leaner, faster application.
-- **Modern Infrastructure:** Multi-stage Docker environments and optimized CI/CD pipelines ensure robust testing and deployment.
+Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea)
 
 ## 🚀 The Stack
 
@@ -54,7 +38,7 @@ Why choose this version over the original `AlphaCloudTechnologies/pdfpea`? This 
 | `/src/css` | Global styling and tailwind configuration. |
 | `/src/js` | Core Vanilla JavaScript models (e.g. `PDFEditor.js`, `PDFGenerator.js`). |
 | `/src/js/OperationComponents` | Manages individual annotation instances. |
-| `/src/utils` | Shared utility functions (e.g. `color/`, `canvas/`, `layout/`). |
+| `/src/js/utils` | Shared utility functions (e.g. `color/`, `canvas/`, `layout/`). |
 | `/public` | Static assets like images served directly. |
 | `/test-files` | Local PDF and media assets for testing the editor visually. |
 | `/tests` | Playwright end-to-end (E2E) UI and visual regression test suites. |
