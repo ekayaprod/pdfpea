@@ -1,3 +1,8 @@
+// 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+/**
+ * Parses a hexadecimal color string into RGB channels.
+ * * Historical Intent: Extracted and consolidated into this utility block via PR #141 (commit ab9ed33, Jul 2026) to enforce DRY principles across PDF generation and editing.
+ */
 export const hexToRgb = (hexString) => {
   if (!hexString) return null;
   hexString = hexString.replace("#", "");
@@ -20,6 +25,11 @@ export const hexToRgb = (hexString) => {
   };
 };
 
+// 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+/**
+ * Converts RGB channel values into a standard hexadecimal color string.
+ * * Historical Intent: Extracted and consolidated into this utility block via PR #141 (commit ab9ed33, Jul 2026) to enforce DRY principles across PDF generation and editing.
+ */
 export const rgbToHex = (red, green, blue) => {
   const redHex = Math.max(0, Math.min(255, Math.round(red)))
     .toString(16)
