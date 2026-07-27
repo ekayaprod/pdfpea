@@ -199,7 +199,7 @@ class PDFGenerator {
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
     const borderWidth = parseInt(operation.borderWidth);
-    const borderColor = hexToRgb(operation.borderColor);
+    const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
     const fillColor = parseColor(operation.fill ?? operation.color);
     const opacity = parseFloat(operation.opacity, 10);
 
@@ -218,7 +218,7 @@ class PDFGenerator {
     });
   }
   static async drawCircleOnPage(pdfDoc, pdfPage, operation) {
-    const borderColor = hexToRgb(operation.borderColor);
+    const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
     const fillColor = parseColor(operation.fill ?? operation.color);
     const opacity = parseFloat(operation.opacity, 10);
 
