@@ -118,22 +118,7 @@ class FreehandDrawing {
     const { color = "#000000", width = 2, smoothLevel = 5 } = options;
     // Apply smoothing
     const smoothedPath = this.smoothPath(path, smoothLevel);
-    // Calculate bounding box
-    const { minX, minY, maxX, maxY } = smoothedPath.reduce(
-      (acc, { x, y }) => ({
-        minX: Math.min(acc.minX, x),
-        minY: Math.min(acc.minY, y),
-        maxX: Math.max(acc.maxX, x),
-        maxY: Math.max(acc.maxY, y),
-      }),
-      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
-    );
-    // Add padding based on stroke width
-    const padding = Math.max(width * 2, 10);
-    const paddedMinX = minX - padding,
-      paddedMinY = minY - padding;
-    const svgWidth = maxX - minX + padding * 2,
-      svgHeight = maxY - minY + padding * 2;
+    const { x: paddedMinX, y: paddedMinY, width: svgWidth, height: svgHeight } = this.calculateBoundingBox(smoothedPath, width) ?? { x: 0, y: 0, width: 0, height: 0 };
     // Build SVG path with original coordinates translated to start from padding
     const pathData =
       smoothedPath.length > 0
@@ -148,10 +133,7 @@ class FreehandDrawing {
       <path d="${pathData}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
     </svg>`;
     // Convert to base64 data URL securely handling Unicode
-    const bytes = new TextEncoder().encode(svg);
-    const binaryStringData = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
-    const base64 = btoa(binaryStringData);
-    return `data:image/svg+xml;base64,${base64}`;
+    return `data:image/svg+xml;base64,${btoa(Array.from(new TextEncoder().encode(svg), (byte) => String.fromCodePoint(byte)).join(""))}`;
   }
   /**
    * Create and setup freehand canvas
@@ -259,11 +241,15 @@ class FreehandDrawing {
    */
   calculateBoundingBox(path, strokeWidth = 2) {
     if (path.length === 0) return null;
-    let minX = Math.min(...path.map((p) => p.x));
-    let minY = Math.min(...path.map((p) => p.y));
-    let maxX = Math.max(...path.map((p) => p.x));
-    let maxY = Math.max(...path.map((p) => p.y));
-    // Add padding based on stroke width
+    const { minX, minY, maxX, maxY } = path.reduce(
+      (acc, { x, y }) => ({
+        minX: Math.min(acc.minX, x),
+        minY: Math.min(acc.minY, y),
+        maxX: Math.max(acc.maxX, x),
+        maxY: Math.max(acc.maxY, y),
+      }),
+      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+    );
     const padding = Math.max(strokeWidth * 2, 10);
     return {
       x: minX - padding,

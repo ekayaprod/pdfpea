@@ -25,3 +25,7 @@
 - [x] Collapsed imperative `processFormFields` iteration into a declarative `.forEach()` pipeline in `PDFEditor.js`.
 - [x] Dissolved redundant staging variables (`displayHeight`, `displayWidth`) into chained logical style assignments in `PDFEditor.js`.
 - [x] Purged verbose `rgbToHex` spread arguments by converting manual array indices to ES6 spread syntax (`...field.color`) in `PDFEditor.js`.
+
+- [x] Optimize `calculateBoundingBox` in `FreehandDrawing.js` using `.reduce()` to eliminate O(N) array allocations.
+- [x] Dissolve duplicated bounding box logic in `pathToSvgDataUrl` by directly invoking `calculateBoundingBox`.
+- [x] Evaporate single-use proxies (`bytes`, `binaryStringData`, `base64`) into the template string in `pathToSvgDataUrl` to remove syntactic noise.
