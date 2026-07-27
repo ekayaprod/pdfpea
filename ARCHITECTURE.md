@@ -30,10 +30,10 @@ C4Component
 
   Container_Boundary(frontend, "Vue 3 Application (Browser)") {
     Component(app, "App.vue", "Vue 3 Component", "Main UI, state management, and entry point for the PDF editor.")
-    Component(pdf_editor, "PDFEditor.js", "Vanilla JS", "Wrapper for pdfjs-dist. Handles rendering PDF pages to HTML canvas elements.")
-    Component(pdf_generator, "PDFGenerator.js", "Vanilla JS", "Wrapper for pdf-lib. Applies annotations and generates the final modified PDF binary.")
-    Component(operation_components, "OperationComponents/", "Vanilla JS", "Manages individual annotation instances (Text, Image, Rectangle, Circle, etc.) and DOM interactions.")
-    Component(freehand_drawing, "utils/canvas/FreehandDrawing.js", "Vanilla JS", "Handles advanced path smoothing and SVG generation for the freehand drawing tool.")
+    Component(pdf_editor, "js/PDFEditor.js", "Vanilla JS", "Wrapper for pdfjs-dist. Handles rendering PDF pages to HTML canvas elements.")
+    Component(pdf_generator, "js/PDFGenerator.js", "Vanilla JS", "Wrapper for pdf-lib. Applies annotations and generates the final modified PDF binary.")
+    Component(operation_components, "js/OperationComponents/", "Vanilla JS", "Manages individual annotation instances (Text, Image, Rectangle, Circle, etc.) and DOM interactions.")
+    Component(freehand_drawing, "js/utils/canvas/FreehandDrawing.js", "Vanilla JS", "Handles advanced path smoothing and SVG generation for the freehand drawing tool.")
   }
 
   System_Ext(browser_api, "Browser APIs", "File System API, Blob, and DOM Event APIs.")
