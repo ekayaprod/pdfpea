@@ -118,7 +118,12 @@ class FreehandDrawing {
     const { color = "#000000", width = 2, smoothLevel = 5 } = options;
     // Apply smoothing
     const smoothedPath = this.smoothPath(path, smoothLevel);
-    const { x: paddedMinX, y: paddedMinY, width: svgWidth, height: svgHeight } = this.calculateBoundingBox(smoothedPath, width) ?? { x: 0, y: 0, width: 0, height: 0 };
+    const {
+      x: paddedMinX,
+      y: paddedMinY,
+      width: svgWidth,
+      height: svgHeight,
+    } = this.calculateBoundingBox(smoothedPath, width) ?? { x: 0, y: 0, width: 0, height: 0 };
     // Build SVG path with original coordinates translated to start from padding
     const pathData =
       smoothedPath.length > 0
