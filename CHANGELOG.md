@@ -24,6 +24,7 @@
 
 - **📘 Author:** Add testing instructions to documentation.
 - **📤 Dispatch:** Provision multi-stage Dockerfile and `.dockerignore`.
+- **🎯 Feature:** Add Pop-out Editor for Sidebar Dashboard.
 
 ### Fixed
 
