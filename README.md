@@ -42,6 +42,8 @@ Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea
 | `/public` | Static assets like images served directly. |
 | `/test-files` | Local PDF and media assets for testing the editor visually. |
 | `/tests` | Playwright end-to-end (E2E) UI and visual regression test suites. |
+| `Dockerfile` | Multi-stage Docker configuration for containerized deployment. |
+| `.mcp.json` | Model Context Protocol configuration for local tooling. |
 
 ## 🛠️ Boot Sequence (CLI Commands)
 
@@ -63,6 +65,11 @@ Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea
 1. `npm run type-check` (Type check TS and Vue components using `vue-tsc`)
 2. `npm run build` (Compile with Vite --debug)
 3. `npm run preview` (Locally preview the production build)
+
+### Docker Deployment
+
+1. `docker build -t pdfpea .` (Build the production container image)
+2. `docker run -d -p 8080:80 pdfpea` (Run the container locally on port 8080)
 
 ### Linting & Formatting
 

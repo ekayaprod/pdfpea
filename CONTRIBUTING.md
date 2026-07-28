@@ -31,6 +31,7 @@ Before submitting any Pull Requests, you must validate your changes against the 
 
     ```bash
     npm run test
+    npx playwright install --with-deps
     npm run test:e2e
     ```
 
