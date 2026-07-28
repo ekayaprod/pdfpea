@@ -8,3 +8,5 @@
 ## Tier 5: Orphaned Entities
 * `src/js/OperationComponents/index.js`
   * Removed: `export { BasicOperationComponent } from "./BasicOperationComponent.js";` (Identified by Knip as unused export).
+### Scavenger Execution Log
+* ✂️ Picked `src/js/PDFEditor.js` clean of `IMAGE_PATHS` import whose internal logic had been entirely outsourced, leaving zero syntactic footprints.
