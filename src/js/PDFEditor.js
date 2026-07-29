@@ -291,7 +291,9 @@ class PDFPage {
     }
   }
   getOperations = () => {
-    const components = Array.from(this.container.querySelectorAll(".component, .deleted-component"));
+    const components = Array.from(
+      this.container.querySelectorAll(".component, .deleted-component"),
+    );
     return components.map((element) => element.operation);
   };
   setSelected = () => {

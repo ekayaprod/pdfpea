@@ -1,778 +1,786 @@
 <template>
   <div class="pdf-editor">
     <div ref="editorContent" class="flex flex-col h-full w-full">
-    <div class="p-2">
-      <div class="header-actions">
-        <!-- Single element container for all tool options -->
-        <div class="element-container ml-2">
-          <div class="option-element">
-            <input type="file" id="file" ref="file" class="hidden" @change="handleFileUpload" />
-            <button
-              @click="clickFileInput"
-              class="btn ml-4"
-              title="Open a PDF file from your device"
-            >
-              <i class="fa-solid fa-folder-open mr-2"></i>
-              Open
-            </button>
-          </div>
-          <div class="option-element">
-            <button
-              id="download-pdf-button"
-              @click="downloadPDF()"
-              class="btn"
-              title="Export the edited PDF with all annotations"
-            >
-              <i class="fa-solid fa-download mr-2"></i>
-              Download PDF
-            </button>
-          </div>
-          <div class="option-element">
-            <button @click="togglePopout" class="btn" title="Pop Out PDF Editor">
-              <i class="fa-solid fa-external-link-alt mr-2" v-if="!isPoppedOut"></i>
-              <i class="fa-solid fa-compress-arrows-alt mr-2" v-else></i>
-              {{ isPoppedOut ? "Pop In Editor" : "Pop Out Editor" }}
-            </button>
-          </div>
-          <div class="option-element">
-            <!-- Config Dropdown -->
-            <div class="dropdown">
+      <div class="p-2">
+        <div class="header-actions">
+          <!-- Single element container for all tool options -->
+          <div class="element-container ml-2">
+            <div class="option-element">
+              <input type="file" id="file" ref="file" class="hidden" @change="handleFileUpload" />
               <button
-                @click="toggleConfigDropdown"
-                class="btn"
-                title="Configuration options - export or restore project settings"
+                @click="clickFileInput"
+                class="btn ml-4"
+                title="Open a PDF file from your device"
               >
-                <i class="fa-solid fa-cog mr-2"></i>
-                Config
-                <i class="fa-solid fa-chevron-down ml-2"></i>
-              </button>
-              <div class="dropdown-menu" :class="{ show: isConfigDropdownOpen }">
-                <button
-                  @click="
-                    downloadConfig();
-                    closeConfigDropdown();
-                  "
-                  class="dropdown-item"
-                >
-                  <i class="fa-solid fa-file-export mr-2"></i>
-                  Export Config
-                </button>
-                <div class="dropdown-divider"></div>
-                <button
-                  @click="
-                    clickRestoreConfigInput();
-                    closeConfigDropdown();
-                  "
-                  class="dropdown-item"
-                >
-                  <i class="fa-solid fa-file-import mr-2"></i>
-                  Restore Config
-                </button>
-              </div>
-            </div>
-            <input
-              type="file"
-              id="config-file"
-              ref="configFile"
-              class="hidden"
-              accept=".json"
-              @change="handleConfigRestore"
-            />
-          </div>
-          <!-- General controls (always visible) -->
-          <div class="option-element">
-            <button
-              @click="clearMeasurements"
-              class="btn btn-xs"
-              title="Clear all measurement lines from the document"
-            >
-              <i class="fa-solid fa-ruler"></i>
-              Clear
-            </button>
-          </div>
-          <div class="option-element">
-            <button @click="scrollToEditor" class="btn btn-xs" title="Focus on the PDF editor area">
-              <i class="fa-solid fa-expand"></i>
-              Focus
-            </button>
-          </div>
-          <div class="option-element">
-            <select
-              v-model="zoomLevel"
-              @change="applyZoom"
-              class="btn btn-xs"
-              title="Adjust the zoom level of the PDF document"
-            >
-              <option value="0.5">50%</option>
-              <option value="0.75">75%</option>
-              <option value="1.0">100%</option>
-              <option value="1.25">125%</option>
-              <option value="1.5">150%</option>
-              <option value="1.75">175%</option>
-              <option value="2.0">200%</option>
-              <option value="2.25">225%</option>
-              <option value="2.5">250%</option>
-              <option value="2.75">275%</option>
-              <option value="3.0">300%</option>
-            </select>
-          </div>
-          <!-- Freehand tool options -->
-          <template v-if="selectedTool === 'freehand'">
-            <div class="option-element">
-              <label>Smooth:</label>
-              <input type="range" v-model="freehandOptions.smoothLevel" min="1" max="10" />
-              <span class="value-display">{{ freehandOptions.smoothLevel }}</span>
-            </div>
-            <div class="option-element">
-              <label>Stroke Color:</label>
-              <input type="color" v-model="freehandOptions.color" />
-            </div>
-            <div class="option-element">
-              <label>Stroke Width:</label>
-              <input type="range" v-model="freehandOptions.width" min="1" max="20" />
-              <span class="value-display">{{ freehandOptions.width }}px</span>
-            </div>
-          </template>
-          <!-- Line tool options -->
-          <template v-if="selectedTool === 'line'">
-            <div class="option-element">
-              <label>Stroke Color:</label>
-              <input type="color" v-model="lineOptions.color" />
-            </div>
-            <div class="option-element">
-              <label>Stroke Width:</label>
-              <input type="range" v-model="lineOptions.width" min="1" max="20" />
-              <span class="value-display">{{ lineOptions.width }}px</span>
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input type="range" v-model="lineOptions.opacity" min="0.1" max="1.0" step="0.1" />
-              <span class="value-display">{{ Math.round(lineOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-          <!-- Shape tool options (Circle and Rectangle) -->
-          <template v-if="selectedTool === 'rectangle' || selectedTool === 'circle'">
-            <div class="option-element">
-              <label>Fill:</label>
-              <input type="color" v-model="shapeOptions.fill" />
-              <button
-                @click="shapeOptions.fill = 'transparent'"
-                class="btn transparent-btn"
-                title="No Fill"
-                aria-label="Remove fill color"
-              >
-                ∅
-              </button>
-            </div>
-            <div class="option-element">
-              <label>Border:</label>
-              <input type="color" v-model="shapeOptions.borderColor" />
-            </div>
-            <div class="option-element">
-              <label>Width:</label>
-              <input type="range" v-model="shapeOptions.borderWidth" min="0" max="10" />
-              <span class="value-display">{{ shapeOptions.borderWidth }}px</span>
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input type="range" v-model="shapeOptions.opacity" min="0.1" max="1.0" step="0.1" />
-              <span class="value-display">{{ Math.round(shapeOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-          <!-- Selected Component Options - Show when select tool is active and component is selected -->
-          <template v-if="selectedTool === 'select' && selectedOperation">
-            <!-- Selected Text Component Options -->
-            <template v-if="selectedOperation.type === 'text'">
-              <div class="option-element">
-                <label>Font:</label>
-                <select v-model="selectedOperation.fontFamily" class="font-select">
-                  <option value="Helvetica">Helvetica</option>
-                  <option value="Helvetica-Bold">Helvetica Bold</option>
-                  <option value="Times-Roman">Times Roman</option>
-                  <option value="Times-Bold">Times Bold</option>
-                  <option value="Courier">Courier</option>
-                  <option value="Courier-Bold">Courier Bold</option>
-                </select>
-              </div>
-              <div class="option-element">
-                <label>Size:</label>
-                <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
-                <span class="value-display">{{ selectedOperation.fontSize }}px</span>
-              </div>
-              <div class="option-element">
-                <label>Color:</label>
-                <input type="color" v-model="selectedOperation.color" />
-              </div>
-              <div class="option-element">
-                <label>Opacity:</label>
-                <input
-                  type="range"
-                  v-model="selectedOperation.opacity"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                />
-                <span class="value-display"
-                  >{{ Math.round(selectedOperation.opacity * 100) }}%</span
-                >
-              </div>
-            </template>
-            <!-- Selected Rectangle/Circle Component Options -->
-            <template
-              v-if="selectedOperation.type === 'rectangle' || selectedOperation.type === 'circle'"
-            >
-              <div class="option-element">
-                <label>Fill:</label>
-                <input type="color" v-model="selectedOperation.fill" />
-                <button
-                  @click="selectedOperation.fill = 'transparent'"
-                  class="btn transparent-btn"
-                  title="No Fill"
-                  aria-label="Remove fill color"
-                >
-                  ∅
-                </button>
-              </div>
-              <div class="option-element">
-                <label>Border:</label>
-                <input type="color" v-model="selectedOperation.borderColor" />
-              </div>
-              <div class="option-element">
-                <label>Width:</label>
-                <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
-                <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
-              </div>
-              <div class="option-element">
-                <label>Opacity:</label>
-                <input
-                  type="range"
-                  v-model="selectedOperation.opacity"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                />
-                <span class="value-display"
-                  >{{ Math.round(selectedOperation.opacity * 100) }}%</span
-                >
-              </div>
-            </template>
-            <!-- Selected Image Component Options -->
-            <template v-if="selectedOperation.type === 'image'">
-              <!-- SVG-specific controls for line and freehand -->
-              <template
-                v-if="
-                  selectedOperation.subType === 'line' || selectedOperation.subType === 'freehand'
-                "
-              >
-                <div class="option-element">
-                  <label>Stroke Color:</label>
-                  <div class="color-input-group">
-                    <input
-                      type="color"
-                      :value="getSvgStrokeColor(selectedOperation)"
-                      @input="updateSvgStrokeColor(selectedOperation, $event.target.value)"
-                      class="color-picker"
-                    />
-                  </div>
-                </div>
-                <div class="option-element">
-                  <label>Stroke Width:</label>
-                  <input
-                    type="range"
-                    :value="getSvgStrokeWidth(selectedOperation)"
-                    @input="updateSvgStrokeWidth(selectedOperation, $event.target.value)"
-                    min="1"
-                    max="20"
-                  />
-                  <span class="value-display">{{ getSvgStrokeWidth(selectedOperation) }}px</span>
-                </div>
-              </template>
-              <!-- SVG-specific controls for icons -->
-              <template v-if="selectedOperation.subType === 'icon'">
-                <div class="option-element">
-                  <label>Fill Color:</label>
-                  <div class="color-input-group">
-                    <input
-                      type="color"
-                      :value="getSvgFillColor(selectedOperation)"
-                      @input="updateSvgFillColor(selectedOperation, $event.target.value)"
-                      class="color-picker"
-                    />
-                  </div>
-                </div>
-              </template>
-              <div class="option-element">
-                <label>Opacity:</label>
-                <input
-                  type="range"
-                  v-model="selectedOperation.opacity"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                />
-                <span class="value-display"
-                  >{{ Math.round(selectedOperation.opacity * 100) }}%</span
-                >
-              </div>
-            </template>
-            <!-- Selected TextField Component Options -->
-            <template v-if="selectedOperation.type === 'textfield'">
-              <div class="option-element">
-                <label>Font:</label>
-                <select v-model="selectedOperation.fontFamily" class="font-select">
-                  <option value="Helvetica">Helvetica</option>
-                  <option value="Helvetica-Bold">Helvetica Bold</option>
-                  <option value="Times-Roman">Times Roman</option>
-                  <option value="Times-Bold">Times Bold</option>
-                  <option value="Courier">Courier</option>
-                  <option value="Courier-Bold">Courier Bold</option>
-                </select>
-              </div>
-              <div class="option-element">
-                <label>Size:</label>
-                <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
-                <span class="value-display">{{ selectedOperation.fontSize }}px</span>
-              </div>
-              <div class="option-element">
-                <label>Text Color:</label>
-                <input type="color" v-model="selectedOperation.color" />
-              </div>
-              <div class="option-element">
-                <label>Background:</label>
-                <input type="color" v-model="selectedOperation.backgroundColor" />
-              </div>
-              <div class="option-element">
-                <label>Border:</label>
-                <input type="color" v-model="selectedOperation.borderColor" />
-              </div>
-              <div class="option-element">
-                <label>Border Width:</label>
-                <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
-                <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
-              </div>
-            </template>
-            <!-- Selected Checkbox Component Options -->
-            <template v-if="selectedOperation.type === 'checkbox'">
-              <div class="option-element">
-                <label>Background:</label>
-                <input type="color" v-model="selectedOperation.backgroundColor" />
-              </div>
-              <div class="option-element">
-                <label>Border:</label>
-                <input type="color" v-model="selectedOperation.borderColor" />
-              </div>
-              <div class="option-element">
-                <label>Border Width:</label>
-                <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
-                <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
-              </div>
-              <div class="option-element">
-                <label>Checked:</label>
-                <input type="checkbox" v-model="selectedOperation.isChecked" />
-              </div>
-            </template>
-            <!-- Selected Link Component Options -->
-            <template v-if="selectedOperation.type === 'link'">
-              <div class="option-element">
-                <label>Fill:</label>
-                <input type="color" v-model="selectedOperation.fill" />
-                <button
-                  @click="selectedOperation.fill = 'transparent'"
-                  class="btn transparent-btn"
-                  title="No Fill"
-                  aria-label="Remove fill color"
-                >
-                  ∅
-                </button>
-              </div>
-              <div class="option-element">
-                <label>Border:</label>
-                <input type="color" v-model="selectedOperation.borderColor" />
-              </div>
-              <div class="option-element">
-                <label>Border Width:</label>
-                <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
-                <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
-              </div>
-              <div class="option-element">
-                <label>Opacity:</label>
-                <input
-                  type="range"
-                  v-model="selectedOperation.opacity"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                />
-                <span class="value-display"
-                  >{{ Math.round(selectedOperation.opacity * 100) }}%</span
-                >
-              </div>
-            </template>
-          </template>
-          <!-- Highlight tool options -->
-          <template v-if="selectedTool === 'highlight'">
-            <div class="option-element">
-              <label>Fill:</label>
-              <input type="color" v-model="highlightOptions.fill" />
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input
-                type="range"
-                v-model="highlightOptions.opacity"
-                min="0.1"
-                max="1.0"
-                step="0.1"
-              />
-              <span class="value-display">{{ Math.round(highlightOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-          <!-- Text tool options -->
-          <template v-if="selectedTool === 'text'">
-            <div class="option-element">
-              <label>Font:</label>
-              <select v-model="textOptions.fontFamily" class="font-select">
-                <option value="Helvetica">Helvetica</option>
-                <option value="Helvetica-Bold">Helvetica Bold</option>
-                <option value="Times-Roman">Times Roman</option>
-                <option value="Times-Bold">Times Bold</option>
-                <option value="Courier">Courier</option>
-                <option value="Courier-Bold">Courier Bold</option>
-              </select>
-            </div>
-            <div class="option-element">
-              <label>Size:</label>
-              <input type="range" v-model="textOptions.fontSize" min="8" max="72" />
-              <span class="value-display">{{ textOptions.fontSize }}px </span>
-            </div>
-            <div class="option-element">
-              <label>Color:</label>
-              <input type="color" v-model="textOptions.color" />
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input type="range" v-model="textOptions.opacity" min="0.1" max="1.0" step="0.1" />
-              <span class="value-display">{{ Math.round(textOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-          <!-- Icon tool options -->
-          <template v-if="iconTools.some((tool) => tool.id === selectedTool)">
-            <div class="option-element">
-              <label>Size:</label>
-              <select v-model="iconOptions.size" class="font-select">
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-                <option value="25">25</option>
-                <option value="30">30</option>
-                <option value="35">35</option>
-                <option value="40">40</option>
-                <option value="45">45</option>
-                <option value="50">50</option>
-                <option value="55">55</option>
-                <option value="60">60</option>
-                <option value="65">65</option>
-                <option value="70">70</option>
-                <option value="75">75</option>
-                <option value="80">80</option>
-                <option value="85">85</option>
-                <option value="90">90</option>
-                <option value="95">95</option>
-                <option value="100">100</option>
-                <option value="105">105</option>
-                <option value="110">110</option>
-                <option value="115">115</option>
-                <option value="120">120</option>
-                <option value="125">125</option>
-                <option value="130">130</option>
-                <option value="135">135</option>
-                <option value="140">140</option>
-                <option value="145">145</option>
-                <option value="150">150</option>
-                <option value="155">155</option>
-                <option value="160">160</option>
-                <option value="165">165</option>
-                <option value="170">170</option>
-                <option value="175">175</option>
-                <option value="180">180</option>
-                <option value="185">185</option>
-                <option value="190">190</option>
-                <option value="195">195</option>
-                <option value="200">200</option>
-              </select>
-            </div>
-            <div class="option-element">
-              <label>Fill Color:</label>
-              <input type="color" v-model="iconOptions.fillColor" />
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input type="range" v-model="iconOptions.opacity" min="0.1" max="1.0" step="0.1" />
-              <span class="value-display">{{ Math.round(iconOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-          <!-- Link tool options -->
-          <template v-if="selectedTool === 'link'">
-            <div class="option-element">
-              <label>Fill:</label>
-              <input type="color" v-model="linkOptions.fill" />
-              <button
-                @click="linkOptions.fill = 'transparent'"
-                class="btn transparent-btn"
-                title="No Fill"
-                aria-label="Remove fill color"
-              >
-                ∅
-              </button>
-            </div>
-            <div class="option-element">
-              <label>Border:</label>
-              <input type="color" v-model="linkOptions.borderColor" />
-            </div>
-            <div class="option-element">
-              <label>Width:</label>
-              <input type="range" v-model="linkOptions.borderWidth" min="0" max="10" />
-              <span class="value-display">{{ linkOptions.borderWidth }}px</span>
-            </div>
-            <div class="option-element">
-              <label>Opacity:</label>
-              <input type="range" v-model="linkOptions.opacity" min="0.1" max="1.0" step="0.1" />
-              <span class="value-display">{{ Math.round(linkOptions.opacity * 100) }}%</span>
-            </div>
-          </template>
-        </div>
-      </div>
-    </div>
-    <!-- Image Dialog Component -->
-    <ImageDialog
-      :isOpen="isImageDialogOpen"
-      @close="closeImageDialog"
-      @confirm="handleImageConfirm"
-    />
-    <!-- Link Dialog Component -->
-    <LinkDialog :isOpen="isLinkDialogOpen" @close="closeLinkDialog" @confirm="handleLinkConfirm" />
-    <div class="pdf-body" ref="pdfBody">
-      <!-- Floating Toolbar -->
-      <div class="floating-toolbar">
-        <!-- General Tools Section -->
-        <div class="tools-section">
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'select' }"
-            @click="selectTool('select')"
-            title="Select Tool - Select and move components"
-          >
-            <i class="fa-solid fa-mouse-pointer"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'text' }"
-            @click="selectTool('text')"
-            title="Text Tool - Add text to the document"
-          >
-            <i class="fa-solid fa-font"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'image' }"
-            @click="selectTool('image')"
-            title="Image Tool - Add images to the document"
-          >
-            <i class="fa-regular fa-image"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'rectangle' }"
-            @click="selectTool('rectangle')"
-            title="Rectangle Tool - Draw rectangles"
-          >
-            <i class="fa-regular fa-square"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'circle' }"
-            @click="selectTool('circle')"
-            title="Circle Tool - Draw circles and ellipses"
-          >
-            <i class="fa-regular fa-circle"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'white-out' }"
-            @click="selectTool('white-out')"
-            title="White-out Tool - Cover text with white rectangles"
-          >
-            <i class="fa fa-window-close-o" aria-hidden="true"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'highlight' }"
-            @click="selectTool('highlight')"
-            title="Highlight Tool - Highlight text with colored rectangles"
-          >
-            <img
-              src="/images/highlight.svg"
-              alt="highlight"
-              width="24"
-              height="24"
-              loading="lazy"
-              decoding="async"
-              class="body-tool-image p-[3px]"
-            />
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'link' }"
-            @click="selectTool('link')"
-            title="Link Tool - Add hyperlinks or page links to the document"
-          >
-            <i class="fa-solid fa-link"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'line' }"
-            @click="selectTool('line')"
-            title="Line Tool - Draw straight lines. Hold Shift for horizontal/vertical lines"
-          >
-            <i class="fa-solid fa-minus"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'freehand' }"
-            @click="selectTool('freehand')"
-            title="Freehand Tool - Draw freehand lines and shapes"
-          >
-            <i class="fa-solid fa-pencil"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'measure' }"
-            @click="selectTool('measure')"
-            title="Measurement Tool - Select two points to measure distance. Hold Shift for horizontal/vertical measurements"
-          >
-            <i class="fa-solid fa-ruler"></i>
-          </div>
-          <div
-            class="body-tool"
-            :class="{ active: selectedTool === 'date' }"
-            @click="selectTool('date')"
-            title="Date Tool - Add a text element with the current date (YYYY-MM-DD)"
-          >
-            <i class="fa-regular fa-calendar"></i>
-          </div>
-        </div>
-        <!-- Icon Tools Section -->
-        <div class="icons-section">
-          <div
-            v-for="iconTool in iconTools"
-            :key="iconTool.id"
-            class="body-tool"
-            :class="{ active: selectedTool === iconTool.id }"
-            @click="selectTool(iconTool.id)"
-            :title="iconTool.title"
-          >
-            <img
-              :src="iconTool.icon"
-              :alt="iconTool.alt"
-              width="24"
-              height="24"
-              loading="lazy"
-              decoding="async"
-              class="body-tool-image"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        ref="pdfViewContainer"
-        id="body-pdf-view"
-        class="body-pdf-view"
-        :class="{
-          'drawing-mode': selectedTool !== 'select',
-          'freehand-cursor': selectedTool === 'freehand',
-        }"
-      >
-        <!-- Placeholder content for when no PDF is loaded -->
-        <div v-if="!isLoaded" class="pdf-placeholder">
-          <div class="pdf-placeholder-content">
-            <i class="fas fa-file-pdf pdf-placeholder-icon"></i>
-            <p class="pdf-placeholder-text">Drag and drop a PDF document to begin editing</p>
-            <p class="pdf-placeholder-text-secondary">
-              Alternatively, select
-              <button @click="clickFileInput" class="btn">
                 <i class="fa-solid fa-folder-open mr-2"></i>
                 Open
               </button>
-              to browse your files
-            </p>
-            <div class="pdf-placeholder-formats">
-              <span class="pdf-placeholder-format">PDF files</span>
-              <span class="pdf-placeholder-format ml-3">JSON config files</span>
             </div>
+            <div class="option-element">
+              <button
+                id="download-pdf-button"
+                @click="downloadPDF()"
+                class="btn"
+                title="Export the edited PDF with all annotations"
+              >
+                <i class="fa-solid fa-download mr-2"></i>
+                Download PDF
+              </button>
+            </div>
+            <div class="option-element">
+              <button @click="togglePopout" class="btn" title="Pop Out PDF Editor">
+                <i class="fa-solid fa-external-link-alt mr-2" v-if="!isPoppedOut"></i>
+                <i class="fa-solid fa-compress-arrows-alt mr-2" v-else></i>
+                {{ isPoppedOut ? "Pop In Editor" : "Pop Out Editor" }}
+              </button>
+            </div>
+            <div class="option-element">
+              <!-- Config Dropdown -->
+              <div class="dropdown">
+                <button
+                  @click="toggleConfigDropdown"
+                  class="btn"
+                  title="Configuration options - export or restore project settings"
+                >
+                  <i class="fa-solid fa-cog mr-2"></i>
+                  Config
+                  <i class="fa-solid fa-chevron-down ml-2"></i>
+                </button>
+                <div class="dropdown-menu" :class="{ show: isConfigDropdownOpen }">
+                  <button
+                    @click="
+                      downloadConfig();
+                      closeConfigDropdown();
+                    "
+                    class="dropdown-item"
+                  >
+                    <i class="fa-solid fa-file-export mr-2"></i>
+                    Export Config
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button
+                    @click="
+                      clickRestoreConfigInput();
+                      closeConfigDropdown();
+                    "
+                    class="dropdown-item"
+                  >
+                    <i class="fa-solid fa-file-import mr-2"></i>
+                    Restore Config
+                  </button>
+                </div>
+              </div>
+              <input
+                type="file"
+                id="config-file"
+                ref="configFile"
+                class="hidden"
+                accept=".json"
+                @change="handleConfigRestore"
+              />
+            </div>
+            <!-- General controls (always visible) -->
+            <div class="option-element">
+              <button
+                @click="clearMeasurements"
+                class="btn btn-xs"
+                title="Clear all measurement lines from the document"
+              >
+                <i class="fa-solid fa-ruler"></i>
+                Clear
+              </button>
+            </div>
+            <div class="option-element">
+              <button
+                @click="scrollToEditor"
+                class="btn btn-xs"
+                title="Focus on the PDF editor area"
+              >
+                <i class="fa-solid fa-expand"></i>
+                Focus
+              </button>
+            </div>
+            <div class="option-element">
+              <select
+                v-model="zoomLevel"
+                @change="applyZoom"
+                class="btn btn-xs"
+                title="Adjust the zoom level of the PDF document"
+              >
+                <option value="0.5">50%</option>
+                <option value="0.75">75%</option>
+                <option value="1.0">100%</option>
+                <option value="1.25">125%</option>
+                <option value="1.5">150%</option>
+                <option value="1.75">175%</option>
+                <option value="2.0">200%</option>
+                <option value="2.25">225%</option>
+                <option value="2.5">250%</option>
+                <option value="2.75">275%</option>
+                <option value="3.0">300%</option>
+              </select>
+            </div>
+            <!-- Freehand tool options -->
+            <template v-if="selectedTool === 'freehand'">
+              <div class="option-element">
+                <label>Smooth:</label>
+                <input type="range" v-model="freehandOptions.smoothLevel" min="1" max="10" />
+                <span class="value-display">{{ freehandOptions.smoothLevel }}</span>
+              </div>
+              <div class="option-element">
+                <label>Stroke Color:</label>
+                <input type="color" v-model="freehandOptions.color" />
+              </div>
+              <div class="option-element">
+                <label>Stroke Width:</label>
+                <input type="range" v-model="freehandOptions.width" min="1" max="20" />
+                <span class="value-display">{{ freehandOptions.width }}px</span>
+              </div>
+            </template>
+            <!-- Line tool options -->
+            <template v-if="selectedTool === 'line'">
+              <div class="option-element">
+                <label>Stroke Color:</label>
+                <input type="color" v-model="lineOptions.color" />
+              </div>
+              <div class="option-element">
+                <label>Stroke Width:</label>
+                <input type="range" v-model="lineOptions.width" min="1" max="20" />
+                <span class="value-display">{{ lineOptions.width }}px</span>
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input type="range" v-model="lineOptions.opacity" min="0.1" max="1.0" step="0.1" />
+                <span class="value-display">{{ Math.round(lineOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
+            <!-- Shape tool options (Circle and Rectangle) -->
+            <template v-if="selectedTool === 'rectangle' || selectedTool === 'circle'">
+              <div class="option-element">
+                <label>Fill:</label>
+                <input type="color" v-model="shapeOptions.fill" />
+                <button
+                  @click="shapeOptions.fill = 'transparent'"
+                  class="btn transparent-btn"
+                  title="No Fill"
+                  aria-label="Remove fill color"
+                >
+                  ∅
+                </button>
+              </div>
+              <div class="option-element">
+                <label>Border:</label>
+                <input type="color" v-model="shapeOptions.borderColor" />
+              </div>
+              <div class="option-element">
+                <label>Width:</label>
+                <input type="range" v-model="shapeOptions.borderWidth" min="0" max="10" />
+                <span class="value-display">{{ shapeOptions.borderWidth }}px</span>
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input type="range" v-model="shapeOptions.opacity" min="0.1" max="1.0" step="0.1" />
+                <span class="value-display">{{ Math.round(shapeOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
+            <!-- Selected Component Options - Show when select tool is active and component is selected -->
+            <template v-if="selectedTool === 'select' && selectedOperation">
+              <!-- Selected Text Component Options -->
+              <template v-if="selectedOperation.type === 'text'">
+                <div class="option-element">
+                  <label>Font:</label>
+                  <select v-model="selectedOperation.fontFamily" class="font-select">
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Helvetica-Bold">Helvetica Bold</option>
+                    <option value="Times-Roman">Times Roman</option>
+                    <option value="Times-Bold">Times Bold</option>
+                    <option value="Courier">Courier</option>
+                    <option value="Courier-Bold">Courier Bold</option>
+                  </select>
+                </div>
+                <div class="option-element">
+                  <label>Size:</label>
+                  <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
+                  <span class="value-display">{{ selectedOperation.fontSize }}px</span>
+                </div>
+                <div class="option-element">
+                  <label>Color:</label>
+                  <input type="color" v-model="selectedOperation.color" />
+                </div>
+                <div class="option-element">
+                  <label>Opacity:</label>
+                  <input
+                    type="range"
+                    v-model="selectedOperation.opacity"
+                    min="0.1"
+                    max="1.0"
+                    step="0.1"
+                  />
+                  <span class="value-display"
+                    >{{ Math.round(selectedOperation.opacity * 100) }}%</span
+                  >
+                </div>
+              </template>
+              <!-- Selected Rectangle/Circle Component Options -->
+              <template
+                v-if="selectedOperation.type === 'rectangle' || selectedOperation.type === 'circle'"
+              >
+                <div class="option-element">
+                  <label>Fill:</label>
+                  <input type="color" v-model="selectedOperation.fill" />
+                  <button
+                    @click="selectedOperation.fill = 'transparent'"
+                    class="btn transparent-btn"
+                    title="No Fill"
+                    aria-label="Remove fill color"
+                  >
+                    ∅
+                  </button>
+                </div>
+                <div class="option-element">
+                  <label>Border:</label>
+                  <input type="color" v-model="selectedOperation.borderColor" />
+                </div>
+                <div class="option-element">
+                  <label>Width:</label>
+                  <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
+                  <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
+                </div>
+                <div class="option-element">
+                  <label>Opacity:</label>
+                  <input
+                    type="range"
+                    v-model="selectedOperation.opacity"
+                    min="0.1"
+                    max="1.0"
+                    step="0.1"
+                  />
+                  <span class="value-display"
+                    >{{ Math.round(selectedOperation.opacity * 100) }}%</span
+                  >
+                </div>
+              </template>
+              <!-- Selected Image Component Options -->
+              <template v-if="selectedOperation.type === 'image'">
+                <!-- SVG-specific controls for line and freehand -->
+                <template
+                  v-if="
+                    selectedOperation.subType === 'line' || selectedOperation.subType === 'freehand'
+                  "
+                >
+                  <div class="option-element">
+                    <label>Stroke Color:</label>
+                    <div class="color-input-group">
+                      <input
+                        type="color"
+                        :value="getSvgStrokeColor(selectedOperation)"
+                        @input="updateSvgStrokeColor(selectedOperation, $event.target.value)"
+                        class="color-picker"
+                      />
+                    </div>
+                  </div>
+                  <div class="option-element">
+                    <label>Stroke Width:</label>
+                    <input
+                      type="range"
+                      :value="getSvgStrokeWidth(selectedOperation)"
+                      @input="updateSvgStrokeWidth(selectedOperation, $event.target.value)"
+                      min="1"
+                      max="20"
+                    />
+                    <span class="value-display">{{ getSvgStrokeWidth(selectedOperation) }}px</span>
+                  </div>
+                </template>
+                <!-- SVG-specific controls for icons -->
+                <template v-if="selectedOperation.subType === 'icon'">
+                  <div class="option-element">
+                    <label>Fill Color:</label>
+                    <div class="color-input-group">
+                      <input
+                        type="color"
+                        :value="getSvgFillColor(selectedOperation)"
+                        @input="updateSvgFillColor(selectedOperation, $event.target.value)"
+                        class="color-picker"
+                      />
+                    </div>
+                  </div>
+                </template>
+                <div class="option-element">
+                  <label>Opacity:</label>
+                  <input
+                    type="range"
+                    v-model="selectedOperation.opacity"
+                    min="0.1"
+                    max="1.0"
+                    step="0.1"
+                  />
+                  <span class="value-display"
+                    >{{ Math.round(selectedOperation.opacity * 100) }}%</span
+                  >
+                </div>
+              </template>
+              <!-- Selected TextField Component Options -->
+              <template v-if="selectedOperation.type === 'textfield'">
+                <div class="option-element">
+                  <label>Font:</label>
+                  <select v-model="selectedOperation.fontFamily" class="font-select">
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Helvetica-Bold">Helvetica Bold</option>
+                    <option value="Times-Roman">Times Roman</option>
+                    <option value="Times-Bold">Times Bold</option>
+                    <option value="Courier">Courier</option>
+                    <option value="Courier-Bold">Courier Bold</option>
+                  </select>
+                </div>
+                <div class="option-element">
+                  <label>Size:</label>
+                  <input type="range" v-model="selectedOperation.fontSize" min="8" max="72" />
+                  <span class="value-display">{{ selectedOperation.fontSize }}px</span>
+                </div>
+                <div class="option-element">
+                  <label>Text Color:</label>
+                  <input type="color" v-model="selectedOperation.color" />
+                </div>
+                <div class="option-element">
+                  <label>Background:</label>
+                  <input type="color" v-model="selectedOperation.backgroundColor" />
+                </div>
+                <div class="option-element">
+                  <label>Border:</label>
+                  <input type="color" v-model="selectedOperation.borderColor" />
+                </div>
+                <div class="option-element">
+                  <label>Border Width:</label>
+                  <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
+                  <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
+                </div>
+              </template>
+              <!-- Selected Checkbox Component Options -->
+              <template v-if="selectedOperation.type === 'checkbox'">
+                <div class="option-element">
+                  <label>Background:</label>
+                  <input type="color" v-model="selectedOperation.backgroundColor" />
+                </div>
+                <div class="option-element">
+                  <label>Border:</label>
+                  <input type="color" v-model="selectedOperation.borderColor" />
+                </div>
+                <div class="option-element">
+                  <label>Border Width:</label>
+                  <input type="range" v-model="selectedOperation.borderWidth" min="0" max="5" />
+                  <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
+                </div>
+                <div class="option-element">
+                  <label>Checked:</label>
+                  <input type="checkbox" v-model="selectedOperation.isChecked" />
+                </div>
+              </template>
+              <!-- Selected Link Component Options -->
+              <template v-if="selectedOperation.type === 'link'">
+                <div class="option-element">
+                  <label>Fill:</label>
+                  <input type="color" v-model="selectedOperation.fill" />
+                  <button
+                    @click="selectedOperation.fill = 'transparent'"
+                    class="btn transparent-btn"
+                    title="No Fill"
+                    aria-label="Remove fill color"
+                  >
+                    ∅
+                  </button>
+                </div>
+                <div class="option-element">
+                  <label>Border:</label>
+                  <input type="color" v-model="selectedOperation.borderColor" />
+                </div>
+                <div class="option-element">
+                  <label>Border Width:</label>
+                  <input type="range" v-model="selectedOperation.borderWidth" min="0" max="10" />
+                  <span class="value-display">{{ selectedOperation.borderWidth }}px</span>
+                </div>
+                <div class="option-element">
+                  <label>Opacity:</label>
+                  <input
+                    type="range"
+                    v-model="selectedOperation.opacity"
+                    min="0.1"
+                    max="1.0"
+                    step="0.1"
+                  />
+                  <span class="value-display"
+                    >{{ Math.round(selectedOperation.opacity * 100) }}%</span
+                  >
+                </div>
+              </template>
+            </template>
+            <!-- Highlight tool options -->
+            <template v-if="selectedTool === 'highlight'">
+              <div class="option-element">
+                <label>Fill:</label>
+                <input type="color" v-model="highlightOptions.fill" />
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input
+                  type="range"
+                  v-model="highlightOptions.opacity"
+                  min="0.1"
+                  max="1.0"
+                  step="0.1"
+                />
+                <span class="value-display">{{ Math.round(highlightOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
+            <!-- Text tool options -->
+            <template v-if="selectedTool === 'text'">
+              <div class="option-element">
+                <label>Font:</label>
+                <select v-model="textOptions.fontFamily" class="font-select">
+                  <option value="Helvetica">Helvetica</option>
+                  <option value="Helvetica-Bold">Helvetica Bold</option>
+                  <option value="Times-Roman">Times Roman</option>
+                  <option value="Times-Bold">Times Bold</option>
+                  <option value="Courier">Courier</option>
+                  <option value="Courier-Bold">Courier Bold</option>
+                </select>
+              </div>
+              <div class="option-element">
+                <label>Size:</label>
+                <input type="range" v-model="textOptions.fontSize" min="8" max="72" />
+                <span class="value-display">{{ textOptions.fontSize }}px </span>
+              </div>
+              <div class="option-element">
+                <label>Color:</label>
+                <input type="color" v-model="textOptions.color" />
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input type="range" v-model="textOptions.opacity" min="0.1" max="1.0" step="0.1" />
+                <span class="value-display">{{ Math.round(textOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
+            <!-- Icon tool options -->
+            <template v-if="iconTools.some((tool) => tool.id === selectedTool)">
+              <div class="option-element">
+                <label>Size:</label>
+                <select v-model="iconOptions.size" class="font-select">
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                  <option value="35">35</option>
+                  <option value="40">40</option>
+                  <option value="45">45</option>
+                  <option value="50">50</option>
+                  <option value="55">55</option>
+                  <option value="60">60</option>
+                  <option value="65">65</option>
+                  <option value="70">70</option>
+                  <option value="75">75</option>
+                  <option value="80">80</option>
+                  <option value="85">85</option>
+                  <option value="90">90</option>
+                  <option value="95">95</option>
+                  <option value="100">100</option>
+                  <option value="105">105</option>
+                  <option value="110">110</option>
+                  <option value="115">115</option>
+                  <option value="120">120</option>
+                  <option value="125">125</option>
+                  <option value="130">130</option>
+                  <option value="135">135</option>
+                  <option value="140">140</option>
+                  <option value="145">145</option>
+                  <option value="150">150</option>
+                  <option value="155">155</option>
+                  <option value="160">160</option>
+                  <option value="165">165</option>
+                  <option value="170">170</option>
+                  <option value="175">175</option>
+                  <option value="180">180</option>
+                  <option value="185">185</option>
+                  <option value="190">190</option>
+                  <option value="195">195</option>
+                  <option value="200">200</option>
+                </select>
+              </div>
+              <div class="option-element">
+                <label>Fill Color:</label>
+                <input type="color" v-model="iconOptions.fillColor" />
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input type="range" v-model="iconOptions.opacity" min="0.1" max="1.0" step="0.1" />
+                <span class="value-display">{{ Math.round(iconOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
+            <!-- Link tool options -->
+            <template v-if="selectedTool === 'link'">
+              <div class="option-element">
+                <label>Fill:</label>
+                <input type="color" v-model="linkOptions.fill" />
+                <button
+                  @click="linkOptions.fill = 'transparent'"
+                  class="btn transparent-btn"
+                  title="No Fill"
+                  aria-label="Remove fill color"
+                >
+                  ∅
+                </button>
+              </div>
+              <div class="option-element">
+                <label>Border:</label>
+                <input type="color" v-model="linkOptions.borderColor" />
+              </div>
+              <div class="option-element">
+                <label>Width:</label>
+                <input type="range" v-model="linkOptions.borderWidth" min="0" max="10" />
+                <span class="value-display">{{ linkOptions.borderWidth }}px</span>
+              </div>
+              <div class="option-element">
+                <label>Opacity:</label>
+                <input type="range" v-model="linkOptions.opacity" min="0.1" max="1.0" step="0.1" />
+                <span class="value-display">{{ Math.round(linkOptions.opacity * 100) }}%</span>
+              </div>
+            </template>
           </div>
         </div>
       </div>
-      <!-- Layers Panel -->
-      <div v-if="isLoaded" class="layers-panel">
-        <div class="layers-panel-header">
-          <i class="fa-solid fa-layer-group"></i>
-          <span>Layers</span>
-          <span class="layers-count">{{ layers.length }}</span>
-        </div>
-        <div class="layers-panel-body">
-          <p v-if="layers.length === 0" class="layers-empty">
-            No elements yet. Add text, images, or shapes to see them here.
-          </p>
-          <ul v-else class="layers-list">
-            <li
-              v-for="layer in layers"
-              :key="layer.key"
-              class="layer-item"
-              :class="{ active: isLayerSelected(layer), editing: editingLayerKey === layer.key }"
-              :title="layer.label"
-              @click="selectLayer(layer)"
+      <!-- Image Dialog Component -->
+      <ImageDialog
+        :isOpen="isImageDialogOpen"
+        @close="closeImageDialog"
+        @confirm="handleImageConfirm"
+      />
+      <!-- Link Dialog Component -->
+      <LinkDialog
+        :isOpen="isLinkDialogOpen"
+        @close="closeLinkDialog"
+        @confirm="handleLinkConfirm"
+      />
+      <div class="pdf-body" ref="pdfBody">
+        <!-- Floating Toolbar -->
+        <div class="floating-toolbar">
+          <!-- General Tools Section -->
+          <div class="tools-section">
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'select' }"
+              @click="selectTool('select')"
+              title="Select Tool - Select and move components"
             >
-              <i class="layer-icon" :class="layer.icon"></i>
-              <input
-                v-if="editingLayerKey === layer.key"
-                v-model="editingLayerValue"
-                class="layer-edit-input"
-                type="text"
-                @click.stop
-                @keydown.enter.prevent="commitEditLayer(layer)"
-                @keydown.esc.prevent="cancelEditLayer()"
-                @blur="commitEditLayer(layer)"
+              <i class="fa-solid fa-mouse-pointer"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'text' }"
+              @click="selectTool('text')"
+              title="Text Tool - Add text to the document"
+            >
+              <i class="fa-solid fa-font"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'image' }"
+              @click="selectTool('image')"
+              title="Image Tool - Add images to the document"
+            >
+              <i class="fa-regular fa-image"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'rectangle' }"
+              @click="selectTool('rectangle')"
+              title="Rectangle Tool - Draw rectangles"
+            >
+              <i class="fa-regular fa-square"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'circle' }"
+              @click="selectTool('circle')"
+              title="Circle Tool - Draw circles and ellipses"
+            >
+              <i class="fa-regular fa-circle"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'white-out' }"
+              @click="selectTool('white-out')"
+              title="White-out Tool - Cover text with white rectangles"
+            >
+              <i class="fa fa-window-close-o" aria-hidden="true"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'highlight' }"
+              @click="selectTool('highlight')"
+              title="Highlight Tool - Highlight text with colored rectangles"
+            >
+              <img
+                src="/images/highlight.svg"
+                alt="highlight"
+                width="24"
+                height="24"
+                loading="lazy"
+                decoding="async"
+                class="body-tool-image p-[3px]"
               />
-              <span v-else class="layer-label">{{ layer.label }}</span>
-              <span v-if="editingLayerKey !== layer.key" class="layer-page"
-                >p{{ layer.pageNumber }}</span
-              >
-              <div v-if="editingLayerKey !== layer.key" class="layer-actions">
-                <button
-                  v-if="canEditLayer(layer)"
-                  class="layer-action-btn"
-                  title="Rename layer"
-                  aria-label="Rename layer"
-                  @click.stop="startEditLayer(layer)"
-                >
-                  <i class="fa-solid fa-pen"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'link' }"
+              @click="selectTool('link')"
+              title="Link Tool - Add hyperlinks or page links to the document"
+            >
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'line' }"
+              @click="selectTool('line')"
+              title="Line Tool - Draw straight lines. Hold Shift for horizontal/vertical lines"
+            >
+              <i class="fa-solid fa-minus"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'freehand' }"
+              @click="selectTool('freehand')"
+              title="Freehand Tool - Draw freehand lines and shapes"
+            >
+              <i class="fa-solid fa-pencil"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'measure' }"
+              @click="selectTool('measure')"
+              title="Measurement Tool - Select two points to measure distance. Hold Shift for horizontal/vertical measurements"
+            >
+              <i class="fa-solid fa-ruler"></i>
+            </div>
+            <div
+              class="body-tool"
+              :class="{ active: selectedTool === 'date' }"
+              @click="selectTool('date')"
+              title="Date Tool - Add a text element with the current date (YYYY-MM-DD)"
+            >
+              <i class="fa-regular fa-calendar"></i>
+            </div>
+          </div>
+          <!-- Icon Tools Section -->
+          <div class="icons-section">
+            <div
+              v-for="iconTool in iconTools"
+              :key="iconTool.id"
+              class="body-tool"
+              :class="{ active: selectedTool === iconTool.id }"
+              @click="selectTool(iconTool.id)"
+              :title="iconTool.title"
+            >
+              <img
+                :src="iconTool.icon"
+                :alt="iconTool.alt"
+                width="24"
+                height="24"
+                loading="lazy"
+                decoding="async"
+                class="body-tool-image"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          ref="pdfViewContainer"
+          id="body-pdf-view"
+          class="body-pdf-view"
+          :class="{
+            'drawing-mode': selectedTool !== 'select',
+            'freehand-cursor': selectedTool === 'freehand',
+          }"
+        >
+          <!-- Placeholder content for when no PDF is loaded -->
+          <div v-if="!isLoaded" class="pdf-placeholder">
+            <div class="pdf-placeholder-content">
+              <i class="fas fa-file-pdf pdf-placeholder-icon"></i>
+              <p class="pdf-placeholder-text">Drag and drop a PDF document to begin editing</p>
+              <p class="pdf-placeholder-text-secondary">
+                Alternatively, select
+                <button @click="clickFileInput" class="btn">
+                  <i class="fa-solid fa-folder-open mr-2"></i>
+                  Open
                 </button>
-                <button
-                  class="layer-action-btn layer-action-delete"
-                  title="Delete layer"
-                  aria-label="Delete layer"
-                  @click.stop="deleteLayer(layer)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                to browse your files
+              </p>
+              <div class="pdf-placeholder-formats">
+                <span class="pdf-placeholder-format">PDF files</span>
+                <span class="pdf-placeholder-format ml-3">JSON config files</span>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
+        </div>
+        <!-- Layers Panel -->
+        <div v-if="isLoaded" class="layers-panel">
+          <div class="layers-panel-header">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Layers</span>
+            <span class="layers-count">{{ layers.length }}</span>
+          </div>
+          <div class="layers-panel-body">
+            <p v-if="layers.length === 0" class="layers-empty">
+              No elements yet. Add text, images, or shapes to see them here.
+            </p>
+            <ul v-else class="layers-list">
+              <li
+                v-for="layer in layers"
+                :key="layer.key"
+                class="layer-item"
+                :class="{ active: isLayerSelected(layer), editing: editingLayerKey === layer.key }"
+                :title="layer.label"
+                @click="selectLayer(layer)"
+              >
+                <i class="layer-icon" :class="layer.icon"></i>
+                <input
+                  v-if="editingLayerKey === layer.key"
+                  v-model="editingLayerValue"
+                  class="layer-edit-input"
+                  type="text"
+                  @click.stop
+                  @keydown.enter.prevent="commitEditLayer(layer)"
+                  @keydown.esc.prevent="cancelEditLayer()"
+                  @blur="commitEditLayer(layer)"
+                />
+                <span v-else class="layer-label">{{ layer.label }}</span>
+                <span v-if="editingLayerKey !== layer.key" class="layer-page"
+                  >p{{ layer.pageNumber }}</span
+                >
+                <div v-if="editingLayerKey !== layer.key" class="layer-actions">
+                  <button
+                    v-if="canEditLayer(layer)"
+                    class="layer-action-btn"
+                    title="Rename layer"
+                    aria-label="Rename layer"
+                    @click.stop="startEditLayer(layer)"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="layer-action-btn layer-action-delete"
+                    title="Delete layer"
+                    aria-label="Delete layer"
+                    @click.stop="deleteLayer(layer)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
-    </div>
   <!-- Toast Notification - Outside main container for better positioning -->
   <!-- Debug: Toast show state: {{ toast.show }} -->
   <!-- Dynamic toast -->

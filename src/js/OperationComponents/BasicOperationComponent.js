@@ -40,10 +40,7 @@ class BasicOperationComponent {
       }
     });
     document.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Delete" &&
-        this.wrapperContainer.classList.contains("selected")
-      ) {
+      if (e.key === "Delete" && this.wrapperContainer.classList.contains("selected")) {
         this.deleteComponent();
       }
     });
