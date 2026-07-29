@@ -30,8 +30,8 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
-    for (const page of pageOperations) {
-      page.operations
+    pageOperations.forEach((page) => {
+        page.operations
         .filter(
           (op) => (op.operation === "update" || op.operation === "delete") && fieldMap.has(op.id),
         )
@@ -39,9 +39,9 @@ class PDFGenerator {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
-    }
+    });
+    const cpages = await pdfDoc.copyPages(srcDoc, pageOperations.map(p => p.pageNumber - 1));
+    cpages.forEach(cpage => pdfDoc.addPage(cpage));
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
     const typeMap = {
@@ -152,7 +152,7 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    for (const path of paths) {
+    paths.forEach((path) => {
       const rawFill = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
       const fillC = rawFill && rawFill !== "none" ? hexToRgb(rawFill) : null;
 
@@ -163,7 +163,7 @@ class PDFGenerator {
         path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
       const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
 
-      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), {
+      pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), {
         x: drawX,
         y: drawY,
         opacity,
@@ -180,7 +180,7 @@ class PDFGenerator {
           }[lineJoin],
         }),
       });
-    }
+    });
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
