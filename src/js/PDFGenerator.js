@@ -30,6 +30,8 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
+
+    // First, remove fields from srcDoc before copying
     for (const page of pageOperations) {
       page.operations
         .filter(
@@ -39,9 +41,16 @@ class PDFGenerator {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
     }
+
+    // Batch copyPages calls for performance
+    const pageIndices = pageOperations.map((page) => page.pageNumber - 1);
+    const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
+
+    copiedPages.forEach((cpage) => {
+      pdfDoc.addPage(cpage);
+    });
+
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
     const typeMap = {
