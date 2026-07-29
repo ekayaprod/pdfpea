@@ -1,5 +1,6 @@
 <template>
   <div class="pdf-editor">
+    <div ref="editorContent" class="flex flex-col h-full w-full">
     <div class="p-2">
       <div class="header-actions">
         <!-- Single element container for all tool options -->
@@ -771,6 +772,7 @@
       </div>
     </div>
   </div>
+    </div>
   <!-- Toast Notification - Outside main container for better positioning -->
   <!-- Debug: Toast show state: {{ toast.show }} -->
   <!-- Dynamic toast -->
@@ -810,6 +812,7 @@ export default {
     LinkDialog,
   },
   setup() {
+    const editorContent = ref(null);
     const pdfViewContainer = ref(null);
     const file = ref(null);
     const configFile = ref(null);
@@ -1035,15 +1038,15 @@ export default {
         });
 
         // Move pdf-body to popup
-        if (pdfBody.value) {
-          popupWindow.document.body.appendChild(pdfBody.value);
+        if (editorContent.value) {
+          popupWindow.document.body.appendChild(editorContent.value);
         }
         isPoppedOut.value = true;
 
         // Handle popup closing
         popupWindow.addEventListener("beforeunload", () => {
-          if (pdfBody.value) {
-            appContainer.appendChild(pdfBody.value);
+          if (editorContent.value) {
+            appContainer.appendChild(editorContent.value);
           }
           isPoppedOut.value = false;
           popupWindow = null;
@@ -1052,8 +1055,8 @@ export default {
         // Pop in
         if (popupWindow && !popupWindow.closed) {
           popupWindow.close(); // beforeunload will handle moving the element back
-        } else if (pdfBody.value && pdfBody.value.parentNode !== appContainer) {
-          appContainer.appendChild(pdfBody.value);
+        } else if (editorContent.value && editorContent.value.parentNode !== appContainer) {
+          appContainer.appendChild(editorContent.value);
           isPoppedOut.value = false;
           popupWindow = null;
         }
@@ -2579,6 +2582,7 @@ export default {
       measurementState,
       clearMeasurements,
       pdfBody,
+      editorContent,
       calculateDistance,
       convertPixelsToUnits,
       createMeasurementOverlay,

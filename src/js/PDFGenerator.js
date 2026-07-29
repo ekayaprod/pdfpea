@@ -32,7 +32,7 @@ class PDFGenerator {
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     for (const page of pageOperations) {
       page.operations
-        .filter((op) => op.operation === "update" && fieldMap.has(op.id))
+        .filter((op) => (op.operation === "update" || op.operation === "delete") && fieldMap.has(op.id))
         .forEach((op) => {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
