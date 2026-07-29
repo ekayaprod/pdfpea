@@ -22,19 +22,8 @@ export const DEFAULT_VALUES = {
 };
 
 // Colors
-const COLORS = {
-  WHITE: "#FFFFFF",
-  RED: "#FF0000",
-  BLACK: "#000000",
-  LIGHT_BLUE: "#ADD8E6",
-};
 
 // Font families
-const FONTS = {
-  HELVETICA: "Helvetica",
-  COURIER: "Courier",
-  TIMES_ROMAN: "TimesRoman",
-};
 
 // Field types
 export const FIELD_TYPES = {
@@ -50,10 +39,6 @@ export const ALIGNMENT = {
 };
 
 // Operation types
-const OPERATION_TYPES = {
-  CREATE: "create",
-  UPDATE: "update",
-};
 
 // Component types
 export const COMPONENT_TYPES = {
@@ -84,7 +69,3 @@ export const IMAGE_PATHS = {
 };
 
 // Image file signatures
-const IMAGE_SIGNATURES = {
-  JPG: [0xff, 0xd8],
-  PNG: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
-};

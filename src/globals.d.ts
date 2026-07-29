@@ -2,14 +2,14 @@
 
 declare global {
   interface Window {
-    PDFLib: any;
-    pdfjsLib: any;
-    Moveable: any;
+    PDFLib: unknown;
+    pdfjsLib: unknown;
+    Moveable: unknown;
   }
 
-  const PDFLib: any;
-  const pdfjsLib: any;
-  const Moveable: any;
+  const PDFLib: unknown;
+  const pdfjsLib: unknown;
+  const Moveable: unknown;
 }
 
 export {};

@@ -24,8 +24,8 @@ describe("PDFGenerator", () => {
     let error = null;
     try {
       await PDFGenerator.drawImageOnPage(null, null, null);
-    } catch (e) {
-      error = e;
+    } catch {
+      error = new Error("Cannot be null");
     }
     expect(error).toBeDefined();
     // Fortified blind error boundary
@@ -60,7 +60,7 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch (e) {
+      } catch {
         type = "error";
       }
 
@@ -73,7 +73,7 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch (e) {
+      } catch {
         type = "error";
       }
 
@@ -117,8 +117,8 @@ describe("PDFGenerator", () => {
       let error = null;
       try {
         await PDFGenerator.drawImageOnPage(pdfDocMock, pdfPageMock, operationMock);
-      } catch (e) {
-        error = e;
+      } catch {
+        error = new Error("Network Error");
       }
 
       expect(error).toBeDefined();
@@ -386,8 +386,8 @@ describe("PDFGenerator", () => {
       let error;
       try {
         await PDFGenerator.drawLinkOnPage(pdfDocMock, pdfPageMock, operationMock);
-      } catch (e) {
-        error = e;
+      } catch {
+        error = new Error("Cannot be null");
       }
 
       expect(error).toBeUndefined();
@@ -402,7 +402,6 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-      const pdfDocMock = {};
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
         drawSvgPath: vi.fn(),
@@ -421,8 +420,8 @@ describe("PDFGenerator", () => {
       let error;
       try {
         await PDFGenerator.drawSvgImageOnPage(pdfPageMock, buffer, operationMock);
-      } catch (e) {
-        error = e;
+      } catch {
+        error = new Error("Cannot be null");
       }
 
       expect(error).toBeUndefined();

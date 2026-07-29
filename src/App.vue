@@ -968,7 +968,7 @@ export default {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
       // Create image component with base64 data
-      const component = page.createComponentWithDimensions(
+      page.createComponentWithDimensions(
         "image",
         { url: imageDataUrl },
         id,
@@ -993,7 +993,7 @@ export default {
       if (!pendingLinkParams.value) return;
       const { page, id, x, y, width, height } = pendingLinkParams.value;
       // Create link component
-      const component = page.createComponentWithDimensions(
+      page.createComponentWithDimensions(
         "link",
         {
           linkType: type,
@@ -1223,8 +1223,6 @@ export default {
       startY,
       currentX,
       currentY,
-      container,
-      zoomFactor = 1,
     ) => {
       if (!drawingOverlay) return;
       const left = Math.min(startX, currentX);
@@ -1289,7 +1287,7 @@ export default {
               const iconSize = iconOptions.value.size;
               const centeredX = drawingStart.value.x - iconSize / 2;
               const centeredY = drawingStart.value.y - iconSize / 2;
-              const component = page.createComponentWithDimensions(
+              page.createComponentWithDimensions(
                 toolType,
                 settings,
                 id,
@@ -1312,7 +1310,7 @@ export default {
               const id = generateId();
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
-              const component = page.createComponentWithDimensions(
+              page.createComponentWithDimensions(
                 toolType,
                 settings,
                 id,
@@ -1343,7 +1341,7 @@ export default {
               const toolType = getToolType(selectedTool.value);
               const settings = getToolSettings(selectedTool.value);
               // Create text component with minimal initial size (will auto-resize)
-              const component = page.createComponentWithDimensions(
+              page.createComponentWithDimensions(
                 toolType,
                 settings,
                 id,
@@ -1580,7 +1578,7 @@ export default {
                 );
                 if (boundingBox) {
                   const id = generateId();
-                  const component = page.createComponentWithDimensions(
+                  page.createComponentWithDimensions(
                     "image",
                     { subType: "freehand", url: svgDataUrl },
                     id,
@@ -1628,7 +1626,7 @@ export default {
                   );
                   if (boundingBox) {
                     const id = generateId();
-                    const component = page.createComponentWithDimensions(
+                    page.createComponentWithDimensions(
                       "image",
                       { subType: "line", url: svgDataUrl },
                       id,
@@ -1672,7 +1670,7 @@ export default {
                 openLinkDialog(page, id, x, y, width, height);
               } else {
                 // Create component with calculated dimensions for other tools
-                const component = page.createComponentWithDimensions(
+                page.createComponentWithDimensions(
                   toolType,
                   settings,
                   id,
@@ -1884,7 +1882,7 @@ export default {
               // Create components for each operation
               pageConfig.operations.forEach((operation) => {
                 try {
-                  const component = page.createComponentWithDimensions(
+                  page.createComponentWithDimensions(
                     operation.type,
                     operation,
                     operation.id || operation.identifier,
