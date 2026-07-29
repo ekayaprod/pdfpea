@@ -39,8 +39,12 @@ class PDFGenerator {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
+    }
+
+    if (pageOperations.length > 0) {
+      const pageIndices = pageOperations.map((page) => page.pageNumber - 1);
+      const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
+      copiedPages.forEach((cpage) => pdfDoc.addPage(cpage));
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
