@@ -16,7 +16,6 @@ import {
   ALIGNMENT,
   COMPONENT_TYPES,
   EVENTS,
-  IMAGE_PATHS,
 } from "./utils/constants/constants.js";
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {
   cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
