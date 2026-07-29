@@ -31,7 +31,7 @@ class PDFGenerator {
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
     pageOperations.forEach((page) => {
-        page.operations
+      page.operations
         .filter(
           (op) => (op.operation === "update" || op.operation === "delete") && fieldMap.has(op.id),
         )
@@ -40,8 +40,11 @@ class PDFGenerator {
           fieldMap.delete(op.id);
         });
     });
-    const cpages = await pdfDoc.copyPages(srcDoc, pageOperations.map(p => p.pageNumber - 1));
-    cpages.forEach(cpage => pdfDoc.addPage(cpage));
+    const cpages = await pdfDoc.copyPages(
+      srcDoc,
+      pageOperations.map((p) => p.pageNumber - 1),
+    );
+    cpages.forEach((cpage) => pdfDoc.addPage(cpage));
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
     const typeMap = {
