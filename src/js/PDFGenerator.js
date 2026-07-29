@@ -157,7 +157,8 @@ class PDFGenerator {
       const rawStroke = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
       const strokeC = rawStroke && rawStroke !== "none" ? hexToRgb(rawStroke) : null;
 
-      const rawStrokeWidth = path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+      const rawStrokeWidth =
+        path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
       const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
 
       await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), {
@@ -166,7 +167,9 @@ class PDFGenerator {
         opacity,
         ...(fillC && { color: PDFLib.rgb(fillC.red, fillC.green, fillC.blue) }),
         ...(strokeC && { borderColor: PDFLib.rgb(strokeC.red, strokeC.green, strokeC.blue) }),
-        ...(rawStrokeWidth && { borderWidth: parseFloat(rawStrokeWidth) * Math.min(scaleX, scaleY) }),
+        ...(rawStrokeWidth && {
+          borderWidth: parseFloat(rawStrokeWidth) * Math.min(scaleX, scaleY),
+        }),
         ...(lineJoin && {
           borderLineCap: {
             butt: PDFLib.LineCapStyle.Butt,
