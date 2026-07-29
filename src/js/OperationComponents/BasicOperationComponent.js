@@ -40,11 +40,7 @@ class BasicOperationComponent {
       }
     });
     document.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Delete" &&
-        this.wrapperContainer.classList.contains("selected") &&
-        this.operation.operation === "create"
-      ) {
+      if (e.key === "Delete" && this.wrapperContainer.classList.contains("selected")) {
         this.deleteComponent();
       }
     });
@@ -147,7 +143,14 @@ class BasicOperationComponent {
   };
   deleteComponent = () => {
     this.removeMoveable();
-    this.wrapperContainer.remove();
+    if (this.operation.operation === "update") {
+      this.operation.operation = "delete";
+      this.wrapperContainer.classList.remove("component");
+      this.wrapperContainer.classList.add("deleted-component");
+      this.wrapperContainer.style.display = "none";
+    } else {
+      this.wrapperContainer.remove();
+    }
     // Set a temporary flag to prevent immediate component creation
     window.isComponentCreationPrevented = true;
     setTimeout(() => {
