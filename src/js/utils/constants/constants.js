@@ -74,15 +74,6 @@ export const EVENTS = {
   SHOULD_CLEAR_ALL_SELECTION: "pdfeditor.shouldClearAllSelection",
 };
 
-// Image paths
-export const IMAGE_PATHS = {
-  DEFAULT_IMAGE: "./images/default_image.jpg",
-  CHECKBOX_CHECKED: "./images/checkbox-checked.png",
-  CHECKBOX_UNCHECKED: "./images/checkbox-unchecked.png",
-  SVG_TICK: "./images/tick.svg",
-  SVG_CROSS: "./images/cross.svg",
-};
-
 // Image file signatures
 const IMAGE_SIGNATURES = {
   JPG: [0xff, 0xd8],
