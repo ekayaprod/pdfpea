@@ -2502,7 +2502,6 @@ export default {
           inline: "center",
         });
         showToast("Focused on PDF editor", "info", 1500);
-      } else {
       }
     };
     return {
