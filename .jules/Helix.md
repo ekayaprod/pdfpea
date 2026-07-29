@@ -29,3 +29,5 @@
 - [x] Optimize `calculateBoundingBox` in `FreehandDrawing.js` using `.reduce()` to eliminate O(N) array allocations.
 - [x] Dissolve duplicated bounding box logic in `pathToSvgDataUrl` by directly invoking `calculateBoundingBox`.
 - [x] Evaporate single-use proxies (`bytes`, `binaryStringData`, `base64`) into the template string in `pathToSvgDataUrl` to remove syntactic noise.
+
+- [x] Collapsed nested conditionals and mutable `opts` object into a declarative object map using optional chaining and spread syntax inside `drawSvgImageOnPage` (in `src/js/PDFGenerator.js`).
