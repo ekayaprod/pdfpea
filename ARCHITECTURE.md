@@ -32,7 +32,7 @@ C4Component
     Component(app, "App.vue", "Vue 3 Component", "Main UI, state management, and entry point for the PDF editor.")
     Component(pdf_editor, "js/PDFEditor.js", "Vanilla JS", "Wrapper for pdfjs-dist. Handles rendering PDF pages to HTML canvas elements.")
     Component(pdf_generator, "js/PDFGenerator.js", "Vanilla JS", "Wrapper for pdf-lib. Applies annotations and generates the final modified PDF binary.")
-    Component(operation_components, "js/OperationComponents/", "Vanilla JS", "Manages individual annotation instances (Text, Image, Rectangle, Circle, etc.) and DOM interactions.")
+    Component(operation_components, "js/OperationComponents/", "Vanilla JS", "Manages annotation instances (Text, Image, Forms) and DOM interactions, with nested shapes/ directory.")
     Component(freehand_drawing, "js/utils/canvas/FreehandDrawing.js", "Vanilla JS", "Handles advanced path smoothing and SVG generation for the freehand drawing tool.")
   }
 

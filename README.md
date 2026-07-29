@@ -44,6 +44,9 @@ Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea
 | `/tests` | Playwright end-to-end (E2E) UI and visual regression test suites. |
 | `Dockerfile` | Multi-stage Docker configuration for containerized deployment. |
 | `.mcp.json` | Model Context Protocol configuration for local tooling. |
+| `.github/workflows` | GitHub Actions CI/CD pipelines. |
+| `*.config.ts` | Build and testing tool configurations. |
+| `wrangler.jsonc` | Cloudflare Pages deployment configuration. |
 
 ## 🛠️ Boot Sequence (CLI Commands)
 
