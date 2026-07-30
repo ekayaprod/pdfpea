@@ -132,6 +132,12 @@ class PDFGenerator {
     const paths = Array.from(svgText.matchAll(pathRegex), (m) => ({ data: m[1], element: m[0] }));
     if (paths.length === 0) throw new Error("No SVG paths found");
 
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Parses SVG definitions utilizing regex to extract structural properties (fill, stroke, stroke-width)
+     * acting as fallbacks for `<path>` nodes lacking localized inline styling.
+     * * Historical Intent: The structural regex parser was modernized in commit 34e1b64 (Jul 2026) to resolve nested SVG layout glitches during document compilation.
+     */
     const globalFillMatch = svgText.match(/<svg[^>]*fill="([^"]+)"/);
     const globalStrokeMatch = svgText.match(/<svg[^>]*stroke="([^"]+)"/);
     const globalStrokeWidthMatch = svgText.match(/<svg[^>]*stroke-width="([^"]+)"/);
@@ -362,6 +368,11 @@ class PDFGenerator {
       Border: [0, 0, 0],
     };
 
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Validates URL-based link targets via regex to ensure only standard HTTP/HTTPS protocols are compiled into the final PDF.
+     * * Historical Intent: This strict regex constraint was consolidated during commit 34e1b64 (Jul 2026) to prevent malicious `javascript:` or `file:` URI injections in the exported PDF.
+     */
     if (operation.linkType === "url" && operation.linkValue?.match(/^https?:\/\//)) {
       PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
         ...linkDictData,

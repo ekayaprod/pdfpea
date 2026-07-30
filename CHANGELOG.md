@@ -30,3 +30,10 @@
 
 - **📯 Dispatch:** Optimize Playwright Pipeline and inject Docker Ecosystem into Dependabot Scanning.
 - **🪲 Scavenger:** Cleaned diagnostic droppings and semantic dust.
+- **🧹 Scavenger:** Excise orphaned IMAGE_PATHS constant (commit 34e1b64).
+- Resolve missing tools in popout and layer deletion on imported PDFs (commit fd65520).
+- **🚨 Paramedic:** Batch PDFLib copyPages for optimized generation to prevent font duplication bloat (commit dac31e0).
+- **📁 Organizer:** Consolidate utilities and components to reduce file count (commit cc239af).
+- **🕯️ Scribe:** Remove dead code, resolve linting errors, and address unused variables (commits 984ecba, f7098ee).
+- **🪲 Scavenger:** Cleaned up necrotic code in App.vue and PDFEditor.js (commit 33e93da).
+- **🚨 Paramedic:** Fix null pointer in drawRectangle and drawCircle (commit bc632df).

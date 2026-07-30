@@ -10,3 +10,5 @@
 - Scribe: Successfully updated README.md, ARCHITECTURE.md, index.html, and package.json to explicitly document the architectural differences and lineage of this fork versus the original AlphaCloudTechnologies/pdfpea repository.
 - Injected AST-driven JSDoc for `hexToRgb` and `rgbToHex` in `src/js/utils/color/colors.js` referencing DRY principle extraction (commit ab9ed33).
 - Aggregated recent git commit ab9ed33 (Pop-out Editor for Sidebar Dashboard) into CHANGELOG.md
+- Injected AST-driven JSDoc for `globalFillMatch` and `linkValue?.match` in `src/js/PDFGenerator.js` explaining SVG fallback parsing and URL regex validation logic.
+- Aggregated recent git commits for Scavenger (34e1b64, 33e93da), Paramedic (dac31e0, bc632df), Organizer (cc239af), and Scribe (984ecba, f7098ee) into CHANGELOG.md.
