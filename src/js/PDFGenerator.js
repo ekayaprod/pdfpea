@@ -30,18 +30,19 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
-    for (const page of pageOperations) {
+    pageOperations.forEach((page) => {
       page.operations
-        .filter(
-          (op) => (op.operation === "update" || op.operation === "delete") && fieldMap.has(op.id),
-        )
+        .filter((op) => (op.operation === "update" || op.operation === "delete") && fieldMap.has(op.id))
         .forEach((op) => {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
-    }
+    });
+    const copiedPages = await pdfDoc.copyPages(
+      srcDoc,
+      pageOperations.map((p) => p.pageNumber - 1)
+    );
+    copiedPages.forEach((cpage) => pdfDoc.addPage(cpage));
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
     const typeMap = {
