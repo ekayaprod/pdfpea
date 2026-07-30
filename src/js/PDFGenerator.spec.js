@@ -23,7 +23,15 @@ describe("PDFGenerator", () => {
   it("survives absolute void parameters", async () => {
     let error = null;
     try {
-      await PDFGenerator.drawImageOnPage(null, null, { type: "image", id: "foo", x: 0, y: 0, width: 0, height: 0, url: null });
+      await PDFGenerator.drawImageOnPage(null, null, {
+        type: "image",
+        id: "foo",
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        url: null,
+      });
     } catch {
       error = { message: "Cannot be null" };
     }
@@ -401,7 +409,6 @@ describe("PDFGenerator", () => {
       // on the result of hexToRgb for SVG paths without verifying it isn't null.
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
-
 
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),

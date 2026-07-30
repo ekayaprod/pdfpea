@@ -280,11 +280,15 @@ class PDFGenerator {
       PDFLib.TextAlignment[operation.alignment] ?? PDFLib.TextAlignment.Left,
     );
 
-    if (operation.isRequired) existingTextField.enableRequired(); else existingTextField.disableRequired();
+    if (operation.isRequired) existingTextField.enableRequired();
+    else existingTextField.disableRequired();
     if (operation.isMultiline) {
       existingTextField.enableMultiline();
-    } else { existingTextField.disableMultiline(); }
-    if (operation.isReadOnly) existingTextField.enableReadOnly(); else existingTextField.disableReadOnly();
+    } else {
+      existingTextField.disableMultiline();
+    }
+    if (operation.isReadOnly) existingTextField.enableReadOnly();
+    else existingTextField.disableReadOnly();
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const id = operation.type === "create" ? `checkbox-${operation.id}` : operation.id;
@@ -313,8 +317,10 @@ class PDFGenerator {
     });
 
     const existingCheckbox = form.getCheckBox(id);
-    if (operation.isChecked) existingCheckbox.check(); else existingCheckbox.uncheck();
-    if (operation.isReadOnly) existingCheckbox.enableReadOnly(); else existingCheckbox.disableReadOnly();
+    if (operation.isChecked) existingCheckbox.check();
+    else existingCheckbox.uncheck();
+    if (operation.isReadOnly) existingCheckbox.enableReadOnly();
+    else existingCheckbox.disableReadOnly();
   }
   static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
     const annotsKey = PDFLib.PDFName.of("Annots");

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { TextOperationComponent } from "./TextOperationComponent.js";
 
-
 vi.mock("moveable", () => {
   return {
     default: class MockMoveable {
