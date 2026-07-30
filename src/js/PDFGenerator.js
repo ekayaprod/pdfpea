@@ -39,7 +39,11 @@ class PDFGenerator {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
+    }
+
+    const pageIndices = pageOperations.map((page) => page.pageNumber - 1);
+    const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
+    for (const cpage of copiedPages) {
       pdfDoc.addPage(cpage);
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
