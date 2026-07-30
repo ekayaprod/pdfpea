@@ -38,6 +38,7 @@ Working website: [ekayaprod.github.io/pdfpea](https://ekayaprod.github.io/pdfpea
 | `/src/css` | Global styling and tailwind configuration. |
 | `/src/js` | Core Vanilla JavaScript models (e.g. `PDFEditor.js`, `PDFGenerator.js`). |
 | `/src/js/OperationComponents` | Manages individual annotation instances. |
+| `/src/js/OperationComponents/shapes` | Domain-specific shape annotation handlers (`Circle`, `Rectangle`). |
 | `/src/js/utils` | Shared utility functions (e.g. `color/`, `canvas/`, `layout/`). |
 | `/public` | Static assets like images served directly. |
 | `/test-files` | Local PDF and media assets for testing the editor visually. |

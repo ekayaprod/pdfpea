@@ -11,3 +11,9 @@
 *   **Axiom 3:** Architectural map comprehensiveness prevents the Monorepo Maze. CI/CD pipelines, configurations, and deployment definitions are integral to the map.
 *   **Heuristic:** Always include hidden configuration directories like `.github/workflows` and deployment scripts like `wrangler.jsonc` in `README.md` to ensure full structural transparency.
 *   **Operation:** Appended `.github/workflows`, `*.config.ts`, and `wrangler.jsonc` to the `README.md` map and updated the `ARCHITECTURE.md` Component Diagram to reflect Form tools and nested directories correctly based on ground truth.
+*   **Axiom 4:** The Phantom Route conceals global endpoints, preventing external integration mapping.
+*   **Heuristic:** Global window dependencies (`PDFLib`, `pdfjsLib`, `Moveable`) must be documented in a central `API.md` derived entirely from `main.js` and `globals.d.ts` without hallucinatory endpoints.
+*   **Operation:** Generated `API.md` documenting global window dependencies.
+*   **Axiom 5:** Monorepo Mazes hide nested architectural directories that define domain-specific contexts.
+*   **Heuristic:** Deep domain directories (e.g. nested shape components) must be structurally surfaced in the architecture map to ensure new contributors recognize the layout context.
+*   **Operation:** Appended `/src/js/OperationComponents/shapes` to the `README.md` architectural map.
