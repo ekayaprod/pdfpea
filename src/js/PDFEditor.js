@@ -7,16 +7,16 @@ import {
   TextFieldOperationComponent,
   CheckboxOperationComponent,
   LinkOperationComponent,
-} from "./OperationComponents/index.js";
+} from "./OperationComponents.js";
 import { PDFGenerator } from "./PDFGenerator.js";
-import { rgbToHex } from "./utils/color/colors.js";
+import { rgbToHex } from "./utils.js";
 import {
   DEFAULT_VALUES,
   FIELD_TYPES,
   ALIGNMENT,
   COMPONENT_TYPES,
   EVENTS,
-} from "./utils/constants/constants.js";
+} from "./constants.js";
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {
   cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
   iccUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/iccs/`,
