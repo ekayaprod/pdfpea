@@ -968,15 +968,7 @@ export default {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
       // Create image component with base64 data
-      page.createComponentWithDimensions(
-        "image",
-        { url: imageDataUrl },
-        id,
-        x,
-        y,
-        width,
-        height,
-      );
+      page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
 
       pendingImageParams.value = null;
     };
@@ -1218,12 +1210,7 @@ export default {
       drawingOverlay.className = "drawing-overlay";
       return drawingOverlay;
     };
-    const updateDrawingOverlay = (
-      startX,
-      startY,
-      currentX,
-      currentY
-    ) => {
+    const updateDrawingOverlay = (startX, startY, currentX, currentY) => {
       if (!drawingOverlay) return;
       const left = Math.min(startX, currentX);
       const top = Math.min(startY, currentY);
@@ -1670,15 +1657,7 @@ export default {
                 openLinkDialog(page, id, x, y, width, height);
               } else {
                 // Create component with calculated dimensions for other tools
-                page.createComponentWithDimensions(
-                  toolType,
-                  settings,
-                  id,
-                  x,
-                  y,
-                  width,
-                  height,
-                );
+                page.createComponentWithDimensions(toolType, settings, id, x, y, width, height);
                 if (component) {
                   component.setSelected(true);
                 }
