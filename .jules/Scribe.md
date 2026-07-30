@@ -10,3 +10,4 @@
 - Scribe: Successfully updated README.md, ARCHITECTURE.md, index.html, and package.json to explicitly document the architectural differences and lineage of this fork versus the original AlphaCloudTechnologies/pdfpea repository.
 - Injected AST-driven JSDoc for `hexToRgb` and `rgbToHex` in `src/js/utils/color/colors.js` referencing DRY principle extraction (commit ab9ed33).
 - Aggregated recent git commit ab9ed33 (Pop-out Editor for Sidebar Dashboard) into CHANGELOG.md
+Resolved linting and technical debt issues in src/ globals.d.ts, App.vue, js/PDFGenerator.js, js/utils/constants/constants.js
