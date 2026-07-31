@@ -17,6 +17,7 @@ import {
   COMPONENT_TYPES,
   EVENTS,
   IMAGE_PATHS,
+  COLORS,
 } from "./utils/constants.js";
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {
   cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
@@ -211,7 +212,7 @@ class PDFPage {
             width,
             height,
             settings?.subType === "highlight"
-              ? (settings.fill ?? "#FFFF00")
+              ? (settings.fill ?? COLORS.YELLOW)
               : settings?.subType === "white-out"
                 ? "#FFFFFF"
                 : (settings?.fill ?? "transparent"),
@@ -280,8 +281,8 @@ class PDFPage {
             height,
             settings?.linkType ?? "url",
             settings?.linkValue ?? "",
-            settings?.fill ?? "rgba(0, 122, 204, 0.1)",
-            settings?.borderColor ?? "#007acc",
+            settings?.fill ?? COLORS.LINK_FILL,
+            settings?.borderColor ?? COLORS.LINK_BLUE,
             settings?.borderWidth ?? 1,
             settings?.opacity ?? 1.0,
           ),

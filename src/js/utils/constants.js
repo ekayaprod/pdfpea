@@ -22,11 +22,15 @@ export const DEFAULT_VALUES = {
 };
 
 // Colors
-const COLORS = {
+export const COLORS = {
   WHITE: "#FFFFFF",
   RED: "#FF0000",
   BLACK: "#000000",
   LIGHT_BLUE: "#ADD8E6",
+  LINK_BLUE: "#007acc",
+  LINK_FILL: "rgba(0, 122, 204, 0.1)",
+  HIGHLIGHT_BLUE: "#a5edff",
+  YELLOW: "#FFFF00",
 };
 
 // Font families

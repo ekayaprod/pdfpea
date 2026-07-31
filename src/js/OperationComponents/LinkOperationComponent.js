@@ -1,4 +1,5 @@
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
+import { COLORS } from "../utils/constants.js";
 
 class LinkOperationComponent extends BasicOperationComponent {
   constructor(operation, canvasContainer) {
@@ -38,8 +39,8 @@ class LinkOperationComponent extends BasicOperationComponent {
     height = 30,
     linkType = "url",
     linkValue = "",
-    fill = "rgba(0, 122, 204, 0.1)",
-    borderColor = "#007acc",
+    fill = COLORS.LINK_FILL,
+    borderColor = COLORS.LINK_BLUE,
     borderWidth = 1,
     opacity = 1.0,
   ) => {
