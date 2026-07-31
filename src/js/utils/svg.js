@@ -18,9 +18,19 @@ export const updateSvgAttribute = (base64Url, attribute, value, elementTag = "pa
     let svgString = atob(base64Data);
 
     if (svgString.includes(`${attribute}=`)) {
+      // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+      /**
+       * Matches existing attribute declarations in the SVG string for targeted replacement.
+       * * Historical Intent: Added in PR #77 (commit 9e89291, Jul 2026) to enable dynamic SVG recoloring and dynamic dimension adjustments on the client-side.
+       */
       const regex = new RegExp(`${attribute}="[^"]*"`, "g");
       svgString = svgString.replace(regex, `${attribute}="${value}"`);
     } else {
+      // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+      /**
+       * Matches the opening tag of a specified SVG element to inject a new attribute when it does not already exist.
+       * * Historical Intent: Added in PR #77 (commit 9e89291, Jul 2026) to enable dynamic SVG recoloring and dynamic dimension adjustments on the client-side.
+       */
       const regex = new RegExp(`<${elementTag}([^>]*)>`, "g");
       svgString = svgString.replace(regex, `<${elementTag}$1 ${attribute}="${value}">`);
     }

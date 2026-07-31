@@ -13,6 +13,7 @@
 - **🗜️ Vice:** Minify SVG assets by stripping bloated XML metadata.
 - Elevate UI copy and inject accessibility labels.
 - Code formatting.
+- **📱 Viewmorph:** Morph rigid layouts to fluid grids and accessible touch targets.
 
 ### Security
 
