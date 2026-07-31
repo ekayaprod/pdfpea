@@ -30,6 +30,7 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
+    const pageIndices = [];
     for (const page of pageOperations) {
       page.operations
         .filter((op) => op.operation === "update" && fieldMap.has(op.id))
@@ -37,8 +38,11 @@ class PDFGenerator {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
+      pageIndices.push(page.pageNumber - 1);
+    }
+    if (pageIndices.length > 0) {
+      const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
+      copiedPages.forEach(cpage => pdfDoc.addPage(cpage));
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
