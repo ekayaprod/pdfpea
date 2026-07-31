@@ -30,16 +30,19 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
-    for (const page of pageOperations) {
-      page.operations
-        .filter((op) => op.operation === "update" && fieldMap.has(op.id))
-        .forEach((op) => {
-          srcForm.removeField(fieldMap.get(op.id));
-          fieldMap.delete(op.id);
-        });
-      const [cpage] = await pdfDoc.copyPages(srcDoc, [page.pageNumber - 1]);
-      pdfDoc.addPage(cpage);
-    }
+    pageOperations
+      .flatMap((p) => p.operations)
+      .filter((op) => op.operation === "update" && fieldMap.has(op.id))
+      .forEach((op) => {
+        srcForm.removeField(fieldMap.get(op.id));
+        fieldMap.delete(op.id);
+      });
+    (
+      await pdfDoc.copyPages(
+        srcDoc,
+        pageOperations.map((p) => p.pageNumber - 1),
+      )
+    ).forEach((p) => pdfDoc.addPage(p));
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
     const typeMap = {
@@ -51,19 +54,16 @@ class PDFGenerator {
       checkbox: "drawCheckboxOnPage",
       link: "drawLinkOnPage",
     };
-    // Pages themselves can be processed concurrently
-    await Promise.all(
-      pageOperations.map(async (page) => {
-        const pdfPage = pdfPages[page.pageNumber - 1];
-        // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
-        for (const op of page.operations) {
-          const fn = typeMap[op.type];
-          const validUpdate =
-            op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
-          if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
-        }
-      }),
-    );
+    for (const page of pageOperations) {
+      const pdfPage = pdfPages[page.pageNumber - 1];
+      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
+      for (const op of page.operations) {
+        const fn = typeMap[op.type];
+        const validUpdate =
+          op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
+        if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
+      }
+    }
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
   }

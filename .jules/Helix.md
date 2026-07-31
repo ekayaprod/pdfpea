@@ -25,3 +25,5 @@
 - [x] Collapsed imperative `processFormFields` iteration into a declarative `.forEach()` pipeline in `PDFEditor.js`.
 - [x] Dissolved redundant staging variables (`displayHeight`, `displayWidth`) into chained logical style assignments in `PDFEditor.js`.
 - [x] Purged verbose `rgbToHex` spread arguments by converting manual array indices to ES6 spread syntax (`...field.color`) in `PDFEditor.js`.
+
+- [x] Collapsed imperative nested loop in `generatePDF` iterating over `pageOperations` into declarative `flatMap` and `.forEach` pipeline, achieving density and preventing duplicate resource allocations.
