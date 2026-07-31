@@ -42,7 +42,7 @@ class PDFGenerator {
     }
     if (pageIndices.length > 0) {
       const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
-      copiedPages.forEach(cpage => pdfDoc.addPage(cpage));
+      copiedPages.forEach((cpage) => pdfDoc.addPage(cpage));
     }
     // ⚡ THE WATERFALL COLLAPSE: Batch pre-fetch pages
     const pdfPages = pdfDoc.getPages();
