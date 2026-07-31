@@ -8,3 +8,6 @@
 - Injected AST-driven JSDoc for `convertPixelsToUnits` in `src/App.vue` explaining PDF DPI division (commit 47c7173).
 - Aggregated recent git commits for Inspector (31b2fd6, be54c6f, e097456, 3ad0af8), Dispatch (4a064e5, e2eafd0, 4349980), Vibe Check (d112452) and Author (85e6748) into CHANGELOG.md.
 - Scribe: Successfully updated README.md, ARCHITECTURE.md, index.html, and package.json to explicitly document the architectural differences and lineage of this fork versus the original AlphaCloudTechnologies/pdfpea repository.
+- Injected AST-driven JSDoc for RegExp in src/js/utils/svg.js explaining dynamic SVG styling extraction (commit 9e89291).
+- Injected JSDoc for generateId in src/js/utils/identity/generateId.js explaining base-36 algorithm magic numbers (commit 9e89291).
+- Aggregated recent git commit 9e89291 (Viewmorph: fluid grids) into CHANGELOG.md.
