@@ -1337,7 +1337,11 @@ export default {
                 // Second click - finalize measurement
                 let finalPoint = { ...drawingStart.value };
                 // If Shift is held, constrain to horizontal or vertical measurement
-                finalPoint = constrainToAxis(finalPoint, measurementState.value.firstPoint, event.shiftKey);
+                finalPoint = constrainToAxis(
+                  finalPoint,
+                  measurementState.value.firstPoint,
+                  event.shiftKey,
+                );
                 // Remove live measurement
                 document.querySelectorAll(".measurement-overlay.live").forEach((overlay) => {
                   overlay.remove();
@@ -1406,9 +1410,13 @@ export default {
             // Handle line drawing (straight line from start to current point)
             if (selectedTool.value === "line") {
               // For line tool, only use start and current points (straight line)
-              const constrainedEnd = constrainToAxis(drawingCurrent.value, drawingStart.value, event.shiftKey);
-              let endX = constrainedEnd.x;
-              let endY = constrainedEnd.y;
+              const constrainedEnd = constrainToAxis(
+                drawingCurrent.value,
+                drawingStart.value,
+                event.shiftKey,
+              );
+              const endX = constrainedEnd.x;
+              const endY = constrainedEnd.y;
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
                 { x: endX, y: endY },
@@ -1428,7 +1436,11 @@ export default {
             // Handle measurement tool live preview
             if (selectedTool.value === "measure" && measurementState.value.isActive) {
               let currentPoint = { ...drawingCurrent.value };
-              currentPoint = constrainToAxis(currentPoint, measurementState.value.firstPoint, event.shiftKey);
+              currentPoint = constrainToAxis(
+                currentPoint,
+                measurementState.value.firstPoint,
+                event.shiftKey,
+              );
               measurementState.value.currentPoint = currentPoint;
               // Show live measurement
               addMeasurementOverlay(
@@ -1464,7 +1476,11 @@ export default {
                 x: rawX / zoomFactor,
                 y: rawY / zoomFactor,
               };
-              currentPoint = constrainToAxis(currentPoint, measurementState.value.firstPoint, event.shiftKey);
+              currentPoint = constrainToAxis(
+                currentPoint,
+                measurementState.value.firstPoint,
+                event.shiftKey,
+              );
               measurementState.value.currentPoint = currentPoint;
               // Show live measurement
               addMeasurementOverlay(
@@ -1518,9 +1534,13 @@ export default {
             // Handle line drawing completion
             if (selectedTool.value === "line") {
               // Create final line path with just start and end points
-              const constrainedEnd = constrainToAxis(drawingCurrent.value, drawingStart.value, event.shiftKey);
-              let endX = constrainedEnd.x;
-              let endY = constrainedEnd.y;
+              const constrainedEnd = constrainToAxis(
+                drawingCurrent.value,
+                drawingStart.value,
+                event.shiftKey,
+              );
+              const endX = constrainedEnd.x;
+              const endY = constrainedEnd.y;
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
                 { x: endX, y: endY },
