@@ -2,5 +2,8 @@
 - Standardized `pendingImageData` to `pendingImageParams` (Ambiguous variable)
 - Standardized `pendingLinkData` to `pendingLinkParams` (Ambiguous variable)
 - Standardized `showImageDialog`, `showLinkDialog`, `showConfigDropdown` (and prop `show`) to `isImageDialogOpen`, `isLinkDialogOpen`, `isConfigDropdownOpen` (and prop `isOpen`) to enforce boolean prefixes.
-- Standardized loadIconCache to fetchIconCache (Fetch Consolidation)\n- Standardized preventComponentCreation to isComponentCreationPrevented (Boolean Prefix Enforcer)\n- Standardized rfile to selectedFile (Ambiguity Excision)
+- Standardized loadIconCache to fetchIconCache (Fetch Consolidation)
+- Standardized preventComponentCreation to isComponentCreationPrevented (Boolean Prefix Enforcer)
+- Standardized rfile to selectedFile (Ambiguity Excision)
 - Learning: Duplicated logic for updating SVG base64 properties (stroke, stroke-width, fill) was nested within `try/catch` ladders and scattered across `updateSvgStrokeColor`, `updateSvgStrokeWidth`, `updateSvgFillColor`, and `getColoredIcon` in `src/App.vue`. | Action: Flattened the logic into a single `updateSvgAttribute` utility inside `src/js/utils/svg.js` utilizing early returns, and replaced the nested clusters with clean invocations.
+- Learning: Deeply nested, duplicated `if/else` logic determining coordinate constraint based on `event.shiftKey` and delta comparison scattered across line-drawing and measurement handlers in `src/App.vue`. | Action: Extracted and flattened the condition into a pure utility `constrainToAxis` using early returns and guard clauses inside `src/js/utils/coordinates.js`.
