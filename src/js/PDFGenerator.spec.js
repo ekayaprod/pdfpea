@@ -60,7 +60,7 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch (e) {
+      } catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
         type = "error";
       }
 
@@ -73,7 +73,7 @@ describe("PDFGenerator", () => {
       let type;
       try {
         type = PDFGenerator.getImageType(tinyBuffer);
-      } catch (e) {
+      } catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
         type = "error";
       }
 
@@ -402,7 +402,7 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-      const pdfDocMock = {};
+      const pdfDocMock = {}; // eslint-disable-line @typescript-eslint/no-unused-vars
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
         drawSvgPath: vi.fn(),

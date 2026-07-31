@@ -1,7 +1,8 @@
 // Global type declarations for external libraries
 
 declare global {
-  interface Window {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+interface Window {
     PDFLib: any;
     pdfjsLib: any;
     Moveable: any;

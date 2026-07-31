@@ -11,21 +11,25 @@ import * as pdfjsLib from "pdfjs-dist";
 import { PDFEditor } from "./PDFEditor.js";
 
 // Mock rgbToHex from colors to avoid errors
-vi.mock("./utils/color/colors.js", () => ({
-  rgbToHex: vi.fn((r, g, b) => {
-    if (
-      r === undefined ||
-      g === undefined ||
-      b === undefined ||
-      r === null ||
-      g === null ||
-      b === null
-    ) {
-      throw new TypeError("Cannot read properties of undefined/null");
-    }
-    return "#000000";
-  }),
-}));
+vi.mock("./utils.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    rgbToHex: vi.fn((r, g, b) => {
+      if (
+        r === undefined ||
+        g === undefined ||
+        b === undefined ||
+        r === null ||
+        g === null ||
+        b === null
+      ) {
+        throw new TypeError("Cannot read properties of undefined/null");
+      }
+      return "#000000";
+    }),
+  };
+});
 
 describe("PDFEditor", () => {
   afterEach(() => {
