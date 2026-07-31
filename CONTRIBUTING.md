@@ -6,8 +6,8 @@ Welcome aboard! PDFPea is a high-velocity, privacy-first PDF editor. We value ze
 
 Before booting, ensure your environment meets the strict engine requirements:
 
-* **Node.js:** `>=24.0.0`
-* **npm:** `>=11.0.0`
+- **Node.js:** `>=24.0.0`
+- **npm:** `>=11.0.0`
 
 ## 🚀 Local Boot Sequence
 
@@ -23,40 +23,55 @@ To boot the application locally, run these commands in sequence:
 
 The Vite development server will boot up and handle hot module replacement seamlessly.
 
+## 🐳 Docker Boot Sequence
+
+To run the application inside an isolated Docker container based on our multi-stage `Dockerfile`:
+
+1. ```bash
+   docker build -t pdfpea .
+   ```
+2. ```bash
+   docker run -p 8080:80 pdfpea
+   ```
+
 ## ✅ Verification & Build
 
 Before submitting any Pull Requests, you must validate your changes against the established linters and parsers. We do not tolerate regressions.
 
 1. **Testing:**
 
-    ```bash
-    npm run test
-    npm run test:e2e
-    ```
+   ```bash
+   npm run test
+   npm run test:watch
+   npm run test:coverage
+   npm run test:e2e
+   ```
 
 2. **Type Checking:**
 
-    ```bash
-    npm run type-check
-    ```
+   ```bash
+   npm run type-check
+   ```
 
 3. **Linting:**
 
-    ```bash
-    npm run lint
-    ```
+   ```bash
+   npm run lint
+   ```
 
 4. **Formatting:**
 
-    ```bash
-    npm run format:check
-    ```
+   ```bash
+   npm run format:check
+   ```
 
-    *(If formatting fails, auto-fix the codebase with `npm run format`)*
-5. **Production Build:**
+   _(If formatting fails, auto-fix the codebase with `npm run format`)_
 
-    ```bash
-    npm run build
-    ```
+5. **Production Build & Preview:**
+
+   ```bash
+   npm run build
+   npm run preview
+   ```
 
 Once all checks pass, your code is ready for review!
