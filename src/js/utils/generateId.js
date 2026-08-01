@@ -10,7 +10,5 @@ export const generateId = () => {
    */
   const array = new Uint32Array(2);
   crypto.getRandomValues(array);
-  return (array[0].toString(36) + array[1].toString(36))
-    .substring(0, 9)
-    .padEnd(9, "0");
+  return (array[0].toString(36) + array[1].toString(36)).substring(0, 9).padEnd(9, "0");
 };
