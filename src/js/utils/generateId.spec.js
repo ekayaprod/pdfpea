@@ -30,15 +30,23 @@ describe("generateId", () => {
     expect(id).toMatch(/^[a-z0-9]+$/);
   });
 
-  it("should pad with zeros if Math.random() returns a short value (e.g. 0.5)", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
+  it("should pad with zeros if crypto.getRandomValues() returns a short value (e.g. 18)", () => {
+    vi.spyOn(crypto, "getRandomValues").mockImplementation((arr) => {
+      arr[0] = 18;
+      arr[1] = 0;
+      return arr;
+    });
     const id = generateId();
     expect(id).toHaveLength(9);
     expect(id).toBe("i00000000");
   });
 
-  it("should handle Math.random() returning 0 correctly", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0);
+  it("should handle crypto.getRandomValues() returning 0 correctly", () => {
+    vi.spyOn(crypto, "getRandomValues").mockImplementation((arr) => {
+      arr[0] = 0;
+      arr[1] = 0;
+      return arr;
+    });
     const id = generateId();
     expect(id).toHaveLength(9);
     expect(id).toBe("000000000");
