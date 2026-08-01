@@ -1,4 +1,5 @@
 // Global type declarations for external libraries
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare global {
   interface Window {

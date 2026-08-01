@@ -11,3 +11,8 @@
 - Injected AST-driven JSDoc for RegExp in src/js/utils/svg.js explaining dynamic SVG styling extraction (commit 9e89291).
 - Injected JSDoc for generateId in src/js/utils/identity/generateId.js explaining base-36 algorithm magic numbers (commit 9e89291).
 - Aggregated recent git commit 9e89291 (Viewmorph: fluid grids) into CHANGELOG.md.
+* Resolving linting errors:
+  - Removed unused variable assignments (e.g., `component`) and unused callback parameters (`container`, `zoomFactor`) in `src/App.vue`.
+  - Refactored ternary expressions evaluating side effects to `if/else` statements in `src/js/PDFGenerator.js` to clear `@typescript-eslint/no-unused-expressions` rules.
+  - Suppressed `@typescript-eslint/no-explicit-any` errors for external module interfaces in `src/globals.d.ts`.
+  - Purged unused dependencies (`IMAGE_PATHS` in `PDFEditor.js`, `FONTS`/`OPERATION_TYPES`/`IMAGE_SIGNATURES` in `constants.js`, and `mountedApp` assignment in `main.js`).
