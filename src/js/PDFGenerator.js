@@ -155,10 +155,15 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
+    const pathFillRegex = /fill="([^"]+)"/;
+    const pathStrokeRegex = /stroke="([^"]+)"/;
+    const pathStrokeWidthRegex = /stroke-width="([^"]+)"/;
+    const pathLineJoinRegex = /stroke-linejoin="([^"]+)"/;
+
     for (const path of paths) {
       const opts = { x: drawX, y: drawY, opacity };
 
-      const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
+      const fillColor = path.element.match(pathFillRegex)?.[1] ?? globalFillMatch?.[1];
       if (fillColor && fillColor !== "none") {
         const c = hexToRgb(fillColor);
         if (c) {
@@ -166,7 +171,7 @@ class PDFGenerator {
         }
       }
 
-      const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
+      const strokeColor = path.element.match(pathStrokeRegex)?.[1] ?? globalStrokeMatch?.[1];
       if (strokeColor && strokeColor !== "none") {
         const c = hexToRgb(strokeColor);
         if (c) {
@@ -175,10 +180,10 @@ class PDFGenerator {
       }
 
       const strokeWidth =
-        path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+        path.element.match(pathStrokeWidthRegex)?.[1] ?? globalStrokeWidthMatch?.[1];
       if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
 
-      const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
+      const lineJoin = path.element.match(pathLineJoinRegex)?.[1];
       if (lineJoin) {
         opts.borderLineCap =
           {
