@@ -203,7 +203,7 @@ class PDFGenerator {
     }
   }
   static async drawRectangleOnPage(pdfDoc, pdfPage, operation) {
-    const borderWidth = parseInt(operation.borderWidth);
+    const borderWidth = parseInt(operation.borderWidth) || 0;
     const borderColor = hexToRgb(operation.borderColor);
     const fillColor = parseColor(operation.fill ?? operation.color);
     const opacity = parseFloat(operation.opacity, 10);
@@ -230,11 +230,11 @@ class PDFGenerator {
     await pdfPage.drawEllipse({
       x: operation.x + operation.width / 2,
       y: pdfPage.getHeight() - operation.y - operation.height / 2,
-      xScale: (operation.width - operation.borderWidth) / 2,
-      yScale: (operation.height - operation.borderWidth) / 2,
-      borderWidth: operation.borderWidth,
+      xScale: (operation.width - (parseInt(operation.borderWidth) || 0)) / 2,
+      yScale: (operation.height - (parseInt(operation.borderWidth) || 0)) / 2,
+      borderWidth: parseInt(operation.borderWidth) || 0,
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      borderOpacity: operation.borderWidth ? opacity : 0,
+      borderOpacity: (parseInt(operation.borderWidth) || 0) ? opacity : 0,
       ...(fillColor && {
         color: PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue),
         opacity,
@@ -243,7 +243,7 @@ class PDFGenerator {
   }
   static async drawTextFieldOnPage(pdfDoc, pdfPage, operation) {
     const id = operation.type === "create" ? `text-field-${operation.id}` : operation.id;
-    const borderWidth = parseFloat(operation.borderWidth, 10);
+    const borderWidth = parseFloat(operation.borderWidth, 10) || 0;
     const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
     const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const backgroundColor = hexToRgb(operation.backgroundColor);
@@ -282,7 +282,7 @@ class PDFGenerator {
 
     const existingTextField = form.getTextField(id);
     existingTextField.setText(operation.text);
-    existingTextField.setFontSize(parseFloat(operation.fontSize, 10));
+    existingTextField.setFontSize(parseFloat(operation.fontSize, 10) || 12);
     if (!isNaN(maxLength)) existingTextField.setMaxLength(maxLength);
 
     existingTextField.setAlignment(
@@ -297,7 +297,7 @@ class PDFGenerator {
   }
   static async drawCheckboxOnPage(pdfDoc, pdfPage, operation) {
     const id = operation.type === "create" ? `checkbox-${operation.id}` : operation.id;
-    const borderWidth = parseFloat(operation.borderWidth, 10);
+    const borderWidth = parseFloat(operation.borderWidth, 10) || 0;
     const borderColor = hexToRgb(operation.borderColor) || { red: 0, green: 0, blue: 0 };
     const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const backgroundColor = hexToRgb(operation.backgroundColor);
