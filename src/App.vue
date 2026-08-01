@@ -795,6 +795,7 @@ import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./js/utils/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdfData.js";
 import { updateSvgAttribute } from "./js/utils/svg.js";
+import { parseConfigFile } from "./js/utils/fileConfig";
 export default {
   name: "App",
   components: {
@@ -1815,30 +1816,7 @@ export default {
         return;
       }
       try {
-        const fileContent = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (e) => reject(e);
-          reader.readAsText(configFileToProcess);
-        });
-        const config = JSON.parse(fileContent, (key, value) => {
-          if (key === "__proto__" || key === "constructor" || key === "prototype") {
-            return undefined;
-          }
-          return value;
-        });
-        // Validate config structure
-        if (
-          !config ||
-          typeof config !== "object" ||
-          typeof config.pdfURL !== "string" ||
-          !Array.isArray(config.pages) ||
-          !config.pages.every(
-            (page) => page && typeof page === "object" && Array.isArray(page.operations),
-          )
-        ) {
-          throw new Error("Invalid config file format");
-        }
+        const config = await parseConfigFile(configFileToProcess);
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
@@ -1906,30 +1884,7 @@ export default {
         return;
       }
       try {
-        const fileContent = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (e) => reject(e);
-          reader.readAsText(configFileInput);
-        });
-        const config = JSON.parse(fileContent, (key, value) => {
-          if (key === "__proto__" || key === "constructor" || key === "prototype") {
-            return undefined;
-          }
-          return value;
-        });
-        // Validate config structure
-        if (
-          !config ||
-          typeof config !== "object" ||
-          typeof config.pdfURL !== "string" ||
-          !Array.isArray(config.pages) ||
-          !config.pages.every(
-            (page) => page && typeof page === "object" && Array.isArray(page.operations),
-          )
-        ) {
-          throw new Error("Invalid config file format");
-        }
+        const config = await parseConfigFile(configFileInput);
         // Clear PDF pages before loading new PDF
         clearPdfPages();
         // Handle PDF data - check if it's a base64 data URL or regular URL
