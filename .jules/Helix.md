@@ -25,3 +25,7 @@
 - [x] Collapsed imperative `processFormFields` iteration into a declarative `.forEach()` pipeline in `PDFEditor.js`.
 - [x] Dissolved redundant staging variables (`displayHeight`, `displayWidth`) into chained logical style assignments in `PDFEditor.js`.
 - [x] Purged verbose `rgbToHex` spread arguments by converting manual array indices to ES6 spread syntax (`...field.color`) in `PDFEditor.js`.
+- [x] Collapsed imperative `for` loop in `smoothPath` into a `.reduce()` pipeline and snapped `if` check into a ternary return in `FreehandDrawing.js`.
+- [x] Inlined single-use variables directly into the `btoa` call within `pathToSvgDataUrl` and purged tautological comments in `FreehandDrawing.js`.
+- [x] Collapsed verbose `this.canvas.style.*` assignments in `createCanvas` into a single declarative `.cssText` assignment in `FreehandDrawing.js`.
+- [x] Collapsed `O(N)` map-and-spread allocations in `calculateBoundingBox` into a single-pass `path.reduce()` pipeline in `FreehandDrawing.js`.
