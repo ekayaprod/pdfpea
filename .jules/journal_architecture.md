@@ -1,14 +1,6 @@
-* 🪴 **The ID Generation Propagation**: Extracted scattered `Math.random().toString(36).substring(2, 11)` calls from `src/App.vue` into a pure `generateId` taproot in `src/utils/generateId.js`. Rewired 6 original callers in `src/App.vue` to use the unified taproot.
-# Transformation Ledger: ⚛️ Collider Execution
+### Spliced Targets
+- **JSON Parsing Cache:** Extracted the duplicate inline `JSON.parse` config logic containing a prototype-pollution guard in `src/App.vue` into a newly constructed `safeJSONParse` master utility gear. Routed both local instances to this taproot and eliminated the redundant shells.
+- **Distance Calculation Utility:** Analyzed duplicate implementations of Pythagoras' theorem masking in `src/App.vue` and `src/js/utils/FreehandDrawing.js`. Mapped their mathematical alignment and spliced the capability into `FreehandDrawing.js` as `calculateDistance`. Dismantled the redundant block in `App.vue` and fully correctly routed its local consumer.
+- **Embedded Font Resolution Engine:** Eradicated the identical font resolution and PDF fallback loading caching block from `drawTextOnPage` and `drawTextFieldOnPage` in `src/js/PDFGenerator.js`. Dissected their core logic into `PDFGenerator._getEmbedFont` utility, successfully maintaining caching continuity and parameter dynamic mapping.
 
-- **Target 1 (`src/js/PDFGenerator.js`)**: Modernized deeply nested `.then()` Promise chain in `drawImageOnPage` into clean `async/await` syntax. Injected boundary testing asserting successful catching of absolute void (`null`) parameters with exact error message match.
-- **Target 2 (`src/js/PDFEditor.js`)**: Refactored `renderPDF` Promise array mapping, collapsing the callback waterfall (`.then(() => pdfPage)`) into standard `async` mapping and `await Promise.all()`. Implemented null-handling guard clause and validated via standalone `src/js/PDFEditor.spec.js` boundary test.
-- **Target 3 (`src/App.vue`)**: Replaced multiple `.then()` execution paths triggered during `reader.onload` and `loadPdfFromLanding` with modern `await` closures, safely resolving asynchronous operations. Validated logic preservation via linter and type-checker pipelines.
-- **Mixologist - Utility Centralization**: Successfully identified duplicated color parsing logic (`hexToRgb` and `rgbToHex`) scattered across `src/js/PDFGenerator.js` and `src/js/PDFEditor.js`. Extracted them to a centralized utility module `src/js/utils/colors.js`.
-- **Mixologist - Verification Lock**: The newly centralized `src/js/utils/colors.js` logic was proven against 18 unit tests guaranteeing robust edge-case handling across null states, out-of-bounds parameters, and variable length hex strings.
-
-- **Organizer - Utility Consolidation**: Relocated generic `src/utils/` directory into domain-driven `src/js/utils/`. The root utility folder lacked proper architectural boundary and contained various scripts. Moving it under `src/js/` semantically couples the logic to the JavaScript domain logic. All imports across 6 files and testing suites have been globally reconciled and verified by compiling build (0 test regressions).
-- text
-- form
-- media
-- basic components
+[2026-08-01] 3 structural divergences surgically dismantled and semantically extracted into unified taproots.

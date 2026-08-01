@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 
 vi.mock("pdf-lib", () => ({
   PDFDocument: {
@@ -14,6 +14,9 @@ vi.mock("pdf-lib", () => ({
 import { PDFGenerator } from "./PDFGenerator.js";
 
 describe("PDFGenerator", () => {
+  beforeEach(() => {
+    PDFGenerator.getEmbedFont = vi.fn().mockResolvedValue({});
+  });
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();

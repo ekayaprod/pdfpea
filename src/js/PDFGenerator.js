@@ -73,18 +73,7 @@ class PDFGenerator {
   }
   static async drawTextOnPage(pdfDoc, pdfPage, operation) {
     const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
-    const resolvedFont =
-      operation.fontFamily === "TimesRoman"
-        ? PDFLib.StandardFonts.TimesRoman
-        : operation.fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
-      ? resolvedFont
-      : PDFLib.StandardFonts.Helvetica;
-
-    pdfDoc.__fontCache ??= new Map();
-    if (!pdfDoc.__fontCache.has(fontToEmbed))
-      pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
-    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
+    const embedFont = await PDFGenerator.getEmbedFont(pdfDoc, operation.fontFamily);
 
     await pdfPage.drawText(operation.text.replaceAll("\n\n", "\n \n"), {
       x: operation.x + operation.xPadding,
@@ -251,18 +240,7 @@ class PDFGenerator {
     const fontColor = hexToRgb(operation.color) || { red: 0, green: 0, blue: 0 };
     const backgroundColor = hexToRgb(operation.backgroundColor);
     const maxLength = parseFloat(operation.maxLength, 10);
-    const resolvedFont =
-      operation.fontFamily === "TimesRoman"
-        ? PDFLib.StandardFonts.TimesRoman
-        : operation.fontFamily;
-    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
-      ? resolvedFont
-      : PDFLib.StandardFonts.Helvetica;
-
-    pdfDoc.__fontCache ??= new Map();
-    if (!pdfDoc.__fontCache.has(fontToEmbed))
-      pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
-    const embedFont = await pdfDoc.__fontCache.get(fontToEmbed);
+    const embedFont = await PDFGenerator.getEmbedFont(pdfDoc, operation.fontFamily);
 
     const form = pdfDoc.getForm();
     await form.createTextField(id).addToPage(pdfPage, {
@@ -388,6 +366,18 @@ class PDFGenerator {
         });
       }
     }
+  }
+
+  // 🥄 SPLICE: Semantic duplicate logic identified and integrated into a single utility block.
+  static async getEmbedFont(pdfDoc, fontFamily) {
+    const resolvedFont = fontFamily === "TimesRoman" ? PDFLib.StandardFonts.TimesRoman : fontFamily;
+    const fontToEmbed = Object.values(PDFLib.StandardFonts).includes(resolvedFont)
+      ? resolvedFont
+      : PDFLib.StandardFonts.Helvetica;
+    pdfDoc.__fontCache ??= new Map();
+    if (!pdfDoc.__fontCache.has(fontToEmbed))
+      pdfDoc.__fontCache.set(fontToEmbed, pdfDoc.embedFont(fontToEmbed));
+    return await pdfDoc.__fontCache.get(fontToEmbed);
   }
 }
 export { PDFGenerator };

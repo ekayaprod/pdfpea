@@ -19,11 +19,7 @@ class FreehandDrawing {
     const minDist = Math.max(1, smoothLevel / 20);
     const denoised = path.reduce((acc, curr) => {
       const prev = acc[acc.length - 1];
-      if (
-        !prev ||
-        Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)) >= minDist
-      )
-        acc.push(curr);
+      if (!prev || calculateDistance(prev, curr) >= minDist) acc.push(curr);
       return acc;
     }, []);
     if (denoised.length < 3) return denoised;
@@ -274,5 +270,10 @@ class FreehandDrawing {
   }
 }
 // Export class and singleton instance
+export const calculateDistance = (point1, point2) => {
+  const dx = point2.x - point1.x;
+  const dy = point2.y - point1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
 export { FreehandDrawing };
 export const freehandDrawing = new FreehandDrawing();

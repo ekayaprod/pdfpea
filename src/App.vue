@@ -792,7 +792,7 @@ import { PDFEditor } from "./js/PDFEditor.js";
 import ImageDialog from "./components/ImageDialog.vue";
 import { generateId } from "./js/utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
-import { freehandDrawing } from "./js/utils/FreehandDrawing.js";
+import { freehandDrawing, calculateDistance } from "./js/utils/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdfData.js";
 import { updateSvgAttribute } from "./js/utils/svg.js";
 export default {
@@ -934,6 +934,15 @@ export default {
     });
     // PDF loaded state
     const isLoaded = ref(false);
+    // 🥄 SPLICE: Semantic duplicate logic identified and integrated into a single utility block.
+    const safeJSONParse = (content) => {
+      return JSON.parse(content, (key, value) => {
+        if (key === "__proto__" || key === "constructor" || key === "prototype") {
+          return undefined;
+        }
+        return value;
+      });
+    };
     // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
       pendingImageParams.value = { page, id, x, y, width, height };
@@ -1821,12 +1830,7 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileToProcess);
         });
-        const config = JSON.parse(fileContent, (key, value) => {
-          if (key === "__proto__" || key === "constructor" || key === "prototype") {
-            return undefined;
-          }
-          return value;
-        });
+        const config = safeJSONParse(fileContent);
         // Validate config structure
         if (
           !config ||
@@ -1912,12 +1916,7 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileInput);
         });
-        const config = JSON.parse(fileContent, (key, value) => {
-          if (key === "__proto__" || key === "constructor" || key === "prototype") {
-            return undefined;
-          }
-          return value;
-        });
+        const config = safeJSONParse(fileContent);
         // Validate config structure
         if (
           !config ||
@@ -2469,11 +2468,7 @@ export default {
       return updateSvgAttribute(cachedIcon, "fill", fillColor, "svg") || `/images/${iconName}.svg`;
     };
     // Measurement utility functions
-    const calculateDistance = (point1, point2) => {
-      const dx = point2.x - point1.x;
-      const dy = point2.y - point1.y;
-      return Math.sqrt(dx * dx + dy * dy);
-    };
+    // 🥄 SPLICE: Semantic duplicate logic identified and integrated into a single utility block.
     const convertPixelsToUnits = (pixels) => {
       const px = pixels * zoomLevel.value;
       // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
