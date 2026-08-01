@@ -1821,21 +1821,11 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileToProcess);
         });
-        const worker = new Worker(new URL("./workers/configParser.worker.js", import.meta.url));
-        const config = await new Promise((resolve, reject) => {
-          worker.postMessage(fileContent);
-          worker.onmessage = (e) => {
-            if (e.data.success) {
-              resolve(e.data.config);
-            } else {
-              reject(new Error(e.data.error));
-            }
-            worker.terminate();
-          };
-          worker.onerror = (e) => {
-            reject(e);
-            worker.terminate();
-          };
+        const config = JSON.parse(fileContent, (key, value) => {
+          if (key === "__proto__" || key === "constructor" || key === "prototype") {
+            return undefined;
+          }
+          return value;
         });
         // Validate config structure
         if (
@@ -1922,21 +1912,11 @@ export default {
           reader.onerror = (e) => reject(e);
           reader.readAsText(configFileInput);
         });
-        const worker = new Worker(new URL("./workers/configParser.worker.js", import.meta.url));
-        const config = await new Promise((resolve, reject) => {
-          worker.postMessage(fileContent);
-          worker.onmessage = (e) => {
-            if (e.data.success) {
-              resolve(e.data.config);
-            } else {
-              reject(new Error(e.data.error));
-            }
-            worker.terminate();
-          };
-          worker.onerror = (e) => {
-            reject(e);
-            worker.terminate();
-          };
+        const config = JSON.parse(fileContent, (key, value) => {
+          if (key === "__proto__" || key === "constructor" || key === "prototype") {
+            return undefined;
+          }
+          return value;
         });
         // Validate config structure
         if (

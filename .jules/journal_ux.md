@@ -1,7 +1,1 @@
-# Wordsmith Journal - Elevating UI Strings
-
-- **Structural Rule Applied**: Eliminated robotic "Click to" and "Click and drag to" phrasing from tooltips and dialog instructions, replacing them with direct, action-oriented verbs (e.g., "Add text", "Select or drag and drop").
-- **Pattern Validated**: Ensure UI strings are scannable and respect the user's cognitive load by omitting device-dependent interaction commands (e.g., "Click").
-- **Structural Rule Applied**: Standardized terminology by converting "element" references to "layer" in the Layers panel, eliminating lexicon drift.
-- **Structural Rule Applied**: Elevated robotic toast and error states into active, user-friendly language (e.g., "Successfully loaded the document"), while stripping out overly verbose "Please" prefixes in error states to maintain brand clarity.
-- **Structural Rule Applied**: Eliminated robotic or passive language by rewriting "Please try again." to "Try again." in the export configuration error state in `src/App.vue`.
+- [Accelerated] Offloaded heavy JSON.parse operations in App.vue when loading massive configuration files (processConfigFile & handleConfigRestore) to a dedicated configParser.worker.js Web Worker.
