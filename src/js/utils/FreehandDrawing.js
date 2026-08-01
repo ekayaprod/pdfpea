@@ -105,8 +105,11 @@ class FreehandDrawing {
         (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
     return { x, y };
   }
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
   /**
-   * Convert path to SVG and then to base64 data URL
+   * Converts a drawn path into an SVG string and encodes it as a base64 data URL.
+   * It calculates the bounding box with padding, constructs the SVG `<path>` using absolute coordinates, and uses `TextEncoder` to handle Unicode safely before encoding.
+   * * Historical Intent: Introduced via commit 29fef6d (Jul 2026) to enable high-fidelity, smooth freehand drawing rendering.
    */
   pathToSvgDataUrl(path, options = {}) {
     if (path.length === 0) return null;
