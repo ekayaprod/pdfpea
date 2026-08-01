@@ -135,6 +135,96 @@
 <script lang="ts">
 import { ref, watch } from "vue";
 
+const useFileUpload = (preview, error) => {
+  const fileInput = ref(null);
+
+  const triggerFileInput = () => {
+    fileInput.value?.click();
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handleDrop = (event) => {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith("image/")) {
+        processFile(file);
+      } else {
+        error.value = "Select a valid image file.";
+      }
+    }
+  };
+
+  const processFile = (file) => {
+    error.value = "";
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      error.value = "File size must be less than 5MB.";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      preview.value = e.target.result;
+    };
+    reader.onerror = () => {
+      error.value = "Unable to read the file. Try uploading again.";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return {
+    fileInput,
+    triggerFileInput,
+    handleFileUpload,
+    handleDrop,
+  };
+};
+
+const useUrlUpload = (imageUrl, preview, error) => {
+  const loadFromUrl = async () => {
+    if (!imageUrl.value) return;
+
+    error.value = "";
+
+    try {
+      // Create a temporary image to test if URL is valid
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl.value;
+      });
+
+      // Convert image to base64
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas context not available");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+
+      preview.value = canvas.toDataURL("image/png");
+    } catch {
+      error.value =
+        "Unable to load the image from the provided URL. Verify the link and try again.";
+    }
+  };
+
+  return {
+    loadFromUrl,
+  };
+};
+
 export default {
   name: "ImageDialog",
   props: {
@@ -149,7 +239,12 @@ export default {
     const imageUrl = ref("");
     const preview = ref("");
     const error = ref("");
-    const fileInput = ref(null);
+
+    const { fileInput, triggerFileInput, handleFileUpload, handleDrop } = useFileUpload(
+      preview,
+      error,
+    );
+    const { loadFromUrl } = useUrlUpload(imageUrl, preview, error);
 
     // Reset state when dialog is opened
     watch(
@@ -174,78 +269,6 @@ export default {
 
     const closeDialog = () => {
       emit("close");
-    };
-
-    const triggerFileInput = () => {
-      fileInput.value?.click();
-    };
-
-    const handleFileUpload = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        processFile(file);
-      }
-    };
-
-    const handleDrop = (event) => {
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        const file = files[0];
-        if (file.type.startsWith("image/")) {
-          processFile(file);
-        } else {
-          error.value = "Select a valid image file.";
-        }
-      }
-    };
-
-    const processFile = (file) => {
-      error.value = "";
-
-      // Check file size (limit to 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        error.value = "File size must be less than 5MB.";
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.value = e.target.result;
-      };
-      reader.onerror = () => {
-        error.value = "Unable to read the file. Try uploading again.";
-      };
-      reader.readAsDataURL(file);
-    };
-
-    const loadFromUrl = async () => {
-      if (!imageUrl.value) return;
-
-      error.value = "";
-
-      try {
-        // Create a temporary image to test if URL is valid
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = imageUrl.value;
-        });
-
-        // Convert image to base64
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        ctx.drawImage(img, 0, 0);
-
-        preview.value = canvas.toDataURL("image/png");
-      } catch {
-        error.value =
-          "Unable to load the image from the provided URL. Verify the link and try again.";
-      }
     };
 
     const confirmSelection = () => {
