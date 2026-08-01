@@ -795,6 +795,7 @@ import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./js/utils/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdfData.js";
 import { updateSvgAttribute } from "./js/utils/svg.js";
+import { COLORS } from "./js/utils/constants.js";
 export default {
   name: "App",
   components: {
@@ -886,7 +887,7 @@ export default {
     });
     // Highlight tool options
     const highlightOptions = ref({
-      fill: "#FFFF00",
+      fill: COLORS.YELLOW,
       opacity: 0.5,
     });
     // Text tool options
@@ -904,8 +905,8 @@ export default {
     });
     // Link tool options
     const linkOptions = ref({
-      fill: "#a5edff",
-      borderColor: "#007acc",
+      fill: COLORS.HIGHLIGHT_BLUE,
+      borderColor: COLORS.LINK_BLUE,
       borderWidth: 1,
       opacity: 0.2,
     });

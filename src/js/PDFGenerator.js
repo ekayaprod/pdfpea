@@ -1,5 +1,6 @@
 import svgpath from "svgpath";
 import { hexToRgb, parseColor } from "./utils/colors.js";
+import { COLORS } from "./utils/constants.js";
 class PDFGenerator {
   static str2ab(binaryString) {
     return Uint8Array.from(binaryString, (char) => char.charCodeAt(0)).buffer;
@@ -343,13 +344,13 @@ class PDFGenerator {
    */
   static async drawLinkOnPage(pdfDoc, pdfPage, operation) {
     const borderWidth = parseInt(operation.borderWidth) || 0;
-    const borderColor = hexToRgb(operation.borderColor ?? "#007acc") || {
+    const borderColor = hexToRgb(operation.borderColor ?? COLORS.LINK_BLUE) || {
       red: 0,
       green: 122 / 255,
       blue: 204 / 255,
     };
     const opacity = parseFloat(operation.opacity, 10) || 1.0;
-    const fillColor = parseColor(operation.fill ?? "rgba(0, 122, 204, 0.1)");
+    const fillColor = parseColor(operation.fill ?? COLORS.LINK_FILL);
 
     await pdfPage.drawRectangle({
       x: operation.x + borderWidth / 2,
