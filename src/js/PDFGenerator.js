@@ -155,52 +155,29 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    const pathFillRegex = /fill="([^"]+)"/;
-    const pathStrokeRegex = /stroke="([^"]+)"/;
-    const pathStrokeWidthRegex = /stroke-width="([^"]+)"/;
-    const pathLineJoinRegex = /stroke-linejoin="([^"]+)"/;
-
-    const parsedPaths = paths.map((path) => {
+    for (const path of paths) {
       const opts = { x: drawX, y: drawY, opacity };
 
-      const fillColor = path.element.match(pathFillRegex)?.[1] ?? globalFillMatch?.[1];
-      if (fillColor && fillColor !== "none") {
-        const c = hexToRgb(fillColor);
-        if (c) {
-          opts.color = PDFLib.rgb(c.red, c.green, c.blue);
-        }
-      }
+      const fC = hexToRgb(path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1]);
+      if (fC) opts.color = PDFLib.rgb(fC.red, fC.green, fC.blue);
 
-      const strokeColor = path.element.match(pathStrokeRegex)?.[1] ?? globalStrokeMatch?.[1];
-      if (strokeColor && strokeColor !== "none") {
-        const c = hexToRgb(strokeColor);
-        if (c) {
-          opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
-        }
-      }
+      const sC = hexToRgb(path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1]);
+      if (sC) opts.borderColor = PDFLib.rgb(sC.red, sC.green, sC.blue);
 
-      const strokeWidth =
-        path.element.match(pathStrokeWidthRegex)?.[1] ?? globalStrokeWidthMatch?.[1];
-      if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+      const sW = path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+      if (sW) opts.borderWidth = parseFloat(sW) * Math.min(scaleX, scaleY);
 
-      const lineJoin = path.element.match(pathLineJoinRegex)?.[1];
-      if (lineJoin) {
+      const lj = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
+      if (lj) {
         opts.borderLineCap =
           {
             butt: PDFLib.LineCapStyle.Butt,
             projecting: PDFLib.LineCapStyle.Projecting,
             round: PDFLib.LineCapStyle.Round,
-          }[lineJoin] ?? opts.borderLineCap;
+          }[lj] ?? opts.borderLineCap;
       }
 
-      return {
-        pathString: svgpath(path.data).scale(scaleX, scaleY).toString(),
-        opts,
-      };
-    });
-
-    for (const { pathString, opts } of parsedPaths) {
-      await pdfPage.drawSvgPath(pathString, opts);
+      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
     }
   }
 

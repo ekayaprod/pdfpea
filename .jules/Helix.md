@@ -9,7 +9,7 @@
 
 ## Targets
 - [x] Collapse imperative `for` loops filtering arrays in `generatePDF` (e.g. `updateOperations` nested loops).
-- [ ] Collapse imperative `for` loops handling SVG paths in `drawSvgImageOnPage` if applicable.
+- [x] Collapse imperative `for` loops handling SVG paths in `drawSvgImageOnPage` if applicable.
 
 - [x] Collapsed nested callbacks and scaffolding from `drawRasterImageOnPage`.
 - [x] Snapped nested switch block and verbose fetch chains in `drawImageOnPage`.
