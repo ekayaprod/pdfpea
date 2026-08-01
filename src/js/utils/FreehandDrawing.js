@@ -27,17 +27,14 @@ class FreehandDrawing {
       return acc;
     }, []);
     if (denoised.length < 3) return denoised;
-    // Apply multiple smoothing passes
-    let smoothed = [...denoised];
+    // Apply multiple smoothing passes utilizing declarative pipeline
     const passes = Math.min(3, Math.floor(smoothLevel / 3) + 1);
-    for (let pass = 0; pass < passes; pass++) {
-      smoothed = this.applySmoothingPass(smoothed, smoothLevel);
-    }
+    const smoothed = Array.from({ length: passes }).reduce(
+      (acc) => this.applySmoothingPass(acc, smoothLevel),
+      denoised,
+    );
     // Generate Bézier curve points for ultra-smooth result
-    if (smoothLevel > 5) {
-      smoothed = this.generateBezierCurve(smoothed, smoothLevel);
-    }
-    return smoothed;
+    return smoothLevel > 5 ? this.generateBezierCurve(smoothed, smoothLevel) : smoothed;
   }
   /**
    * Single smoothing pass using weighted average
@@ -202,9 +199,7 @@ class FreehandDrawing {
         : this.smoothPath(path, smoothLevel);
     this.context.beginPath();
     this.context.moveTo(pathToRender[0].x, pathToRender[0].y);
-    for (let i = 1; i < pathToRender.length; i++) {
-      this.context.lineTo(pathToRender[i].x, pathToRender[i].y);
-    }
+    pathToRender.slice(1).forEach((p) => this.context.lineTo(p.x, p.y));
     this.context.stroke();
   }
   /**
