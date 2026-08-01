@@ -944,15 +944,7 @@ export default {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
       // Create image component with base64 data
-      const component = page.createComponentWithDimensions(
-        "image",
-        { url: imageDataUrl },
-        id,
-        x,
-        y,
-        width,
-        height,
-      );
+      page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
 
       pendingImageParams.value = null;
     };
@@ -969,7 +961,7 @@ export default {
       if (!pendingLinkParams.value) return;
       const { page, id, x, y, width, height } = pendingLinkParams.value;
       // Create link component
-      const component = page.createComponentWithDimensions(
+      page.createComponentWithDimensions(
         "link",
         {
           linkType: type,
@@ -1145,14 +1137,7 @@ export default {
       drawingOverlay.className = "drawing-overlay";
       return drawingOverlay;
     };
-    const updateDrawingOverlay = (
-      startX,
-      startY,
-      currentX,
-      currentY,
-      container,
-      zoomFactor = 1,
-    ) => {
+    const updateDrawingOverlay = (startX, startY, currentX, currentY) => {
       if (!drawingOverlay) return;
       const left = Math.min(startX, currentX);
       const top = Math.min(startY, currentY);
@@ -1216,7 +1201,7 @@ export default {
               const iconSize = iconOptions.value.size;
               const centeredX = drawingStart.value.x - iconSize / 2;
               const centeredY = drawingStart.value.y - iconSize / 2;
-              const component = page.createComponentWithDimensions(
+              page.createComponentWithDimensions(
                 toolType,
                 settings,
                 id,
@@ -1382,8 +1367,6 @@ export default {
               drawingStart.value.y,
               drawingCurrent.value.x,
               drawingCurrent.value.y,
-              container,
-              zoomFactor,
             );
           });
           element.addEventListener("mousemove", (event) => {
@@ -1479,8 +1462,6 @@ export default {
               drawingStart.value.y,
               drawingCurrent.value.x,
               drawingCurrent.value.y,
-              container,
-              zoomFactor,
             );
           });
           // Add separate mousemove listener for measurement tool when not drawing
