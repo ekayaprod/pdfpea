@@ -132,6 +132,7 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
+
       const pdfDocMock = {
         context: {
           register: vi.fn(),
@@ -176,6 +177,7 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
+
       const pdfDocMock = {};
       const pdfPageMock = {
         getHeight: vi.fn().mockReturnValue(800),
@@ -210,38 +212,14 @@ describe("PDFGenerator", () => {
       // "If you uncover an application bug, write the test expecting the *correct* behavior. If it fails, submit the failing test as your PR to expose the bug. Never write a test that enshrines a failure just to pass CI."
       // YES.
 
-      // Import PDFLib so global reference works in PDFGenerator
-      const PDFLib = await import("pdf-lib");
-      global.PDFLib = PDFLib;
+      // Import actual PDFLib module bypassing mock
+      const realPDFLib = await vi.importActual("pdf-lib");
+      global.PDFLib = realPDFLib;
 
-      const embedFontMock = vi.fn().mockResolvedValue({});
-      const createTextFieldMock = vi.fn().mockReturnValue({
-        addToPage: vi.fn().mockResolvedValue(),
-      });
-      const getTextFieldMock = vi.fn().mockReturnValue({
-        setText: vi.fn(),
-        setFontSize: vi.fn(),
-        setMaxLength: vi.fn(),
-        setAlignment: vi.fn(),
-        enableRequired: vi.fn(),
-        disableRequired: vi.fn(),
-        enableMultiline: vi.fn(),
-        disableMultiline: vi.fn(),
-        enableReadOnly: vi.fn(),
-        disableReadOnly: vi.fn(),
-      });
-      const pdfDocMock = {
-        embedFont: embedFontMock,
-        getForm: vi.fn().mockReturnValue({
-          createTextField: createTextFieldMock,
-          getTextField: getTextFieldMock,
-        }),
-      };
-      const pdfPageMock = {
-        getHeight: vi.fn().mockReturnValue(800),
-      };
+      const pdfDoc = await realPDFLib.PDFDocument.create();
+      const pdfPage = pdfDoc.addPage([800, 800]);
 
-      // Pass object missing some strings like backgroundColor
+      // Pass object missing some strings like backgroundColor, fontSize, borderWidth, etc.
       const operationMock = {
         id: "test",
         type: "create",
@@ -249,50 +227,22 @@ describe("PDFGenerator", () => {
         y: 20,
         width: 100,
         height: 50,
-        borderWidth: 2,
-        borderColor: "#000000",
-        color: "#000000",
-        // backgroundColor missing
-        text: "test",
-        fontSize: "12",
-        alignment: "Left",
-        isRequired: false,
-        isMultiline: false,
-        isReadOnly: false,
       };
 
-      // Since the app crashes due to parsing backgroundColor, the addToPage method should never be called.
-      // No, wait, we EXPECT the code to handle it gracefully and proceed.
-      await PDFGenerator.drawTextFieldOnPage(pdfDocMock, pdfPageMock, operationMock);
-
-      expect(pdfDocMock.getForm).toHaveBeenCalled();
+      await expect(PDFGenerator.drawTextFieldOnPage(pdfDoc, pdfPage, operationMock)).resolves.not.toThrow();
     });
   });
 
   describe("drawCheckboxOnPage", () => {
     it("handles null parameter strings smoothly without throwing unhandled exceptions", async () => {
-      // Import PDFLib so global reference works in PDFGenerator
-      const PDFLib = await import("pdf-lib");
-      global.PDFLib = PDFLib;
+      // Import actual PDFLib module bypassing mock
+      const realPDFLib = await vi.importActual("pdf-lib");
+      global.PDFLib = realPDFLib;
 
-      const pdfDocMock = {
-        getForm: vi.fn().mockReturnValue({
-          createCheckBox: vi.fn().mockReturnValue({
-            addToPage: vi.fn().mockResolvedValue(),
-          }),
-          getCheckBox: vi.fn().mockReturnValue({
-            check: vi.fn(),
-            uncheck: vi.fn(),
-            enableReadOnly: vi.fn(),
-            disableReadOnly: vi.fn(),
-          }),
-        }),
-      };
-      const pdfPageMock = {
-        getHeight: vi.fn().mockReturnValue(800),
-      };
+      const pdfDoc = await realPDFLib.PDFDocument.create();
+      const pdfPage = pdfDoc.addPage([800, 800]);
 
-      // Pass object missing some strings like backgroundColor
+      // Pass object missing strings
       const operationMock = {
         id: "test",
         type: "create",
@@ -300,16 +250,9 @@ describe("PDFGenerator", () => {
         y: 20,
         width: 100,
         height: 50,
-        borderWidth: 2,
-        borderColor: "#000000",
-        color: "#000000",
-        // backgroundColor missing
-        isChecked: false,
-        isReadOnly: false,
       };
 
-      await PDFGenerator.drawCheckboxOnPage(pdfDocMock, pdfPageMock, operationMock);
-      expect(pdfDocMock.getForm).toHaveBeenCalled();
+      await expect(PDFGenerator.drawCheckboxOnPage(pdfDoc, pdfPage, operationMock)).resolves.not.toThrow();
     });
   });
 
@@ -318,6 +261,7 @@ describe("PDFGenerator", () => {
       // Import PDFLib so global reference works in PDFGenerator
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
+
 
       const embedFontMock = vi.fn().mockResolvedValue({});
       const pdfDocMock = {
@@ -352,6 +296,7 @@ describe("PDFGenerator", () => {
       // into PDFLib.rgb() without checking if hexToRgb returned null.
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
+
 
       const pdfDocMock = {
         context: {
@@ -401,6 +346,7 @@ describe("PDFGenerator", () => {
       // on the result of hexToRgb for SVG paths without verifying it isn't null.
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
+
 
       const pdfDocMock = {};
       const pdfPageMock = {
