@@ -132,7 +132,6 @@ describe("PDFGenerator", () => {
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
 
-
       const pdfDocMock = {
         context: {
           register: vi.fn(),
@@ -176,7 +175,6 @@ describe("PDFGenerator", () => {
       // Import PDFLib so global reference works in PDFGenerator
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
-
 
       const pdfDocMock = {};
       const pdfPageMock = {
@@ -229,7 +227,9 @@ describe("PDFGenerator", () => {
         height: 50,
       };
 
-      await expect(PDFGenerator.drawTextFieldOnPage(pdfDoc, pdfPage, operationMock)).resolves.not.toThrow();
+      await expect(
+        PDFGenerator.drawTextFieldOnPage(pdfDoc, pdfPage, operationMock),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -252,7 +252,9 @@ describe("PDFGenerator", () => {
         height: 50,
       };
 
-      await expect(PDFGenerator.drawCheckboxOnPage(pdfDoc, pdfPage, operationMock)).resolves.not.toThrow();
+      await expect(
+        PDFGenerator.drawCheckboxOnPage(pdfDoc, pdfPage, operationMock),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -261,7 +263,6 @@ describe("PDFGenerator", () => {
       // Import PDFLib so global reference works in PDFGenerator
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
-
 
       const embedFontMock = vi.fn().mockResolvedValue({});
       const pdfDocMock = {
@@ -296,7 +297,6 @@ describe("PDFGenerator", () => {
       // into PDFLib.rgb() without checking if hexToRgb returned null.
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
-
 
       const pdfDocMock = {
         context: {
@@ -346,7 +346,6 @@ describe("PDFGenerator", () => {
       // on the result of hexToRgb for SVG paths without verifying it isn't null.
       const PDFLib = await import("pdf-lib");
       global.PDFLib = PDFLib;
-
 
       const pdfDocMock = {};
       const pdfPageMock = {
