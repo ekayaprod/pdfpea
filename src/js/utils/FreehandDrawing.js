@@ -27,17 +27,12 @@ class FreehandDrawing {
       return acc;
     }, []);
     if (denoised.length < 3) return denoised;
-    // Apply multiple smoothing passes
-    let smoothed = [...denoised];
     const passes = Math.min(3, Math.floor(smoothLevel / 3) + 1);
-    for (let pass = 0; pass < passes; pass++) {
-      smoothed = this.applySmoothingPass(smoothed, smoothLevel);
-    }
-    // Generate Bézier curve points for ultra-smooth result
-    if (smoothLevel > 5) {
-      smoothed = this.generateBezierCurve(smoothed, smoothLevel);
-    }
-    return smoothed;
+    const smoothed = Array.from({ length: passes }).reduce(
+      (acc) => this.applySmoothingPass(acc, smoothLevel),
+      [...denoised],
+    );
+    return smoothLevel > 5 ? this.generateBezierCurve(smoothed, smoothLevel) : smoothed;
   }
   /**
    * Single smoothing pass using weighted average
@@ -147,11 +142,9 @@ class FreehandDrawing {
     const svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="${pathData}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
     </svg>`;
-    // Convert to base64 data URL securely handling Unicode
-    const bytes = new TextEncoder().encode(svg);
-    const binaryStringData = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
-    const base64 = btoa(binaryStringData);
-    return `data:image/svg+xml;base64,${base64}`;
+    return `data:image/svg+xml;base64,${btoa(
+      Array.from(new TextEncoder().encode(svg), (byte) => String.fromCodePoint(byte)).join(""),
+    )}`;
   }
   /**
    * Create and setup freehand canvas
@@ -162,11 +155,8 @@ class FreehandDrawing {
       this.canvas.remove();
     }
     this.canvas = document.createElement("canvas");
-    this.canvas.style.position = "absolute";
-    this.canvas.style.top = "0";
-    this.canvas.style.left = "0";
-    this.canvas.style.pointerEvents = "none";
-    this.canvas.style.zIndex = "9999";
+    this.canvas.style.cssText =
+      "position: absolute; top: 0; left: 0; pointer-events: none; z-index: 9999;";
     // Set canvas size to match container
     const rect = container.getBoundingClientRect();
     this.canvas.width = rect.width / zoomFactor;
@@ -259,11 +249,15 @@ class FreehandDrawing {
    */
   calculateBoundingBox(path, strokeWidth = 2) {
     if (path.length === 0) return null;
-    let minX = Math.min(...path.map((p) => p.x));
-    let minY = Math.min(...path.map((p) => p.y));
-    let maxX = Math.max(...path.map((p) => p.x));
-    let maxY = Math.max(...path.map((p) => p.y));
-    // Add padding based on stroke width
+    const { minX, minY, maxX, maxY } = path.reduce(
+      (acc, { x, y }) => ({
+        minX: Math.min(acc.minX, x),
+        minY: Math.min(acc.minY, y),
+        maxX: Math.max(acc.maxX, x),
+        maxY: Math.max(acc.maxY, y),
+      }),
+      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+    );
     const padding = Math.max(strokeWidth * 2, 10);
     return {
       x: minX - padding,
