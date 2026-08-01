@@ -33,7 +33,7 @@ C4Component
     Component(pdf_editor, "PDFEditor.js", "Vanilla JS", "Wrapper for pdfjs-dist. Handles rendering PDF pages to HTML canvas elements.")
     Component(pdf_generator, "PDFGenerator.js", "Vanilla JS", "Wrapper for pdf-lib. Applies annotations and generates the final modified PDF binary.")
     Component(operation_components, "OperationComponents/", "Vanilla JS", "Manages individual annotation instances (Text, Image, Rectangle, Circle, etc.) and DOM interactions.")
-    Component(freehand_drawing, "utils/canvas/FreehandDrawing.js", "Vanilla JS", "Handles advanced path smoothing and SVG generation for the freehand drawing tool.")
+    Component(freehand_drawing, "js/utils/FreehandDrawing.js", "Vanilla JS", "Handles advanced path smoothing and SVG generation for the freehand drawing tool.")
   }
 
   System_Ext(browser_api, "Browser APIs", "File System API, Blob, and DOM Event APIs.")

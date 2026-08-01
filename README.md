@@ -37,7 +37,8 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 | `/src/css`                    | Global styling and tailwind configuration.                               |
 | `/src/js`                     | Core Vanilla JavaScript models (e.g. `PDFEditor.js`, `PDFGenerator.js`). |
 | `/src/js/OperationComponents` | Manages individual annotation instances.                                 |
-| `/src/utils`                  | Shared utility functions (e.g. `color/`, `canvas/`, `layout/`).          |
+| `/src/js/utils`               | Shared utility functions (e.g. `colors.js`, `FreehandDrawing.js`).       |
+| `/src/workers`                | Web Workers for offloading heavy configuration parsing.                  |
 | `/public`                     | Static assets like images served directly.                               |
 | `/test-files`                 | Local PDF and media assets for testing the editor visually.              |
 | `/tests`                      | Playwright end-to-end (E2E) UI and visual regression test suites.        |
