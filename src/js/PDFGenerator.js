@@ -160,7 +160,7 @@ class PDFGenerator {
     const pathStrokeWidthRegex = /stroke-width="([^"]+)"/;
     const pathLineJoinRegex = /stroke-linejoin="([^"]+)"/;
 
-    for (const path of paths) {
+    const parsedPaths = paths.map((path) => {
       const opts = { x: drawX, y: drawY, opacity };
 
       const fillColor = path.element.match(pathFillRegex)?.[1] ?? globalFillMatch?.[1];
@@ -193,7 +193,14 @@ class PDFGenerator {
           }[lineJoin] ?? opts.borderLineCap;
       }
 
-      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
+      return {
+        pathString: svgpath(path.data).scale(scaleX, scaleY).toString(),
+        opts,
+      };
+    });
+
+    for (const { pathString, opts } of parsedPaths) {
+      await pdfPage.drawSvgPath(pathString, opts);
     }
   }
 
