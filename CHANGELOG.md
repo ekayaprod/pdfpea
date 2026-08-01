@@ -4,6 +4,9 @@
 
 ### Changed
 
+- **📦 Quartermaster:** Centralize magic link colors, highlight yellow, and literal image paths.
+- **🧫 Mitosis:** Extract JSON.parse to Web Worker for performance optimization.
+
 - **🧬 Helix:** Refactor `PDFEditor.js` and `PDFGenerator.js` to collapse imperative logic blocks.
 - **🪴 Propagator:** Extract duplicated border width dimension calculations.
 - **🗂️ Organizer:** Refactor to organize utils into semantic subdirectories.

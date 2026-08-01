@@ -329,6 +329,11 @@ class PDFGenerator {
     operation.isChecked ? existingCheckbox.check() : existingCheckbox.uncheck();
     operation.isReadOnly ? existingCheckbox.enableReadOnly() : existingCheckbox.disableReadOnly();
   }
+  // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+  /**
+   * Registers a new annotation dictionary with the PDF document context and appends it to the page's 'Annots' array.
+   * * Historical Intent: Extracted and centralized via commit 29fef6d (Jul 2026) to streamline the process of attaching interactive link annotations to PDF pages.
+   */
   static _registerAndAddAnnotation(pdfDoc, pdfPage, linkDictData) {
     const annotsKey = PDFLib.PDFName.of("Annots");
     const annots = pdfPage.node.get(annotsKey) || [];
