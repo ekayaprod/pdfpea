@@ -1,1 +1,5 @@
 ## Paramedic Refactoring Journal\n\n- **Target:** `src/js/PDFGenerator.js`\n- **Symptom:** Performance degradation and output file bloat when executing sequential `pdfDoc.copyPages()` in a loop within `generatePDF`.\n- **Shift Executed:** Replaced the `for` loop of `pdfDoc.copyPages` with a batch operation. Accumulated `pageIndices` during form updates, then fired a single `pdfDoc.copyPages(srcDoc, pageIndices)` call to collapse the N+1 performance bottleneck.\n- **Result:** Native tests passing. Semantic generation logic verified via reviewer.
+- **Action**: Enforced sequential execution for PDF generation
+  - **Observation**: `Promise.all` inside `src/js/PDFGenerator.js` was causing web worker deadlocks and race conditions for page generation and SVG rendering.
+  - **Mutation**: Swapped `Promise.all` iterations to use sequential `for...of` loops, maintaining the Z-order of canvas rendering.
+  - **Outcome**: The generation logic works safely without locking the application or triggering a silent semantic failure.

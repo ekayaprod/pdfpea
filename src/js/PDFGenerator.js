@@ -56,19 +56,17 @@ class PDFGenerator {
       checkbox: "drawCheckboxOnPage",
       link: "drawLinkOnPage",
     };
-    // Pages themselves can be processed concurrently
-    await Promise.all(
-      pageOperations.map(async (page) => {
-        const pdfPage = pdfPages[page.pageNumber - 1];
-        // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
-        for (const op of page.operations) {
-          const fn = typeMap[op.type];
-          const validUpdate =
-            op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
-          if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
-        }
-      }),
-    );
+    // Pages themselves must be processed sequentially to prevent web worker deadlocks
+    for (const page of pageOperations) {
+      const pdfPage = pdfPages[page.pageNumber - 1];
+      // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
+      for (const op of page.operations) {
+        const fn = typeMap[op.type];
+        const validUpdate =
+          op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
+        if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
+      }
+    }
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
   }
@@ -157,43 +155,41 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    await Promise.all(
-      paths.map(async (path) => {
-        const opts = { x: drawX, y: drawY, opacity };
+    for (const path of paths) {
+      const opts = { x: drawX, y: drawY, opacity };
 
-        const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
-        if (fillColor && fillColor !== "none") {
-          const c = hexToRgb(fillColor);
-          if (c) {
-            opts.color = PDFLib.rgb(c.red, c.green, c.blue);
-          }
+      const fillColor = path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1];
+      if (fillColor && fillColor !== "none") {
+        const c = hexToRgb(fillColor);
+        if (c) {
+          opts.color = PDFLib.rgb(c.red, c.green, c.blue);
         }
+      }
 
-        const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
-        if (strokeColor && strokeColor !== "none") {
-          const c = hexToRgb(strokeColor);
-          if (c) {
-            opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
-          }
+      const strokeColor = path.element.match(/stroke="([^"]+)"/)?.[1] ?? globalStrokeMatch?.[1];
+      if (strokeColor && strokeColor !== "none") {
+        const c = hexToRgb(strokeColor);
+        if (c) {
+          opts.borderColor = PDFLib.rgb(c.red, c.green, c.blue);
         }
+      }
 
-        const strokeWidth =
-          path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
-        if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
+      const strokeWidth =
+        path.element.match(/stroke-width="([^"]+)"/)?.[1] ?? globalStrokeWidthMatch?.[1];
+      if (strokeWidth) opts.borderWidth = parseFloat(strokeWidth) * Math.min(scaleX, scaleY);
 
-        const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
-        if (lineJoin) {
-          opts.borderLineCap =
-            {
-              butt: PDFLib.LineCapStyle.Butt,
-              projecting: PDFLib.LineCapStyle.Projecting,
-              round: PDFLib.LineCapStyle.Round,
-            }[lineJoin] ?? opts.borderLineCap;
-        }
+      const lineJoin = path.element.match(/stroke-linejoin="([^"]+)"/)?.[1];
+      if (lineJoin) {
+        opts.borderLineCap =
+          {
+            butt: PDFLib.LineCapStyle.Butt,
+            projecting: PDFLib.LineCapStyle.Projecting,
+            round: PDFLib.LineCapStyle.Round,
+          }[lineJoin] ?? opts.borderLineCap;
+      }
 
-        await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
-      }),
-    );
+      await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
+    }
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
