@@ -234,7 +234,7 @@ class PDFGenerator {
       yScale: (operation.height - (parseInt(operation.borderWidth) || 0)) / 2,
       borderWidth: parseInt(operation.borderWidth) || 0,
       borderColor: PDFLib.rgb(borderColor.red, borderColor.green, borderColor.blue),
-      borderOpacity: (parseInt(operation.borderWidth) || 0) ? opacity : 0,
+      borderOpacity: parseInt(operation.borderWidth) || 0 ? opacity : 0,
       ...(fillColor && {
         color: PDFLib.rgb(fillColor.red, fillColor.green, fillColor.blue),
         opacity,
