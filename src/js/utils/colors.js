@@ -1,3 +1,8 @@
+// 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+/**
+ * Parses a hex color string into RGB values using bitwise shift operations (`>> 16`, `>> 8`, `& 255`) after integer conversion.
+ * * Historical Intent: Extracted and centralized to standardize color conversion across PDF operations during the Helix SVG collapse refactor in PR #206 (commit 5666cb0, Jul 2026).
+ */
 export const hexToRgb = (hexString) => {
   if (!hexString) return null;
   hexString = hexString.replace("#", "");
