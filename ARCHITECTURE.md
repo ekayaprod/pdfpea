@@ -1,5 +1,22 @@
 # Architecture Map
 
+## 🏗️ Architectural Map
+
+| Directory                     | Purpose                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| `/.github`                    | GitHub Actions CI/CD workflows and Dependabot configuration.             |
+| `/src`                        | Core Vue 3 application logic, components, styling, and utilities.        |
+| `/src/components`             | Reusable UI and tool components.                                         |
+| `/src/css`                    | Global styling and tailwind configuration.                               |
+| `/src/js`                     | Core Vanilla JavaScript models (e.g. `PDFEditor.js`, `PDFGenerator.js`). |
+| `/src/js/OperationComponents` | Manages individual annotation instances.                                 |
+| `/src/js/utils`               | Shared utility functions (e.g. `colors.js`, `FreehandDrawing.js`).       |
+| `/src/js/utils/canvas`        | HTML5 Canvas specific math and rendering utilities.                      |
+| `/src/workers`                | Web Workers for offloading heavy configuration parsing.                  |
+| `/public`                     | Static assets like images served directly.                               |
+| `/test-files`                 | Local PDF and media assets for testing the editor visually.              |
+| `/tests`                      | Playwright end-to-end (E2E) UI and visual regression test suites.        |
+
 ## 🔀 Fork Context (vs. Original)
 
 This project is a modernized fork of the original `AlphaCloudTechnologies/pdfpea`. Architecturally, this fork breaks down the original monolithic structures into modular, domain-driven components. The most significant shift is the dismantling of the original `OperationComponents.js` file into a dedicated `/src/js/OperationComponents/` directory containing individual class files (e.g., `TextOperationComponent`, `ImageOperationComponent`) for each tool type, dramatically improving maintainability and reducing module coupling.
