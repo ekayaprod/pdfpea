@@ -11,3 +11,5 @@
 - Injected AST-driven JSDoc for RegExp in src/js/utils/svg.js explaining dynamic SVG styling extraction (commit 9e89291).
 - Injected JSDoc for generateId in src/js/utils/identity/generateId.js explaining base-36 algorithm magic numbers (commit 9e89291).
 - Aggregated recent git commit 9e89291 (Viewmorph: fluid grids) into CHANGELOG.md.
+- Injected AST-driven JSDoc for `hexToRgb` in `src/js/utils/colors.js` explaining the bitwise shift logic for RGB parsing (commit 5666cb0).
+- Injected AST-driven JSDoc for URL protocol validation regex in `src/js/PDFGenerator.js` explaining URI action parsing (commit 5666cb0).

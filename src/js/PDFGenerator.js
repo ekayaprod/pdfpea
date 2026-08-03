@@ -365,6 +365,11 @@ class PDFGenerator {
       Border: [0, 0, 0],
     };
 
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Validates that an external URL starts with `http://` or `https://` via regex before injecting a URI Action annotation.
+     * * Historical Intent: Validations restructured and collapsed into declarative conditionals during the Helix refactor (PR #206, commit 5666cb0, Jul 2026).
+     */
     if (operation.linkType === "url" && operation.linkValue?.match(/^https?:\/\//)) {
       PDFGenerator._registerAndAddAnnotation(pdfDoc, pdfPage, {
         ...linkDictData,
