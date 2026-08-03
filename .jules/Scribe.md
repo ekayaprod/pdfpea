@@ -13,3 +13,5 @@
 - Aggregated recent git commit 9e89291 (Viewmorph: fluid grids) into CHANGELOG.md.
 - Injected AST-driven JSDoc for `hexToRgb` in `src/js/utils/colors.js` explaining the bitwise shift logic for RGB parsing (commit 5666cb0).
 - Injected AST-driven JSDoc for URL protocol validation regex in `src/js/PDFGenerator.js` explaining URI action parsing (commit 5666cb0).
+- Injected AST-driven JSDoc for `drawThrottleMs` and `minDist` threshold in `src/js/utils/FreehandDrawing.js` explaining frame rate and smoothing defaults.
+- Aggregated recent git commit 4ab1780 (Performance: parallelize SVG parsing) and 06a2282 (Author: format README) into CHANGELOG.md.

@@ -4,6 +4,8 @@
 
 ### Changed
 
+- **📘 Author:** Format README commands and sync architecture maps, and correct architectural paths.
+- **⚡ Performance:** Optimize SVG rendering by parallelizing SVG path parsing.
 - **📦 Quartermaster:** Centralize magic link colors, highlight yellow, and literal image paths.
 - **🧫 Mitosis:** Extract JSON.parse to Web Worker for performance optimization.
 
