@@ -154,12 +154,13 @@ class BasicOperationComponent {
       window.isComponentCreationPrevented = false;
     }, 200); // 200ms delay
     // Clear selection in property panel
-    const clearEvent = new CustomEvent("pdfeditor.shouldClearAllSelection", {
-      detail: { target: null },
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(clearEvent);
+    document.dispatchEvent(
+      new CustomEvent("pdfeditor.shouldClearAllSelection", {
+        detail: { target: null },
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
   };
   initializeOperation = () => {
     Object.keys(this.operation).forEach((key) => {
@@ -268,14 +269,15 @@ class BasicOperationComponent {
     }
   };
   fireEvent = (eventName) => {
-    const componentSelected = new CustomEvent(eventName, {
-      detail: {
-        target: this,
-      },
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(componentSelected);
+    document.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          target: this,
+        },
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
   };
 }
 
