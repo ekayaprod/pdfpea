@@ -33,11 +33,13 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 | Directory                     | Purpose                                                                  |
 | ----------------------------- | ------------------------------------------------------------------------ |
 | `/.github`                    | GitHub Actions CI/CD workflows and Dependabot configuration.             |
+| `/.vscode`                    | VS Code workspace settings and extension recommendations.                |
 | `/src`                        | Core Vue 3 application logic, components, styling, and utilities.        |
 | `/src/components`             | Reusable UI and tool components.                                         |
 | `/src/css`                    | Global styling and tailwind configuration.                               |
 | `/src/js`                     | Core Vanilla JavaScript models (e.g. `PDFEditor.js`, `PDFGenerator.js`). |
 | `/src/js/OperationComponents` | Manages individual annotation instances.                                 |
+| `/src/js/OperationComponents/shapes` | Manages specific shape annotation instances (e.g. Rectangle, Circle). |
 | `/src/js/utils`               | Shared utility functions (e.g. `colors.js`, `FreehandDrawing.js`).       |
 | `/src/js/utils/canvas`        | HTML5 Canvas specific math and rendering utilities.                      |
 | `/src/workers`                | Web Workers for offloading heavy configuration parsing.                  |
