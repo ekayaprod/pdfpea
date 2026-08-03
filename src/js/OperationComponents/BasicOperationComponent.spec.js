@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
-import Moveable from "moveable";
 
 vi.mock("moveable", () => {
   return {
