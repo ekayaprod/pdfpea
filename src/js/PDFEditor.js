@@ -300,14 +300,15 @@ class PDFPage {
     this.fireEvent(EVENTS.SHOULD_CLEAR_ALL_SELECTION);
   };
   fireEvent = (eventName) => {
-    const event = new CustomEvent(eventName, {
-      detail: {
-        target: this,
-      },
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(event);
+    document.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          target: this,
+        },
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
   };
   applyZoom(zoomLevel) {
     this.container.style.transform = `scale(${zoomLevel})`;

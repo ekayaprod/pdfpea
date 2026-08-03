@@ -1406,14 +1406,7 @@ export default {
               if (event.shiftKey) {
                 const deltaX = Math.abs(endX - drawingStart.value.x);
                 const deltaY = Math.abs(endY - drawingStart.value.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal line
-                  endY = drawingStart.value.y;
-                } else {
-                  // Make vertical line
-                  endX = drawingStart.value.x;
-                }
+                deltaX > deltaY ? (endY = drawingStart.value.y) : (endX = drawingStart.value.x);
               }
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
@@ -1552,14 +1545,7 @@ export default {
               if (event.shiftKey) {
                 const deltaX = Math.abs(endX - drawingStart.value.x);
                 const deltaY = Math.abs(endY - drawingStart.value.y);
-                // Choose direction based on which axis has greater movement
-                if (deltaX > deltaY) {
-                  // Make horizontal line
-                  endY = drawingStart.value.y;
-                } else {
-                  // Make vertical line
-                  endX = drawingStart.value.x;
-                }
+                deltaX > deltaY ? (endY = drawingStart.value.y) : (endX = drawingStart.value.x);
               }
               const linePath = [
                 { x: drawingStart.value.x, y: drawingStart.value.y },
@@ -2412,16 +2398,8 @@ export default {
       // Position tooltip
       const rect = element.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
-      let left, top;
-      if (position === "below") {
-        // Position below and to the right of the element
-        left = rect.left;
-        top = rect.bottom + 10;
-      } else {
-        // Default position to the right (for toolbar)
-        left = rect.right + 10;
-        top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-      }
+      const left = position === "below" ? rect.left : rect.right + 10;
+      const top = position === "below" ? rect.bottom + 10 : rect.top + rect.height / 2 - tooltipRect.height / 2;
       tooltip.style.left = `${left}px`;
       tooltip.style.top = `${top}px`;
       // Add arrow
