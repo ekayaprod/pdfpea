@@ -2399,7 +2399,10 @@ export default {
       const rect = element.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
       const left = position === "below" ? rect.left : rect.right + 10;
-      const top = position === "below" ? rect.bottom + 10 : rect.top + rect.height / 2 - tooltipRect.height / 2;
+      const top =
+        position === "below"
+          ? rect.bottom + 10
+          : rect.top + rect.height / 2 - tooltipRect.height / 2;
       tooltip.style.left = `${left}px`;
       tooltip.style.top = `${top}px`;
       // Add arrow
