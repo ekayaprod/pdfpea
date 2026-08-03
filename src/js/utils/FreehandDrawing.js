@@ -8,6 +8,9 @@ class FreehandDrawing {
     this.context = null;
     this.path = [];
     this.lastDrawTime = 0;
+    /**
+     * * Historical Intent: The ~60fps drawing throttle was established in the initial commit (76bc964, Jul 2025) to provide a fluid user experience for freehand drawing across modern devices.
+     */
     this.drawThrottleMs = 16; // ~60fps
   }
   /**
@@ -16,6 +19,9 @@ class FreehandDrawing {
   smoothPath(path, smoothLevel) {
     if (path.length < 3 || smoothLevel <= 1) return path;
     // First, reduce noise by removing points that are too close
+    /**
+     * * Historical Intent: The distance threshold ratio for noise reduction (smoothLevel / 20) was introduced via the Helix refactor (PR #96, commit dd96432b, Jul 2026) to dynamically scale smoothing intensity based on user preference.
+     */
     const minDist = Math.max(1, smoothLevel / 20);
     const denoised = path.reduce((acc, curr) => {
       const prev = acc[acc.length - 1];
