@@ -414,4 +414,55 @@ describe("PDFEditor", () => {
 
     expect(error).toBeUndefined();
   });
+
+  it("handles form fields with missing defaultAppearanceData gracefully without crashing", async () => {
+    const container = document.createElement("div");
+
+    const originalCreateElement = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag) => {
+      if (tag === "canvas") {
+        const canvas = originalCreateElement("canvas");
+        vi.spyOn(canvas, "getContext").mockImplementation(() => ({}));
+        return canvas;
+      }
+      return originalCreateElement(tag);
+    });
+
+    const editor = new PDFEditor(container);
+
+    const mockPage = {
+      getViewport: vi.fn().mockReturnValue({ width: 800, height: 600 }),
+      getAnnotations: vi.fn().mockResolvedValue([
+        {
+          fieldType: "Tx",
+          rect: [10, 10, 100, 50],
+          borderStyle: { width: 1 },
+          color: [0, 0, 0],
+          borderColor: [0, 0, 0],
+          backgroundColor: undefined,
+          fieldName: "TestField",
+          fieldFlags: 1,
+          readOnly: false,
+          // Missing defaultAppearanceData
+        },
+      ]),
+      render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
+    };
+
+    pdfjsLib.getDocument.mockReturnValue({
+      promise: Promise.resolve({
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage),
+      }),
+    });
+
+    let error;
+    try {
+      await editor.renderPDF("dummy.pdf", new Uint8Array([1, 2, 3]));
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeUndefined();
+  });
 });
