@@ -1,0 +1,1 @@
+- The github MCP server is missing environment bindings in .mcp.json and needs to be addressed in a future run.
