@@ -11,10 +11,6 @@
     "pdf": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-pdf"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"]
     }
   }
 }
