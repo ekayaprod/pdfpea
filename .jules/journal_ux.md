@@ -1,2 +1,6 @@
-- [Accelerated] Offloaded heavy JSON.parse operations in App.vue when loading massive configuration files (processConfigFile & handleConfigRestore) to a dedicated configParser.worker.js Web Worker.
-- [Finesse] Replaced magic arbitrary pixel values in tailwind classes like `max-w-[450px]` with `max-w-md` across Vue components. Eradicated `!important` tags from `styles.css`.
+# Espresso Journal
+
+- Mutated `src/components/ImageDialog.vue` to persist `error` state variable, removing reset state function entirely to prevent amnesiac loop for repeated stamping.
+- Mutated `src/components/LinkDialog.vue` to persist state, removing reset state function to prevent amnesiac loop for repeated stamping.
+- Mutated `src/App.vue` `handleImageConfirm`, `handleLinkConfirm`, text tool, freehand, line, shapes etc to hoist selection and immediately jump to `selectTool("select")` preserving momentum without amnesiac loops.
+- Modified `deleteLayer` to add `document.dispatchEvent(new CustomEvent("pdfeditor.shouldClearAllSelection", ...))` to keep properties panel clear on deletion.

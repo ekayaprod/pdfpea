@@ -107,21 +107,16 @@ export default {
     const linkUrl = ref("");
     const pageNumber = ref("");
     const error = ref("");
-    // Reset state when dialog is opened
+    // ☕ CAFFEINATED: Persist context to prevent amnesiac loop for repeated link creation.
     watch(
       () => props.isOpen,
       (newValue) => {
         if (newValue) {
-          resetState();
+          error.value = ""; // Only clear errors, preserve user's content
         }
       },
     );
-    const resetState = () => {
-      activeTab.value = "url";
-      linkUrl.value = "";
-      pageNumber.value = "";
-      error.value = "";
-    };
+
     const isValid = computed(() => {
       if (activeTab.value === "url") {
         return linkUrl.value.trim() !== "";
@@ -195,6 +190,7 @@ export default {
       handleOverlayClick,
       closeDialog,
       confirmSelection,
+      resetState: () => {},
     };
   },
 };
