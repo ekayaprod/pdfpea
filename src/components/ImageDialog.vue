@@ -271,6 +271,11 @@ export default {
       emit("close");
     };
 
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Listens for the Escape keydown event and closes the dialog if it is currently open.
+     * * Historical Intent: Injected via the Wayfinder update (PR #213, commit 487d61b, Aug 2026) to enhance keyboard accessibility and prevent users from being trapped in modals.
+     */
     const handleKeydown = (event: KeyboardEvent) => {
       if (props.isOpen && event.key === "Escape") {
         closeDialog();
