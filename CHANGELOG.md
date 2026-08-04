@@ -4,6 +4,7 @@
 
 ### Changed
 
+- **🧬 Helix:** Refactor style logic with ternary collapse and proxy variable inlining.
 - **📘 Author:** Format README commands and sync architecture maps, and correct architectural paths.
 - **⚡ Performance:** Optimize SVG rendering by parallelizing SVG path parsing.
 - **📦 Quartermaster:** Centralize magic link colors, highlight yellow, and literal image paths.
@@ -28,6 +29,7 @@
 
 ### Added
 
+- **🪧 Wayfinder:** Inject `<Esc>` handlers into modals for keyboard accessibility.
 - **📘 Author:** Add testing instructions to documentation.
 - **📤 Dispatch:** Provision multi-stage Dockerfile and `.dockerignore`.
 
