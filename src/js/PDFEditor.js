@@ -16,7 +16,6 @@ import {
   ALIGNMENT,
   COMPONENT_TYPES,
   EVENTS,
-  IMAGE_PATHS,
   COLORS,
 } from "./utils/constants.js";
 const DEFAULT_PDFJS_DOCUMENT_OPTIONS = {

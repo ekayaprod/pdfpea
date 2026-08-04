@@ -603,7 +603,7 @@
             title="Highlight Tool - Highlight text with colored rectangles"
           >
             <img
-              src="/images/highlight.svg"
+              src="./images/highlight.svg"
               alt="highlight"
               width="24"
               height="24"
@@ -823,37 +823,37 @@ export default {
       {
         id: "tick",
         title: "Tick Tool - Add checkmark icons to the document",
-        icon: "/images/tick.svg",
+        icon: IMAGE_PATHS.SVG_TICK,
         alt: "svg-tick",
       },
       {
         id: "cross",
         title: "Cross Tool - Add cross/X mark icons to the document",
-        icon: "/images/cross.svg",
+        icon: IMAGE_PATHS.SVG_CROSS,
         alt: "svg-cross",
       },
       {
         id: "star",
         title: "Star Tool - Add star icons to the document",
-        icon: "/images/star.svg",
+        icon: IMAGE_PATHS.SVG_STAR,
         alt: "svg-star",
       },
       {
         id: "thumb-up",
         title: "Thumbs Up Tool - Add thumbs up icons to the document",
-        icon: "/images/thumb-up.svg",
+        icon: IMAGE_PATHS.SVG_THUMB_UP,
         alt: "svg-thumb-up",
       },
       {
         id: "thumb-down",
         title: "Thumbs Down Tool - Add thumbs down icons to the document",
-        icon: "/images/thumb-down.svg",
+        icon: IMAGE_PATHS.SVG_THUMB_DOWN,
         alt: "svg-thumb-down",
       },
       {
         id: "love",
         title: "Heart Tool - Add heart icons to the document",
-        icon: "/images/love.svg",
+        icon: IMAGE_PATHS.SVG_LOVE,
         alt: "svg-love",
       },
     ]);
@@ -2449,7 +2449,7 @@ export default {
     // Apply fill color to cached SVG icon
     const getColoredIcon = (iconName, fillColor) => {
       const cachedIcon = iconCache.value[iconName];
-      return updateSvgAttribute(cachedIcon, "fill", fillColor, "svg") || `/images/${iconName}.svg`;
+      return updateSvgAttribute(cachedIcon, "fill", fillColor, "svg") || `./images/${iconName}.svg`;
     };
     // Measurement utility functions
     const calculateDistance = (point1, point2) => {
