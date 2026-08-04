@@ -99,7 +99,7 @@
           <img
             :src="preview"
             alt="Preview"
-              class="max-h-48 max-w-full rounded border border-gray-300 object-contain shadow-sm"
+            class="max-h-48 max-w-full rounded border border-gray-300 object-contain shadow-sm"
             loading="lazy"
             decoding="async"
           />
