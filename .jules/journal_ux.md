@@ -1,1 +1,2 @@
 - [Accelerated] Offloaded heavy JSON.parse operations in App.vue when loading massive configuration files (processConfigFile & handleConfigRestore) to a dedicated configParser.worker.js Web Worker.
+- [Finesse] Replaced magic arbitrary pixel values in tailwind classes like `max-w-[450px]` with `max-w-md` across Vue components. Eradicated `!important` tags from `styles.css`.

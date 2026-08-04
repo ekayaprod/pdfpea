@@ -609,7 +609,7 @@
               height="24"
               loading="lazy"
               decoding="async"
-              class="body-tool-image p-[3px]"
+              class="body-tool-image p-1"
             />
           </div>
           <div
@@ -2693,11 +2693,11 @@ export default {
     }
 
     .value-display {
-      @apply text-sm text-gray-800/80 min-w-[20px] text-center;
+      @apply text-sm text-gray-800/80 min-w-5 text-center;
     }
 
     .font-select {
-      @apply px-1.5 py-0.5 border border-gray-300 rounded bg-white text-sm text-gray-800 cursor-pointer min-w-[120px];
+      @apply px-1.5 py-0.5 border border-gray-300 rounded bg-white text-sm text-gray-800 cursor-pointer min-w-32;
 
       &:focus {
         @apply outline-none border-blue-600;
