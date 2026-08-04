@@ -924,7 +924,15 @@ export default {
     const handleImageConfirm = (imageDataUrl) => {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
-      const component = page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
+      const component = page.createComponentWithDimensions(
+        "image",
+        { url: imageDataUrl },
+        id,
+        x,
+        y,
+        width,
+        height,
+      );
 
       pendingImageParams.value = null;
 

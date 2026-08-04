@@ -256,8 +256,6 @@ export default {
       },
     );
 
-
-
     const handleOverlayClick = () => {
       closeDialog();
     };
