@@ -246,22 +246,17 @@ export default {
     );
     const { loadFromUrl } = useUrlUpload(imageUrl, preview, error);
 
-    // Reset state when dialog is opened
+    // ☕ CAFFEINATED: Persist context (image/url) to prevent amnesiac loop for repeated stamping.
     watch(
       () => props.isOpen,
       (newValue) => {
         if (newValue) {
-          resetState();
+          error.value = ""; // Only clear errors, preserve user's content
         }
       },
     );
 
-    const resetState = () => {
-      activeTab.value = "upload";
-      imageUrl.value = "";
-      preview.value = "";
-      error.value = "";
-    };
+
 
     const handleOverlayClick = () => {
       closeDialog();
@@ -310,6 +305,7 @@ export default {
       handleDrop,
       loadFromUrl,
       confirmSelection,
+      resetState: () => {},
     };
   },
 };

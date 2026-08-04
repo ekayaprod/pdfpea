@@ -924,9 +924,15 @@ export default {
     const handleImageConfirm = (imageDataUrl) => {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
-      page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
+      const component = page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
 
       pendingImageParams.value = null;
+
+      // ☕ CAFFEINATED: Hoist immediately to select tool & select component
+      if (component) {
+        selectTool("select");
+        nextTick(() => component.setSelected(true));
+      }
     };
     const closeImageDialog = () => {
       isImageDialogOpen.value = false;
@@ -939,7 +945,7 @@ export default {
     const handleLinkConfirm = ({ type, value }) => {
       if (!pendingLinkParams.value) return;
       const { page, id, x, y, width, height } = pendingLinkParams.value;
-      page.createComponentWithDimensions(
+      const component = page.createComponentWithDimensions(
         "link",
         {
           linkType: type,
@@ -956,6 +962,12 @@ export default {
         height,
       );
       pendingLinkParams.value = null;
+
+      // ☕ CAFFEINATED: Hoist immediately to select tool & select component
+      if (component) {
+        selectTool("select");
+        nextTick(() => component.setSelected(true));
+      }
     };
     const closeLinkDialog = () => {
       isLinkDialogOpen.value = false;
@@ -1171,7 +1183,7 @@ export default {
               const iconSize = iconOptions.value.size;
               const centeredX = drawingStart.value.x - iconSize / 2;
               const centeredY = drawingStart.value.y - iconSize / 2;
-              page.createComponentWithDimensions(
+              const component = page.createComponentWithDimensions(
                 toolType,
                 settings,
                 id,
@@ -1180,6 +1192,11 @@ export default {
                 iconSize,
                 iconSize,
               );
+
+              if (component) {
+                selectTool("select");
+                nextTick(() => component.setSelected(true));
+              }
 
               isDrawing.value = false;
               return;
@@ -1210,7 +1227,8 @@ export default {
                 if (typeof component.updateSize === "function") {
                   component.updateSize();
                 }
-                component.setSelected(true);
+                selectTool("select");
+                nextTick(() => component.setSelected(true));
               }
               isDrawing.value = false;
               return;
@@ -1235,22 +1253,24 @@ export default {
                 20, // Minimal initial height
               );
               if (component) {
-                // Set selected and trigger edit mode
-                component.setSelected(true);
-                // Focus the text element for immediate editing
-                setTimeout(() => {
-                  const textElement = component.shadow;
-                  if (textElement) {
-                    textElement.contentEditable = true;
-                    textElement.focus();
-                    // Select all text for easy replacement
-                    const range = document.createRange();
-                    range.selectNodeContents(textElement);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                  }
-                }, 10);
+                selectTool("select");
+                nextTick(() => {
+                  component.setSelected(true);
+                  // Focus the text element for immediate editing
+                  setTimeout(() => {
+                    const textElement = component.shadow;
+                    if (textElement) {
+                      textElement.contentEditable = true;
+                      textElement.focus();
+                      // Select all text for easy replacement
+                      const range = document.createRange();
+                      range.selectNodeContents(textElement);
+                      const selection = window.getSelection();
+                      selection.removeAllRanges();
+                      selection.addRange(range);
+                    }
+                  }, 10);
+                });
               }
               isDrawing.value = false;
               return;
@@ -1496,7 +1516,8 @@ export default {
                     boundingBox.height,
                   );
                   if (component) {
-                    component.setSelected(true);
+                    selectTool("select");
+                    nextTick(() => component.setSelected(true));
                   }
                 }
               }
@@ -1546,7 +1567,8 @@ export default {
                       boundingBox.height,
                     );
                     if (component) {
-                      component.setSelected(true);
+                      selectTool("select");
+                      nextTick(() => component.setSelected(true));
                     }
                   }
                 }
@@ -1590,7 +1612,8 @@ export default {
                   height,
                 );
                 if (component) {
-                  component.setSelected(true);
+                  selectTool("select");
+                  nextTick(() => component.setSelected(true));
                 }
               }
             }
@@ -2084,6 +2107,13 @@ export default {
       if (editingLayerKey.value === layer.key) {
         editingLayerKey.value = null;
       }
+      // ☕ CAFFEINATED: Hoist missing component clear trigger to persist active layer logic
+      const clearEvent = new CustomEvent("pdfeditor.shouldClearAllSelection", {
+        detail: { target: null },
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(clearEvent);
       refreshLayers();
     };
     // Inline rename is only meaningful for text-based elements.
