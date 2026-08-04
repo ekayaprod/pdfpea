@@ -1,11 +1,11 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-overlay-enter"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-overlay-enter"
     @click="handleOverlayClick"
   >
     <div
-      class="flex w-[90%] max-w-[450px] max-h-[70vh] flex-col overflow-hidden rounded-xl bg-white shadow-2xl animate-dialog-enter"
+      class="flex w-11/12 max-w-md max-h-[70vh] flex-col overflow-hidden rounded-xl bg-white shadow-2xl animate-dialog-enter"
       @click.stop
     >
       <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 p-5">
