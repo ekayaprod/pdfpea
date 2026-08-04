@@ -1,3 +1,4 @@
+import { IMAGE_PATHS } from "../utils/constants.js";
 import { describe, it, expect, beforeEach } from "vitest";
 import { CheckboxOperationComponent } from "./CheckboxOperationComponent.js";
 
@@ -12,7 +13,7 @@ describe("CheckboxOperationComponent", () => {
     const operation = CheckboxOperationComponent.createDefaultOperation("1", 10, 20);
     const component = new CheckboxOperationComponent(operation, mockContainer);
 
-    expect(component.shadow.getAttribute("src")).toBe("./images/checkbox-unchecked.png");
+    expect(component.shadow.getAttribute("src")).toBe(IMAGE_PATHS.CHECKBOX_UNCHECKED);
   });
 
   it("updates width", () => {
@@ -71,9 +72,9 @@ describe("CheckboxOperationComponent", () => {
     const operation = CheckboxOperationComponent.createDefaultOperation("1", 10, 20);
     const component = new CheckboxOperationComponent(operation, mockContainer);
     component.operationChanged("isChecked", true);
-    expect(component.shadow.getAttribute("src")).toBe("./images/checkbox-checked.png");
+    expect(component.shadow.getAttribute("src")).toBe(IMAGE_PATHS.CHECKBOX_CHECKED);
     component.operationChanged("isChecked", false);
-    expect(component.shadow.getAttribute("src")).toBe("./images/checkbox-unchecked.png");
+    expect(component.shadow.getAttribute("src")).toBe(IMAGE_PATHS.CHECKBOX_UNCHECKED);
   });
 
   it("creates update default operation", () => {

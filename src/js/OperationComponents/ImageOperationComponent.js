@@ -1,3 +1,4 @@
+import { IMAGE_PATHS } from "../utils/constants.js";
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
 
 class ImageOperationComponent extends BasicOperationComponent {
@@ -6,7 +7,7 @@ class ImageOperationComponent extends BasicOperationComponent {
     if (!operation) {
       throw new TypeError("ImageOperationComponent: image operation must exist");
     }
-    const url = "./images/default_image.jpg";
+    const url = IMAGE_PATHS.DEFAULT_IMAGE;
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
     this.shadow.setAttribute("src", url);
@@ -38,7 +39,7 @@ class ImageOperationComponent extends BasicOperationComponent {
     y,
     width = 100,
     height = 100,
-    url = "./images/default_image.jpg",
+    url = IMAGE_PATHS.DEFAULT_IMAGE,
     imageHeight = 100,
     imageWidth = 100,
     subType = null,

@@ -1,3 +1,4 @@
+import { IMAGE_PATHS } from "../utils/constants.js";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ImageOperationComponent } from "./ImageOperationComponent.js";
 
@@ -35,7 +36,7 @@ describe("ImageOperationComponent", () => {
   it("should create successfully with valid operation", () => {
     const comp = new ImageOperationComponent(operation, canvasContainer);
     expect(comp).toBeDefined();
-    expect(comp.shadow.getAttribute("src")).toBe("./images/default_image.jpg");
+    expect(comp.shadow.getAttribute("src")).toBe(IMAGE_PATHS.DEFAULT_IMAGE);
   });
 
   it("should securely reject null or undefined operation", () => {
@@ -95,7 +96,7 @@ describe("ImageOperationComponent", () => {
         imageHeight: 100,
         imageWidth: 100,
         opacity: 1.0,
-        url: "./images/default_image.jpg",
+        url: IMAGE_PATHS.DEFAULT_IMAGE,
         subType: null,
       });
     });

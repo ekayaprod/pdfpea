@@ -1,3 +1,4 @@
+import { IMAGE_PATHS } from "../utils/constants.js";
 import { BasicOperationComponent } from "./BasicOperationComponent.js";
 import { calculateInnerDimensions } from "../utils/dimensions.js";
 
@@ -6,7 +7,7 @@ class CheckboxOperationComponent extends BasicOperationComponent {
     super(operation, canvasContainer);
     this.shadow = document.createElement("img");
     this.shadow.classList.add("component-content");
-    this.shadow.setAttribute("src", "./images/checkbox-checked.png");
+    this.shadow.setAttribute("src", IMAGE_PATHS.CHECKBOX_CHECKED);
     this.shadow.style.maxWidth = "100%";
     this.shadow.style.maxHeight = "100%";
     this.shadow.style.objectFit = "contain";
@@ -42,7 +43,7 @@ class CheckboxOperationComponent extends BasicOperationComponent {
       case "isChecked":
         this.shadow.setAttribute(
           "src",
-          value ? "./images/checkbox-checked.png" : "./images/checkbox-unchecked.png",
+          value ? IMAGE_PATHS.CHECKBOX_CHECKED : IMAGE_PATHS.CHECKBOX_UNCHECKED,
         );
         break;
     }

@@ -72,4 +72,8 @@ export const IMAGE_PATHS = {
   CHECKBOX_UNCHECKED: "./images/checkbox-unchecked.png",
   SVG_TICK: "./images/tick.svg",
   SVG_CROSS: "./images/cross.svg",
+  SVG_STAR: "./images/star.svg",
+  SVG_THUMB_UP: "./images/thumb-up.svg",
+  SVG_THUMB_DOWN: "./images/thumb-down.svg",
+  SVG_LOVE: "./images/love.svg",
 };
