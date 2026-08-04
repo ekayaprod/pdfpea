@@ -610,7 +610,7 @@ import { IMAGE_PATHS } from "./js/utils/constants.js";
               height="24"
               loading="lazy"
               decoding="async"
-              class="body-tool-image p-[3px]"
+              class="body-tool-image p-1"
             />
           </div>
           <div
@@ -812,14 +812,11 @@ export default {
     const counter = ref(0);
     const zoomLevel = ref(1.5);
     const selectedTool = ref("select");
-    // Layers panel state
     const layers = ref([]);
     const selectedLayerEl = ref(null);
     const editingLayerKey = ref(null);
     const editingLayerValue = ref("");
-    // Icon cache for base64 encoded SVGs
     const iconCache = ref({});
-    // Define icon tools array for dynamic rendering
     const iconTools = ref([
       {
         id: "tick",
@@ -858,60 +855,50 @@ export default {
         alt: "svg-love",
       },
     ]);
-    // Drawing state
     const isDrawing = ref(false);
     const drawingStart = ref({ x: 0, y: 0 });
     const drawingCurrent = ref({ x: 0, y: 0 });
     let drawingOverlay = null;
-    // Freehand drawing state
     const freehandPath = ref([]);
     let lastDrawTime = 0;
     const drawThrottleMs = 16; // ~60fps
-    // Freehand tool options
     const freehandOptions = ref({
       smoothLevel: 5,
       color: "#000000",
       width: 2,
     });
-    // Line tool options
     const lineOptions = ref({
       color: "#000000",
       width: 2,
       opacity: 1.0,
     });
-    // Shape tool options
     const shapeOptions = ref({
       fill: "transparent",
       borderColor: "#000000",
       borderWidth: 2,
       opacity: 1.0,
     });
-    // Highlight tool options
     const highlightOptions = ref({
       fill: COLORS.YELLOW,
       opacity: 0.5,
     });
-    // Text tool options
     const textOptions = ref({
       fontFamily: "Helvetica",
       fontSize: 12,
       color: "#000000",
       opacity: 1.0,
     });
-    // Icon tool options
     const iconOptions = ref({
       fillColor: "#000000",
       opacity: 1.0,
       size: 25,
     });
-    // Link tool options
     const linkOptions = ref({
       fill: COLORS.HIGHLIGHT_BLUE,
       borderColor: COLORS.LINK_BLUE,
       borderWidth: 1,
       opacity: 0.2,
     });
-    // Measurement state
     const measurementState = ref({
       isActive: false,
       firstPoint: null,
@@ -919,24 +906,18 @@ export default {
       measurements: [], // Array of finalized measurements
       liveMeasurement: null, // Current live measurement being drawn
     });
-    // Image dialog state - simplified
     const isImageDialogOpen = ref(false);
     const pendingImageParams = ref(null);
-    // Link dialog state
     const isLinkDialogOpen = ref(false);
     const pendingLinkParams = ref(null);
-    // Config dropdown state
     const isConfigDropdownOpen = ref(false);
-    // Toast notification state
     const toast = ref({
       show: false,
       message: "",
       type: "success", // 'success', 'error', 'info', 'warning'
       timeout: null,
     });
-    // PDF loaded state
     const isLoaded = ref(false);
-    // Image dialog functions - simplified
     const openImageDialog = (page, id, x, y, width, height) => {
       pendingImageParams.value = { page, id, x, y, width, height };
       isImageDialogOpen.value = true;
@@ -944,7 +925,6 @@ export default {
     const handleImageConfirm = (imageDataUrl) => {
       if (!pendingImageParams.value) return;
       const { page, id, x, y, width, height } = pendingImageParams.value;
-      // Create image component with base64 data
       page.createComponentWithDimensions("image", { url: imageDataUrl }, id, x, y, width, height);
 
       pendingImageParams.value = null;
@@ -953,7 +933,6 @@ export default {
       isImageDialogOpen.value = false;
       pendingImageParams.value = null;
     };
-    // Link dialog functions
     const openLinkDialog = (page, id, x, y, width, height) => {
       pendingLinkParams.value = { page, id, x, y, width, height };
       isLinkDialogOpen.value = true;
@@ -961,7 +940,6 @@ export default {
     const handleLinkConfirm = ({ type, value }) => {
       if (!pendingLinkParams.value) return;
       const { page, id, x, y, width, height } = pendingLinkParams.value;
-      // Create link component
       page.createComponentWithDimensions(
         "link",
         {
@@ -984,23 +962,19 @@ export default {
       isLinkDialogOpen.value = false;
       pendingLinkParams.value = null;
     };
-    // Config dropdown functions
     const toggleConfigDropdown = () => {
       isConfigDropdownOpen.value = !isConfigDropdownOpen.value;
     };
     const closeConfigDropdown = () => {
       isConfigDropdownOpen.value = false;
     };
-    // Toast functions
     const showToast = (message, type = "success", duration = 2000) => {
-      // Clear existing timeout
       if (toast.value.timeout) {
         clearTimeout(toast.value.timeout);
       }
       toast.value.message = message;
       toast.value.type = type;
       toast.value.show = true;
-      // Auto-hide after duration
       toast.value.timeout = setTimeout(() => {
         hideToast();
       }, duration);
@@ -1012,7 +986,6 @@ export default {
         toast.value.timeout = null;
       }
     };
-    // Function to clear PDF pages while preserving other content (toolbar, placeholder)
     const clearPdfPages = () => {
       if (pdfViewContainer.value) {
         const pdfPages = pdfViewContainer.value.querySelectorAll(".pdf-page");
@@ -1025,11 +998,8 @@ export default {
     };
     const selectTool = (tool) => {
       selectedTool.value = tool;
-      // Clear all component selections when switching tools
       selectedOperation.value = null;
-      // Clear measurements when switching away from measurement tool
       if (tool !== "measure" && measurementState.value.isActive) {
-        // Remove live measurement if switching away from measure tool
         document.querySelectorAll(".measurement-overlay.live").forEach((overlay) => {
           overlay.remove();
         });
@@ -2694,11 +2664,11 @@ export default {
     }
 
     .value-display {
-      @apply text-sm text-gray-800/80 min-w-[20px] text-center;
+      @apply text-sm text-gray-800/80 min-w-5 text-center;
     }
 
     .font-select {
-      @apply px-1.5 py-0.5 border border-gray-300 rounded bg-white text-sm text-gray-800 cursor-pointer min-w-[120px];
+      @apply px-1.5 py-0.5 border border-gray-300 rounded bg-white text-sm text-gray-800 cursor-pointer min-w-32;
 
       &:focus {
         @apply outline-none border-blue-600;

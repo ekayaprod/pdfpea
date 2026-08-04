@@ -30,7 +30,7 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 
 ## 🏗️ Architectural Map
 
-| Directory                     | Purpose                                                                  |
+| Directory / File              | Purpose                                                                  |
 | ----------------------------- | ------------------------------------------------------------------------ |
 | `/.github`                    | GitHub Actions CI/CD workflows and Dependabot configuration.             |
 | `/.vscode`                    | VS Code workspace settings and extension recommendations.                |
@@ -46,6 +46,12 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 | `/public`                     | Static assets like images served directly.                               |
 | `/test-files`                 | Local PDF and media assets for testing the editor visually.              |
 | `/tests`                      | Playwright end-to-end (E2E) UI and visual regression test suites.        |
+| `.mcp.json`                   | Model Context Protocol tool configurations.                              |
+| `Dockerfile`                  | Multi-stage container definitions for isolated deployments.              |
+| `playwright.config.ts`        | End-to-end UI testing pipeline configuration.                            |
+| `vite.config.ts`              | Vite build system and development server configuration.                  |
+| `vitest.config.ts`            | Vitest unit testing runner configuration.                                |
+| `wrangler.jsonc`              | Cloudflare Workers/Pages deployment configuration.                       |
 
 ## 🛠️ Boot Sequence (CLI Commands)
 

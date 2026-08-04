@@ -6,15 +6,11 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/app"]
     },
     "pdf": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-pdf"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"]
     }
   }
 }

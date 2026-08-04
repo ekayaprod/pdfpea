@@ -1,11 +1,11 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-overlay-enter"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-overlay-enter"
     @click="handleOverlayClick"
   >
     <div
-      class="flex w-[90%] max-w-[450px] max-h-[70vh] flex-col overflow-hidden rounded-xl bg-white shadow-2xl animate-dialog-enter"
+      class="flex w-11/12 max-w-md max-h-[70vh] flex-col overflow-hidden rounded-xl bg-white shadow-2xl animate-dialog-enter"
       @click.stop
     >
       <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 p-5">
@@ -92,7 +92,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 export default {
   name: "LinkDialog",
   props: {
@@ -136,6 +136,26 @@ export default {
     const closeDialog = () => {
       emit("close");
     };
+
+    // 🕯️ CHRONICLE: AST reasoning explains the logic; Git history explains the business intent.
+    /**
+     * Listens for the Escape keydown event and closes the dialog if it is currently open.
+     * * Historical Intent: Injected via the Wayfinder update (PR #213, commit 487d61b, Aug 2026) to enhance keyboard accessibility and prevent users from being trapped in modals.
+     */
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (props.isOpen && event.key === "Escape") {
+        closeDialog();
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keydown", handleKeydown);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keydown", handleKeydown);
+    });
+
     const confirmSelection = () => {
       if (!isValid.value) return;
       error.value = "";
