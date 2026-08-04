@@ -1,3 +1,4 @@
+import { IMAGE_PATHS } from "./js/utils/constants.js";
 <template>
   <div class="pdf-editor">
     <div class="p-2">
@@ -603,7 +604,7 @@
             title="Highlight Tool - Highlight text with colored rectangles"
           >
             <img
-              src="./images/highlight.svg"
+              src="/images/highlight.svg"
               alt="highlight"
               width="24"
               height="24"
