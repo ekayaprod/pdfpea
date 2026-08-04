@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 
 const useFileUpload = (preview, error) => {
   const fileInput = ref(null);
@@ -270,6 +270,20 @@ export default {
     const closeDialog = () => {
       emit("close");
     };
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (props.isOpen && event.key === "Escape") {
+        closeDialog();
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keydown", handleKeydown);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keydown", handleKeydown);
+    });
 
     const confirmSelection = () => {
       if (!preview.value) return;

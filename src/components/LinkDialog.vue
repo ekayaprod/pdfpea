@@ -92,7 +92,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 export default {
   name: "LinkDialog",
   props: {
@@ -136,6 +136,21 @@ export default {
     const closeDialog = () => {
       emit("close");
     };
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (props.isOpen && event.key === "Escape") {
+        closeDialog();
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keydown", handleKeydown);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keydown", handleKeydown);
+    });
+
     const confirmSelection = () => {
       if (!isValid.value) return;
       error.value = "";

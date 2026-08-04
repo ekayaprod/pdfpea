@@ -1,1 +1,2 @@
 - [Accelerated] Offloaded heavy JSON.parse operations in App.vue when loading massive configuration files (processConfigFile & handleConfigRestore) to a dedicated configParser.worker.js Web Worker.
+- Ensure all modals provide a clear structural `<Esc>` listener to prevent user trapping.
