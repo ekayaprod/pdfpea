@@ -136,11 +136,15 @@ class PDFPage {
         width,
         field.fieldValue,
         borderWidth,
-        field.color ? rgbToHex(...field.color) : "#000000",
-        field.borderColor ? rgbToHex(...field.borderColor) : "transparent",
-        field.backgroundColor ? rgbToHex(...field.backgroundColor) : "transparent",
-        field.defaultAppearanceData.fontName,
-        field.defaultAppearanceData.fontSize,
+        field.color && Array.isArray(field.color) ? rgbToHex(...field.color) : "#000000",
+        field.borderColor && Array.isArray(field.borderColor)
+          ? rgbToHex(...field.borderColor)
+          : "transparent",
+        field.backgroundColor && Array.isArray(field.backgroundColor)
+          ? rgbToHex(...field.backgroundColor)
+          : "transparent",
+        field.defaultAppearanceData?.fontName ?? "Helvetica",
+        field.defaultAppearanceData?.fontSize ?? 14,
         field.required,
         field.multiLine,
         field.readOnly,
@@ -169,9 +173,13 @@ class PDFPage {
         height,
         width,
         borderWidth,
-        field.color ? rgbToHex(...field.color) : "#000000",
-        field.borderColor ? rgbToHex(...field.borderColor) : "transparent",
-        field.backgroundColor ? rgbToHex(...field.backgroundColor) : "transparent",
+        field.color && Array.isArray(field.color) ? rgbToHex(...field.color) : "#000000",
+        field.borderColor && Array.isArray(field.borderColor)
+          ? rgbToHex(...field.borderColor)
+          : "transparent",
+        field.backgroundColor && Array.isArray(field.backgroundColor)
+          ? rgbToHex(...field.backgroundColor)
+          : "transparent",
         field.fieldFlags === 1,
         field.readOnly,
       ),
