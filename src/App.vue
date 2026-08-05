@@ -795,7 +795,7 @@ import { generateId } from "./js/utils/generateId.js";
 import LinkDialog from "./components/LinkDialog.vue";
 import { freehandDrawing } from "./js/utils/FreehandDrawing.js";
 import { parsePdfData } from "./js/utils/pdfData.js";
-import { updateSvgAttribute } from "./js/utils/svg.js";
+import { updateSvgAttribute, getSvgAttribute } from "./js/utils/svg.js";
 import { COLORS } from "./js/utils/constants.js";
 export default {
   name: "App",
@@ -2212,36 +2212,11 @@ export default {
     watch(() => [freehandOptions.value.color, freehandOptions.value.width], updateFreehandOptions);
     // SVG property helper functions
     const getSvgStrokeColor = (operation) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return "#000000";
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        const svgString = atob(base64Data);
-        // Extract stroke color from SVG
-        const strokeMatch = svgString.match(/stroke="([^"]+)"/);
-        return strokeMatch ? strokeMatch[1] : "#000000";
-      } catch (error) {
-        console.error("Error parsing SVG:", error);
-        return "#000000";
-      }
+      return getSvgAttribute(operation?.url, "stroke", "#000000");
     };
     const getSvgStrokeWidth = (operation) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return 2;
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        const svgString = atob(base64Data);
-        // Extract stroke width from SVG
-        const strokeWidthMatch = svgString.match(/stroke-width="([^"]+)"/);
-        return strokeWidthMatch ? parseFloat(strokeWidthMatch[1]) : 2;
-      } catch (error) {
-        console.error("Error parsing SVG:", error);
-        return 2;
-      }
+      const width = getSvgAttribute(operation?.url, "stroke-width", "2");
+      return parseFloat(width);
     };
     const updateSvgStrokeColor = (operation, newColor) => {
       const newUrl = updateSvgAttribute(operation.url, "stroke", newColor);
@@ -2264,20 +2239,7 @@ export default {
       document.dispatchEvent(event);
     };
     const getSvgFillColor = (operation) => {
-      if (!operation.url || !operation.url.startsWith("data:image/svg+xml;base64,")) {
-        return "#000000";
-      }
-      try {
-        // Decode base64 SVG
-        const base64Data = operation.url.replace("data:image/svg+xml;base64,", "");
-        const svgString = atob(base64Data);
-        // Extract fill color from SVG
-        const fillMatch = svgString.match(/fill="([^"]+)"/);
-        return fillMatch ? fillMatch[1] : "#000000";
-      } catch (error) {
-        console.error("Error parsing SVG:", error);
-        return "#000000";
-      }
+      return getSvgAttribute(operation?.url, "fill", "#000000");
     };
     const updateSvgFillColor = (operation, newColor) => {
       const newUrl = updateSvgAttribute(operation.url, "fill", newColor, "svg");
