@@ -190,9 +190,11 @@ class BasicOperationComponent {
       // Handle resizing based on direction
       // direction[0]: -1 (left), 0 (center), 1 (right)
       // direction[1]: -1 (top), 0 (center), 1 (bottom)
-      const newLeft = direction[0] === -1 ? parseInt(target.style.left) - delta[0] : parseInt(target.style.left);
+      const newLeft =
+        direction[0] === -1 ? parseInt(target.style.left) - delta[0] : parseInt(target.style.left);
       const newWidth = direction[0] === -1 ? parseInt(target.style.width) + delta[0] : width;
-      const newTop = direction[1] === -1 ? parseInt(target.style.top) - delta[1] : parseInt(target.style.top);
+      const newTop =
+        direction[1] === -1 ? parseInt(target.style.top) - delta[1] : parseInt(target.style.top);
       const newHeight = direction[1] === -1 ? parseInt(target.style.height) + delta[1] : height;
 
       target.style.left = `${newLeft}px`;
