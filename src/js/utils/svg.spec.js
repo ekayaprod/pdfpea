@@ -52,7 +52,6 @@ describe("updateSvgAttribute", () => {
   });
 });
 
-
 describe("getSvgAttribute", () => {
   const prefix = "data:image/svg+xml;base64,";
   const createBase64Url = (svgString) => prefix + btoa(svgString);

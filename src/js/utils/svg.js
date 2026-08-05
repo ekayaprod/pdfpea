@@ -43,7 +43,6 @@ export const updateSvgAttribute = (base64Url, attribute, value, elementTag = "pa
   }
 };
 
-
 /**
  * Extracts a specific attribute from an SVG data URL (base64 encoded).
  * Uses early returns to flatten execution.
