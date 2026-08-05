@@ -2170,7 +2170,7 @@ export default {
       if (!pdfViewContainer) return;
       // Skip if on mobile (toolbar positioning handled by CSS on mobile)
       if (window.innerWidth <= 768) {
-        toolbar.style.left = ""; // Clear any JavaScript-set positioning
+        toolbar.style.transform = ""; // Clear any JavaScript-set positioning
         return;
       }
       // Calculate the PDF page position with current zoom
@@ -2185,9 +2185,11 @@ export default {
       const desiredLeft = pdfPageLeft - toolbarWidth - spacing;
       const toolbarLeft = Math.max(minLeftPosition, desiredLeft);
       // Only update if position has changed significantly (avoid unnecessary updates)
-      const currentLeft = parseInt(toolbar.style.left) || 20;
+      const currentTransform = toolbar.style.transform || "";
+      const match = currentTransform.match(/translateX\(([\d.-]+)px\)/);
+      const currentLeft = match ? parseFloat(match[1]) : 20;
       if (Math.abs(currentLeft - toolbarLeft) > 5) {
-        toolbar.style.left = `${toolbarLeft}px`;
+        toolbar.style.transform = `translateX(${toolbarLeft}px)`;
       }
     };
     const applyZoom = () => {
