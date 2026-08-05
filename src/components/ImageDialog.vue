@@ -99,6 +99,8 @@
           <img
             :src="preview"
             alt="Preview"
+            width="200"
+            height="200"
             class="max-h-48 max-w-full rounded border border-gray-300 object-contain shadow-sm"
             loading="lazy"
             decoding="async"
