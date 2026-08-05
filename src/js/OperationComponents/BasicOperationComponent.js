@@ -190,30 +190,23 @@ class BasicOperationComponent {
       // Handle resizing based on direction
       // direction[0]: -1 (left), 0 (center), 1 (right)
       // direction[1]: -1 (top), 0 (center), 1 (bottom)
-      let newLeft = parseInt(target.style.left);
-      let newTop = parseInt(target.style.top);
-      let newWidth = width;
-      let newHeight = height;
-      // Handle horizontal resizing (left edge movement)
-      if (direction[0] === -1) {
-        newLeft = parseInt(target.style.left) - delta[0];
-        newWidth = parseInt(target.style.width) + delta[0];
-      }
-      // Handle vertical resizing (top edge movement)
-      if (direction[1] === -1) {
-        newTop = parseInt(target.style.top) - delta[1];
-        newHeight = parseInt(target.style.height) + delta[1];
-      }
-      // Apply the changes
+      const newLeft =
+        direction[0] === -1 ? parseInt(target.style.left) - delta[0] : parseInt(target.style.left);
+      const newWidth = direction[0] === -1 ? parseInt(target.style.width) + delta[0] : width;
+      const newTop =
+        direction[1] === -1 ? parseInt(target.style.top) - delta[1] : parseInt(target.style.top);
+      const newHeight = direction[1] === -1 ? parseInt(target.style.height) + delta[1] : height;
+
       target.style.left = `${newLeft}px`;
       target.style.top = `${newTop}px`;
       target.style.width = `${newWidth}px`;
       target.style.height = `${newHeight}px`;
-      // Update operation
+
       this.operation.x = newLeft;
       this.operation.y = newTop;
       this.operation.width = newWidth;
       this.operation.height = newHeight;
+
       this.fireEvent("pdfeditor.componentResizing");
       this.wrapperContainer.moveable.updateRect();
     });
@@ -237,23 +230,9 @@ class BasicOperationComponent {
     return new Proxy(this.operation, handler);
   };
   handleBasicOperation = (property, value) => {
-    switch (property) {
-      case "x":
-        this.wrapperContainer.style.left = `${value}px`;
-        break;
-      case "y":
-        this.wrapperContainer.style.top = `${value}px`;
-        break;
-      case "width":
-        this.wrapperContainer.style.width = `${value}px`;
-        break;
-      case "height":
-        this.wrapperContainer.style.height = `${value}px`;
-        break;
-    }
-    if (this.wrapperContainer.moveable) {
-      this.wrapperContainer.moveable.updateRect();
-    }
+    const styleMap = { x: "left", y: "top", width: "width", height: "height" };
+    if (styleMap[property]) this.wrapperContainer.style[styleMap[property]] = `${value}px`;
+    if (this.wrapperContainer.moveable) this.wrapperContainer.moveable.updateRect();
   };
   setSelected = (selected) => {
     if (selected) {
