@@ -1,4 +1,3 @@
-import { IMAGE_PATHS } from "./js/utils/constants.js";
 <template>
   <div class="pdf-editor">
     <div class="p-2">
@@ -788,6 +787,7 @@ import { IMAGE_PATHS } from "./js/utils/constants.js";
   </div>
 </template>
 <script lang="ts">
+import { IMAGE_PATHS } from "./js/utils/constants.js";
 import { ref, onMounted, nextTick, watch } from "vue";
 import { PDFEditor } from "./js/PDFEditor.js";
 import ImageDialog from "./components/ImageDialog.vue";
