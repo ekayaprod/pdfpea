@@ -1,1 +1,1 @@
-- The github MCP server is missing environment bindings in .mcp.json and needs to be addressed in a future run.
+- Integrated the github MCP server with its required environment variable (`GITHUB_PERSONAL_ACCESS_TOKEN`) into `.mcp.json`.
