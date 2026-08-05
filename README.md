@@ -95,7 +95,7 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 2. ```bash
    npm run build
    ```
-   (Compile with Vite --debug)
+   (Compile with Vite)
 3. ```bash
    npm run preview
    ```
