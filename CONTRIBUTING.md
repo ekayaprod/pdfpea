@@ -44,6 +44,7 @@ Before submitting any Pull Requests, you must validate your changes against the 
    npm run test
    npm run test:watch
    npm run test:coverage
+   npx playwright install
    npm run test:e2e
    ```
 

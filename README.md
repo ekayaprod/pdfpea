@@ -82,6 +82,10 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
    ```
    (Run tests and generate coverage report)
 4. ```bash
+   npx playwright install
+   ```
+   (Install Playwright browsers for E2E testing)
+5. ```bash
    npm run test:e2e
    ```
    (Run Playwright end-to-end tests)
