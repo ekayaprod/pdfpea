@@ -31,16 +31,15 @@ class PDFGenerator {
     // ⚡ THE ALGORITHMIC TRAP: Pre-compute dictionary of fields for O(1) lookups
     const srcForm = srcDoc.getForm();
     const fieldMap = new Map(srcForm.getFields().map((f) => [f.getName(), f]));
-    const pageIndices = [];
-    for (const page of pageOperations) {
+    const pageIndices = pageOperations.map((page) => {
       page.operations
         .filter((op) => op.operation === "update" && fieldMap.has(op.id))
         .forEach((op) => {
           srcForm.removeField(fieldMap.get(op.id));
           fieldMap.delete(op.id);
         });
-      pageIndices.push(page.pageNumber - 1);
-    }
+      return page.pageNumber - 1;
+    });
     if (pageIndices.length > 0) {
       const copiedPages = await pdfDoc.copyPages(srcDoc, pageIndices);
       copiedPages.forEach((cpage) => pdfDoc.addPage(cpage));
@@ -57,16 +56,18 @@ class PDFGenerator {
       link: "drawLinkOnPage",
     };
     // Enforce sequential execution queue to prevent web worker deadlocks
-    for (const page of pageOperations) {
+    await pageOperations.reduce(async (prevPageP, page) => {
+      await prevPageP;
       const pdfPage = pdfPages[page.pageNumber - 1];
       // CRITICAL REVERT: Preserve sequential Z-order of canvas painting operations
-      for (const op of page.operations) {
+      await page.operations.reduce(async (prevOpP, op) => {
+        await prevOpP;
         const fn = typeMap[op.type];
         const validUpdate =
           op.operation === "update" && ["textfield", "checkbox", "link"].includes(op.type);
         if (fn && (op.operation === "create" || validUpdate)) await this[fn](pdfDoc, pdfPage, op);
-      }
-    }
+      }, Promise.resolve());
+    }, Promise.resolve());
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
   }
@@ -155,7 +156,8 @@ class PDFGenerator {
     const drawX = x + offsetX;
     const drawY = pageHeight - y - offsetY;
 
-    for (const path of paths) {
+    await paths.reduce(async (prevP, path) => {
+      await prevP;
       const opts = { x: drawX, y: drawY, opacity };
 
       const fC = hexToRgb(path.element.match(/fill="([^"]+)"/)?.[1] ?? globalFillMatch?.[1]);
@@ -178,7 +180,7 @@ class PDFGenerator {
       }
 
       await pdfPage.drawSvgPath(svgpath(path.data).scale(scaleX, scaleY).toString(), opts);
-    }
+    }, Promise.resolve());
   }
 
   static async drawImageOnPage(pdfDoc, pdfPage, operation) {
