@@ -40,15 +40,17 @@ class PDFEditor {
       data: fileContents,
     }).promise;
     // Prevent concurrent race conditions by initializing sequentially
-    this.pdfPages.push(...await Array.from({ length: pdfDoc.numPages }).reduce(async (prevP, _, i) => {
-      const pages = await prevP;
-      const pdfPageContainer = document.createElement("div");
-      this.container.appendChild(pdfPageContainer);
-      const pdfPage = new PDFPage(pdfPageContainer);
-      // Wait for initialization to complete before moving to the next page
-      await pdfPage.initialize(fileName, i + 1, fileContents);
-      return [...pages, pdfPage];
-    }, Promise.resolve([])));
+    this.pdfPages.push(
+      ...(await Array.from({ length: pdfDoc.numPages }).reduce(async (prevP, _, i) => {
+        const pages = await prevP;
+        const pdfPageContainer = document.createElement("div");
+        this.container.appendChild(pdfPageContainer);
+        const pdfPage = new PDFPage(pdfPageContainer);
+        // Wait for initialization to complete before moving to the next page
+        await pdfPage.initialize(fileName, i + 1, fileContents);
+        return [...pages, pdfPage];
+      }, Promise.resolve([]))),
+    );
   }
   async downloadPDF() {
     const pageOperations = this.pdfPages.map((page) => ({
