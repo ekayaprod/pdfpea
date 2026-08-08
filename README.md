@@ -55,81 +55,36 @@ _Note: PDFPea strictly targets Node.js >=24.0.0 and npm >=11.0.0._
 
 ## 🛠️ Boot Sequence (CLI Commands)
 
-1. ```bash
-   npm install
-   ```
-   (Install dependencies)
+1. `npm install` (Install dependencies)
 
 ### Development
 
-1. ```bash
-   npm run dev
-   ```
-   (Boot the Vite development server)
+1. `npm run dev` (Boot the Vite development server)
 
 ### Testing
 
-1. ```bash
-   npm run test
-   ```
-   (Run the Vitest test suite)
-2. ```bash
-   npm run test:watch
-   ```
-   (Run tests in watch mode)
-3. ```bash
-   npm run test:coverage
-   ```
-   (Run tests and generate coverage report)
-4. ```bash
-   npx playwright install
-   ```
-   (Install Playwright browsers for E2E testing)
-5. ```bash
-   npm run test:e2e
-   ```
-   (Run Playwright end-to-end tests)
+1. `npm run test` (Run the Vitest test suite)
+2. `npm run test:watch` (Run tests in watch mode)
+3. `npm run test:coverage` (Run tests and generate coverage report)
+4. `npx playwright install` (Install Playwright browsers for E2E testing)
+5. `npm run test:e2e` (Run Playwright end-to-end tests)
 
 ### Production & Verification
 
-1. ```bash
-   npm run type-check
-   ```
-   (Type check TS and Vue components using `vue-tsc`)
-2. ```bash
-   npm run build
-   ```
-   (Compile with Vite)
-3. ```bash
-   npm run preview
-   ```
-   (Locally preview the production build)
+1. `npm run type-check` (Type check TS and Vue components using `vue-tsc`)
+2. `npm run build` (Compile with Vite)
+3. `npm run preview` (Locally preview the production build)
 
 ### Docker Environment
 
-1. ```bash
-   docker build -t pdfpea .
-   ```
-   (Build the multi-stage image)
-2. ```bash
-   docker run -p 8080:80 pdfpea
-   ```
-   (Boot the container on port 8080)
+1. `docker build -t pdfpea .` (Build the multi-stage image)
+2. `docker run -p 8080:80 pdfpea` (Boot the container on port 8080)
 
 ### Linting & Formatting
 
-1. ```bash
-   npm run lint
-   ```
-   (ESLint auto-fix and cache)
-2. ```bash
-   npm run format:check
-   ```
-   (Prettier validation)
-3. ```bash
-   npm run format
-   ```
-   (Prettier auto-format)
+1. `npm run lint` (ESLint auto-fix and cache)
+2. `npm run format:check` (Prettier validation)
+3. `npm run format` (Prettier auto-format)
 
 ## ⚙️ Recommended IDE Setup
 
