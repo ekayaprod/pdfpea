@@ -38,41 +38,45 @@ To run the application inside an isolated Docker container based on our multi-st
 
 Before submitting any Pull Requests, you must validate your changes against the established linters and parsers. We do not tolerate regressions.
 
-1. **Testing:**
-
-   ```bash
+1. ```bash
    npm run test
+   ```
+   (Run the Vitest test suite)
+2. ```bash
    npm run test:watch
+   ```
+   (Run tests in watch mode)
+3. ```bash
    npm run test:coverage
+   ```
+   (Run tests and generate coverage report)
+4. ```bash
    npx playwright install
+   ```
+   (Install Playwright browsers for E2E testing)
+5. ```bash
    npm run test:e2e
    ```
-
-2. **Type Checking:**
-
-   ```bash
+   (Run Playwright end-to-end tests)
+6. ```bash
    npm run type-check
    ```
-
-3. **Linting:**
-
-   ```bash
+   (Type check TS and Vue components using `vue-tsc`)
+7. ```bash
    npm run lint
    ```
-
-4. **Formatting:**
-
-   ```bash
+   (ESLint auto-fix and cache)
+8. ```bash
    npm run format:check
    ```
-
-   _(If formatting fails, auto-fix the codebase with `npm run format`)_
-
-5. **Production Build & Preview:**
-
-   ```bash
+   (Prettier validation. If it fails, auto-fix the codebase with `npm run format`)
+9. ```bash
    npm run build
-   npm run preview
    ```
+   (Compile with Vite)
+10. ```bash
+    npm run preview
+    ```
+    (Locally preview the production build)
 
 Once all checks pass, your code is ready for review!
